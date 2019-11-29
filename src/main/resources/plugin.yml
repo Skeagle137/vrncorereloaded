@@ -9,9 +9,6 @@ commands:
     clearchat:
         description: Clears all chat.
         usage: /clearchat
-    sysinfo:
-        description: Displays server platform information.
-        usage: /sysinfo
     gamemode:
         aliases: gm
         description: Changes your (or another player's) gamemode.
@@ -19,18 +16,9 @@ commands:
     heal:
         description: Heals you.
         usage: /heal <player>
-    spawn:
-        description: Teleports to server spawn.
-        usage: /spawn
-    setspawn:
-        description: Sets the server spawn.
-        usage: /setspawn
     fly:
         description: Toggles flight mode.
         usage: /fly
-    vrnversion:
-        description: Gets the current VRNcore version.
-        usage: /vrnversion
     vanish:
         description: Toggles invisibility.
         usage: /vanish
@@ -55,7 +43,7 @@ commands:
     sun:
         description: Sets the weather to sun.
         usage: /sun <all>
-    slap:
+    kill:
         description: Kill a player.
         usage: /slap <player>
     speed:
@@ -81,9 +69,6 @@ commands:
     smite:
         description: Strike a player with lightning.
         usage: /smite <player:all>
-    enchant:
-        description: Open a virtual enchantment table.
-        usage: /enchant
     craft:
         description: Open a virtual crafting table.
         usage: /craft
@@ -96,13 +81,6 @@ commands:
     tpall:
         description: Teleport all players to your location.
         usage: /tpall
-    ban:
-        description: Bans a player.
-        usage: /ban <player> <time:reason>
     kick:
         description: Kicks a player.
         usage: /kick <player> <reason>
-    nick:
-        aliases: nickname
-        description: Changes your display name.
-        usage: /nick <nickname>

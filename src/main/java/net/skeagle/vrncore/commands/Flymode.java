@@ -1,14 +1,21 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class Flymode implements CommandExecutor {
+public class Flymode extends SimpleCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Flymode() {
+        super("fly");
+    }
+
+    @Override
+    protected void onCommand() {
+        checkConsole();
         Player p = (Player) sender;
         if (args.length == 0) {
             if (p.hasPermission("vrn.fly.self")) {
@@ -34,8 +41,6 @@ public class Flymode implements CommandExecutor {
             }
 
         }
-
-        return true;
     }
 }
 

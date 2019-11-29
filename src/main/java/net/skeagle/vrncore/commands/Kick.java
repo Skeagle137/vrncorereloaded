@@ -1,17 +1,21 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class Kick implements CommandExecutor {
+public class Kick extends SimpleCommand {
+    public Kick() {
+        super("kick");
+    }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
+    @Override
+    protected void onCommand() {
         Player p = (Player) sender;
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i < args.length; i++) {
@@ -38,6 +42,5 @@ public class Kick implements CommandExecutor {
         else {
             p.sendMessage(VRNcore.noperm);
         }
-        return true;
     }
 }

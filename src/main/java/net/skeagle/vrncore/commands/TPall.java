@@ -1,13 +1,20 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class TPall implements CommandExecutor {
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+public class TPall extends SimpleCommand {
+
+    public TPall() {
+        super("tpall");
+    }
+
+    @Override
+    public void onCommand() {
         Player p = (Player) sender;
         if (p.hasPermission("vrn.tpall")) {
             for (Player pl : Bukkit.getOnlinePlayers()) {
@@ -21,6 +28,5 @@ public class TPall implements CommandExecutor {
         else {
             p.sendMessage(VRNcore.noperm);
         }
-        return true;
     }
 }

@@ -1,15 +1,21 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class Rename implements CommandExecutor {
+public class Rename extends SimpleCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Rename() {
+        super("rename");
+    }
+
+    @Override
+    public void onCommand() {
         Player p = (Player)sender;
         String s = String.join(" ", args);
         if (p.hasPermission("vrn.rename")) {
@@ -27,6 +33,5 @@ public class Rename implements CommandExecutor {
         else {
             p.sendMessage(VRNcore.noperm);
         }
-        return true;
     }
 }

@@ -1,27 +1,30 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 
-public class Vanish implements CommandExecutor, Listener {
-    public ArrayList<Player> vanished = new ArrayList<Player>();
+public class Vanish extends SimpleCommand implements Listener {
+
+    private ArrayList<Player> vanished = new ArrayList<Player>();
 
     private VRNcore plugin;
 
     public Vanish(VRNcore vrncore) {
+        super("vanish");
         plugin = vrncore;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    @Override
+    public void onCommand() {
+        checkConsole();
         Player p = (Player) sender;
         if (args.length == 0) {
             if (p.hasPermission("vrn.vanish.self")) {
@@ -32,7 +35,6 @@ public class Vanish implements CommandExecutor, Listener {
                     }
                     vanished.add(p);
                     p.sendMessage(VRNcore.vrn + "Vanish enabled.");
-                    return true;
                 } else {
 
                     for (Player pl : Bukkit.getOnlinePlayers()) {
@@ -40,7 +42,6 @@ public class Vanish implements CommandExecutor, Listener {
                     }
                     vanished.remove(p);
                     p.sendMessage(VRNcore.vrn + "Vanish disabled.");
-                    return true;
                 }
             } else {
                 p.sendMessage(VRNcore.noperm);
@@ -58,7 +59,6 @@ public class Vanish implements CommandExecutor, Listener {
                         vanished.add(a);
                         a.sendMessage(VRNcore.vrn + "Vanish enabled.");
                         p.sendMessage(VRNcore.vrn + "Vanish enabled for &a" + a.getName() + ".");
-                        return true;
                     } else {
 
                         for (Player pl : Bukkit.getOnlinePlayers()) {
@@ -67,7 +67,6 @@ public class Vanish implements CommandExecutor, Listener {
                         vanished.remove(a);
                         a.sendMessage(VRNcore.vrn + "Vanish disabled.");
                         p.sendMessage(VRNcore.vrn + "Vanish disabled for &a" + a.getName() + ".");
-                        return true;
                     }
                 }
                 else {
@@ -77,7 +76,6 @@ public class Vanish implements CommandExecutor, Listener {
                 p.sendMessage(VRNcore.noperm);
             }
         }
-        return true;
     }
 
     @EventHandler

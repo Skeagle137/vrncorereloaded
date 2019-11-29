@@ -1,17 +1,22 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class Heal implements CommandExecutor {
-	
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		Player p = (Player) sender;
+public class Heal extends SimpleCommand {
+
+    public Heal() {
+        super("heal");
+    }
+
+    @Override
+    protected void onCommand() {
 		if (args.length == 0) {
+		    checkConsole();
+            Player p = getPlayer();
             if (p.hasPermission("vrn.heal.self")) {
                 p.setHealth(20);
                 p.setFoodLevel(20);
@@ -23,6 +28,8 @@ public class Heal implements CommandExecutor {
             }
         }
         else if (args.length == 1) {
+            checkConsole();
+            Player p = getPlayer();
             if (p.hasPermission("vrn.heal.others")) {
                 Player a = Bukkit.getPlayerExact(args[0]);
                 if (a != null) {
@@ -39,7 +46,5 @@ public class Heal implements CommandExecutor {
                 p.sendMessage(VRNcore.noperm);
             }
         }
-		return true;
 	}
-
 }

@@ -1,22 +1,20 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class Speed implements CommandExecutor {
-    public boolean isInt(String s) {
-        try {
-            Integer.parseInt(s);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
+public class Speed extends SimpleCommand {
+
+    public Speed() {
+        super("speed");
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    @Override
+    public void onCommand() {
         double dfs = 0.1;
         float dflys = (float) dfs;
         double ds = 0.2;
@@ -76,6 +74,14 @@ public class Speed implements CommandExecutor {
             }
         } else {
             p.sendMessage(VRNcore.noperm);
+        }
+    }
+
+    private boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch (NumberFormatException nfe) {
+            return false;
         }
         return true;
     }

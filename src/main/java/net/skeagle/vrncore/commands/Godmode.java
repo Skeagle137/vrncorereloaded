@@ -1,20 +1,26 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 
-public class Godmode implements CommandExecutor, Listener {
+public class Godmode extends SimpleCommand implements Listener {
     private static ArrayList<String> god = new ArrayList<String>();
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Godmode() {
+        super("god");
+    }
+
+    @Override
+    protected void onCommand() {
         Player p = (Player) sender;
         if (args.length == 0) {
             if (p.hasPermission("vrn.god.self")) {
@@ -50,7 +56,6 @@ public class Godmode implements CommandExecutor, Listener {
                 p.sendMessage(VRNcore.noperm);
             }
         }
-        return true;
     }
 
     @EventHandler

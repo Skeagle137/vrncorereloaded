@@ -1,18 +1,25 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class GamemodeC implements CommandExecutor {
+import java.util.Collections;
+
+public class Gamemode extends SimpleCommand {
+
+    public Gamemode() {
+        super("gamemode", Collections.singletonList("gm"));
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
+    protected void onCommand() {
 
         //to bring back the 1.12 style of changing gamemode
         //I'm too lazy to type the actual words
@@ -117,6 +124,5 @@ public class GamemodeC implements CommandExecutor {
                 p.sendMessage(VRNcore.noperm);
             }
         }
-        return true;
     }
 }

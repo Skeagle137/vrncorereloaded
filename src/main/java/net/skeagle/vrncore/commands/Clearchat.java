@@ -1,15 +1,21 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class CommandClearChat implements CommandExecutor {
-	@Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+public class Clearchat extends SimpleCommand {
+
+    public Clearchat() {
+        super("clearchat");
+    }
+
+    @Override
+    protected void onCommand() {
 	    Player p = (Player)sender;
         if (p.hasPermission("vrn.clearchat")) {
             for (int i = 0; i < 150; i++) {
@@ -20,6 +26,5 @@ public class CommandClearChat implements CommandExecutor {
         else {
             p.sendMessage(VRNcore.noperm);
         }
-        return true;
 	}
 }

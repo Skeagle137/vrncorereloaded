@@ -1,5 +1,6 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.listeners;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 public class GUIgive implements Listener {
-    void give(Player p) {
+    public void give(Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, ChatColor.GOLD + "GUI /give");
 
         ItemStack instructions = new ItemStack(Material.PAPER);

@@ -1,14 +1,21 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.command.SimpleCommand;
 
-public class TPhere implements CommandExecutor {
+public class TPhere extends SimpleCommand {
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public TPhere() {
+        super("tphere");
+    }
+
+    @Override
+    public void onCommand() {
+        checkConsole();
         Player p = (Player) sender;
         if (args.length == 0) {
             p.sendMessage(VRNcore.sp);
@@ -26,6 +33,5 @@ public class TPhere implements CommandExecutor {
                 p.sendMessage(VRNcore.noperm);
             }
         }
-        return true;
     }
 }

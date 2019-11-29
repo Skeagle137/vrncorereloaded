@@ -1,21 +1,28 @@
-package net.skeagle.vrncore;
+package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 
-public class Mute implements CommandExecutor, Listener {
+public class Mute extends SimpleCommand implements Listener {
+
     private static ArrayList<String> mute = new ArrayList<String>();
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public Mute() {
+        super("mute");
+    }
+
+    @Override
+    public void onCommand() {
         Player p = (Player)sender;
         if (args.length == 0) {
             p.sendMessage(VRNcore.sp);
@@ -40,7 +47,6 @@ public class Mute implements CommandExecutor, Listener {
                 p.sendMessage(VRNcore.noperm);
             }
         }
-        return true;
     }
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
