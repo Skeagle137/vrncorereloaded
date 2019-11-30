@@ -13,7 +13,7 @@ import java.util.Collections;
 public class Kill extends SimpleCommand {
 
     public Kill() {
-        super("kill", Collections.singletonList("slap"));
+        super("kill|slap");
     }
 
     @Override

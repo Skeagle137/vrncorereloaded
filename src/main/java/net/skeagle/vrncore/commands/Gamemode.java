@@ -15,7 +15,7 @@ import java.util.Collections;
 public class Gamemode extends SimpleCommand {
 
     public Gamemode() {
-        super("gamemode", Collections.singletonList("gm"));
+        super("gamemode|gm");
     }
 
     @Override
@@ -60,60 +60,22 @@ public class Gamemode extends SimpleCommand {
 
             if (p.hasPermission("vrn.gamemode.others")) {
                 if (a != null) {
-
-                    //change gamemode with numbers
-                    if (args[0].equalsIgnoreCase("0")) {
+                    if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("s")) {
                         a.setGameMode(GameMode.SURVIVAL);
                         a.sendMessage(VRNcore.vrn + "You are now in survival mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in survival mode!"));
-                    } else if (args[0].equalsIgnoreCase("1")) {
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() +  " &7is now in survival mode!"));
+                    } else if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("creative") || args[0].equalsIgnoreCase("c")) {
                         a.setGameMode(GameMode.CREATIVE);
                         a.sendMessage(VRNcore.vrn + "You are now in creative mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in creative mode!"));
-                    } else if (args[0].equalsIgnoreCase("2")) {
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() +  " &7is now in creative mode!"));
+                    } else if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("adventure") || args[0].equalsIgnoreCase("a")) {
                         a.setGameMode(GameMode.ADVENTURE);
                         a.sendMessage(VRNcore.vrn + "You are now in adventure mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in adventure mode!"));
-                    } else if (args[0].equalsIgnoreCase("3")) {
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() +  " &7is now in adventure mode!"));
+                    } else if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("spectator") || args[0].equalsIgnoreCase("sp")) {
                         a.setGameMode(GameMode.SPECTATOR);
                         a.sendMessage(VRNcore.vrn + "You are now in spectator mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in spectator mode!"));
-
-                        //actual words
-                    } else if (args[0].equalsIgnoreCase("survival")) {
-                        a.setGameMode(GameMode.SURVIVAL);
-                        a.sendMessage(VRNcore.vrn + "You are now in survival mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in survival mode!"));
-                    } else if (args[0].equalsIgnoreCase("creative")) {
-                        a.setGameMode(GameMode.CREATIVE);
-                        a.sendMessage(VRNcore.vrn + "You are now in creative mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in creative mode!"));
-                    } else if (args[0].equalsIgnoreCase("adventure")) {
-                        a.setGameMode(GameMode.ADVENTURE);
-                        a.sendMessage(VRNcore.vrn + "You are now in adventure mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in adventure mode!"));
-                    } else if (args[0].equalsIgnoreCase("spectator")) {
-                        a.setGameMode(GameMode.SPECTATOR);
-                        a.sendMessage(VRNcore.vrn + "You are now in spectator mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in spectator mode!"));
-
-                        //one letter style
-                    } else if (args[0].equalsIgnoreCase("s")) {
-                        a.setGameMode(GameMode.SURVIVAL);
-                        a.sendMessage(VRNcore.vrn + "You are now in survival mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in survival mode!"));
-                    } else if (args[0].equalsIgnoreCase("c")) {
-                        a.setGameMode(GameMode.CREATIVE);
-                        a.sendMessage(VRNcore.vrn + "You are now in creative mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in creative mode!"));
-                    } else if (args[0].equalsIgnoreCase("a")) {
-                        a.setGameMode(GameMode.ADVENTURE);
-                        a.sendMessage(VRNcore.vrn + "You are now in adventure mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() +  " &7is now in adventure mode!"));
-                    } else if (args[0].equalsIgnoreCase("sp")) {
-                        a.setGameMode(GameMode.SPECTATOR);
-                        a.sendMessage(VRNcore.vrn + "You are now in spectator mode.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() + " &7is now in spectator mode!"));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() +  " &7is now in spectator mode!"));
                     } else {
                         p.sendMessage(VRNcore.vrn + "That's not a game mode.");
                     }
