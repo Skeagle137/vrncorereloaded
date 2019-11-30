@@ -68,13 +68,13 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Heal()); //vrn.heal.self / vrn.heal.others
         registerCommand(new Flymode()); //vrn.fly.self / vrn.fly.others
         //listeners
-        Bukkit.getPluginManager().registerEvents(new joinEvent(), this);
-        Bukkit.getPluginManager().registerEvents(new QuitEvent(), this);
-        Bukkit.getPluginManager().registerEvents(new Vanish(this), this);
-        Bukkit.getPluginManager().registerEvents(new Godmode(), this);
-        Bukkit.getPluginManager().registerEvents(new Mute(), this);
-        Bukkit.getPluginManager().registerEvents(new GUIgive(), this);
-        Bukkit.getPluginManager().registerEvents(new SmallThings(), this);
+        Common.registerEvents(new joinEvent());
+        Common.registerEvents(new QuitEvent());
+        Common.registerEvents(new Vanish(this));
+        Common.registerEvents(new Godmode());
+        Common.registerEvents(new Mute());
+        Common.registerEvents(new GUIgive());
+        Common.registerEvents(new SmallThings());
     }
 
 
