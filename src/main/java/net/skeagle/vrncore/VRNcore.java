@@ -14,23 +14,15 @@ import org.mineacademy.fo.plugin.SimplePlugin;
 
 public class VRNcore extends SimplePlugin {
 
-    private VRNcore plugin;
     private PluginDescriptionFile pdf = this.getDescription();
     private String pv = pdf.getVersion();
     public static String vrn = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &7"));
-    public static String vrn2 = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &a"));
-    public static String joinquit = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &d"));
     public static String no = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &c"));
-    public static String welcome = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &e"));
-    public static String sp = (ChatColor.translateAlternateColorCodes('&', no + "You must specify a player."));
-    public static String tma = (ChatColor.translateAlternateColorCodes('&', no + "Too many args!"));
     public static String noperm = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &cYou don't have permission."));
     public static String noton = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &cThat player is not online."));
-    public static String broadcast = (ChatColor.translateAlternateColorCodes('&', "&8[&3&lVRN Broadcast&r&8] &b"));
 
     @Override
     public void onPluginStart() {
-        plugin = this;
         //config stuff
 
         //this.getConfig().options().copyDefaults(true);
@@ -80,7 +72,7 @@ public class VRNcore extends SimplePlugin {
 
     public void onPluginStop() {
         Common.log(ChatColor.RED + "----------------------------------------",
-                ChatColor.RED + "VRNcore version " + pv + " is now disabled.",
+                ChatColor.RED + "VRNcore v" + pv + " is now disabled.",
                 ChatColor.RED + "----------------------------------------");
 
     }

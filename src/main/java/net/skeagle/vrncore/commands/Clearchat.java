@@ -21,7 +21,7 @@ public class Clearchat extends SimpleCommand {
             for (int i = 0; i < 150; i++) {
                 Bukkit.broadcastMessage("");
             }
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + p.getName() + " &7has cleared the chat."));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + p.getName() + " &7has cleared the chat."));
         }
         else {
             p.sendMessage(VRNcore.noperm);

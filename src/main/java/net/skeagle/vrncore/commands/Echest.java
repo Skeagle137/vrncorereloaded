@@ -15,14 +15,14 @@ public class Echest extends SimpleCommand {
     @Override
     protected void onCommand() {
         Player p = (Player) sender;
-        if (args.length == 0) {
+        if (args.length < 1) {
             if (p.hasPermission("vrn.echest.self")) {
                 p.openInventory(p.getEnderChest());
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "Now showing your inventory."));
             } else {
                 p.sendMessage(VRNcore.noperm);
             }
-        } else if (args.length == 1) {
+        } else {
             Player a = Bukkit.getPlayerExact(args[0]);
             if (p.hasPermission("vrn.echest.others")) {
                 if (a != null) {
@@ -34,8 +34,6 @@ public class Echest extends SimpleCommand {
             } else {
                 p.sendMessage(VRNcore.noperm);
             }
-        } else {
-            p.sendMessage(VRNcore.tma);
         }
     }
 }

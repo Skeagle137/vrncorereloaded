@@ -12,7 +12,7 @@ public class QuitEvent implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event)
     {
 		event.setQuitMessage(null);
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.joinquit + "&5" + event.getPlayer().getName() + " &dhas left."));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&5" + event.getPlayer().getName() + " &dhas left."));
     }
 
 }

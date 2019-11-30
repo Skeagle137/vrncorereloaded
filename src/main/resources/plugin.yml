@@ -1,4 +1,5 @@
 name: VRNcore
 version: ${project.version}
 main: ${main.class}
+description: ${project.description}
 api-version: 1.13

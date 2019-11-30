@@ -16,18 +16,18 @@ public class joinEvent implements Listener {
         Player p = event.getPlayer();
         if (p.hasPlayedBefore()) {
             for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
-                    if (!pl.getName().equals(p.getName())) {
-                    pl.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.joinquit + "&5" + p.getName() + " &dhas joined."));
+                if (!pl.getName().equals(p.getName())) {
+                    pl.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&5" + p.getName() + " &dhas joined."));
                 } else {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.joinquit + "Welcome back, &5" + p.getName() + "&d!"));
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&dWelcome back, &5" + p.getName() + "&d!"));
                 }
             }
         } else {
             for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
                 if (!pl.getName().equals(p.getName())) {
-                    pl.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.joinquit + "&5" + p.getName() + " &dhas joined."));
+                    pl.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&5" + p.getName() + " &dhas joined."));
                 } else {
-                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.welcome + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!"));
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&e" + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!"));
                 }
             }
         }

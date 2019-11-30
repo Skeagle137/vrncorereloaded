@@ -2,6 +2,7 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,7 +30,7 @@ public class Kill extends SimpleCommand {
                 Player a = Bukkit.getPlayerExact(args[0]);
                 if (a != null) {
                     a.setHealth(0);
-                    p.sendMessage(VRNcore.vrn + "You rekt &a" + a.getName() + "&7.");
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "You rekt &a" + a.getName() + "&7."));
 
                 } else {
                     p.sendMessage(VRNcore.noton);

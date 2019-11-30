@@ -5,10 +5,11 @@
 
     <groupId>net.skeagle.vrncore</groupId>
     <artifactId>vrncore</artifactId>
-    <version>v4.0.0_dev</version>
+    <version>4.0.0_dev</version>
     <packaging>jar</packaging>
 
     <name>VRNcore</name>
+    <description>The core plugin for VRN Network.</description>
 
     <properties>
 
@@ -133,7 +134,7 @@
                        -->
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <finalName>${project.name}-${project.version}</finalName>
+                            <finalName>${project.name}-v${project.version}</finalName>
                             <artifactSet>
                                 <includes>
                                     <include>org.mineacademy:Game*</include>

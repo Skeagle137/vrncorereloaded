@@ -37,7 +37,7 @@ public class Heal extends SimpleCommand {
                     a.setFoodLevel(20);
                     a.setFireTicks(0);
                     a.sendMessage(VRNcore.vrn + "Your health and hunger are now full.");
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() + "&7's health and hunger are now full."));
+                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + "&7's health and hunger are now full."));
                 } else {
                     p.sendMessage(VRNcore.noton);
                 }

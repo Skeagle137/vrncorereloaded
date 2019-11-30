@@ -30,13 +30,18 @@ public class Kick extends SimpleCommand {
                 p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(VRNcore.color("&a&lC")));
             }
             Player a = Bukkit.getPlayerExact(args[0]);
-            if (args.length == 1) {
+            if (a != null) {
+                if (args.length == 1) {
 
-                a.kickPlayer(VRNcore.no + "You have been kicked by " + p.getName() + ".");
-                Bukkit.broadcastMessage(VRNcore.color(VRNcore.no + a.getName() + " &7was kicked by&a " + p.getName() + "&7."));
+                    a.kickPlayer(VRNcore.no + "You have been kicked by " + p.getName() + ".");
+                    Bukkit.broadcastMessage(VRNcore.color(VRNcore.no + a.getName() + " &7was kicked by&a " + p.getName() + "&7."));
+                }
+                if (args.length >= 2) {
+                    a.kickPlayer(VRNcore.color("&cYou have been kicked for: \n\n &6" + reason + "\n\n " + "&cby: &b" + p.getName()));
+                }
             }
-            if (args.length >= 2) {
-                a.kickPlayer(VRNcore.color("&cYou have been kicked for: \n\n &6" + reason + "\n\n " + "&cby: &b" + p.getName()));
+            else {
+                p.sendMessage(VRNcore.noton);
             }
         }
         else {

@@ -30,7 +30,7 @@ public class Flymode extends SimpleCommand {
                 if (a != null) {
                     a.setAllowFlight(!a.getAllowFlight());
                     a.sendMessage(VRNcore.vrn + "Fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
-                    p.sendMessage(VRNcore.vrn2 + a.getName() + "'s fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
+                    p.sendMessage(VRNcore.vrn + "&a" + a.getName() + "&7's fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
                 }
                 else {
                     p.sendMessage(VRNcore.noton);

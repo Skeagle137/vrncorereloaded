@@ -27,7 +27,7 @@ public class Broadcast extends SimpleCommand {
                 sender.sendMessage(VRNcore.no + "You must have a message to broadcast.");
             }
             else {
-                Bukkit.broadcastMessage(VRNcore.broadcast + message);
+                Bukkit.broadcastMessage("&8[&3&lVRN Broadcast&r&8] &b" + message);
             }
         }
         else {

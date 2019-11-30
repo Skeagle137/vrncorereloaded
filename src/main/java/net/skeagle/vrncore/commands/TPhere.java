@@ -18,7 +18,7 @@ public class TPhere extends SimpleCommand {
         checkConsole();
         Player p = (Player) sender;
         if (args.length == 0) {
-            p.sendMessage(VRNcore.sp);
+            p.sendMessage(VRNcore.no + "You must specify a player.");
         } else if (args.length == 1) {
             if (p.hasPermission("vrn.tphere")) {
                 Player a = Bukkit.getPlayerExact(args[0]);

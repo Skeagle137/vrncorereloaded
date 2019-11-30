@@ -25,7 +25,7 @@ public class Mute extends SimpleCommand implements Listener {
     public void onCommand() {
         Player p = (Player)sender;
         if (args.length == 0) {
-            p.sendMessage(VRNcore.sp);
+            p.sendMessage(VRNcore.no + "You must specify a player.");
         } else if (args.length == 1) {
             if (p.hasPermission("vrn.mute")) {
                 Player a = Bukkit.getPlayerExact(args[0]);
@@ -33,11 +33,11 @@ public class Mute extends SimpleCommand implements Listener {
                     if (!mute.contains(a.getName())) {
                         mute.add(a.getName());
                         a.sendMessage(VRNcore.vrn + "You are now muted.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() + " &7is now muted."));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is now muted."));
                     } else {
                         mute.remove(a.getName());
                         a.sendMessage(VRNcore.vrn + "You are no longer muted.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() + " &7is no longer muted."));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is no longer muted."));
                     }
                 } else {
                     p.sendMessage(VRNcore.noton);

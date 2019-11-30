@@ -42,11 +42,11 @@ public class Godmode extends SimpleCommand implements Listener {
                     if (!god.contains(a.getName())) {
                         god.add(a.getName());
                         a.sendMessage(VRNcore.vrn + "You are now invulnerable.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() + " &7is now invulnerable."));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is now invulnerable."));
                     } else {
                         god.remove(a.getName());
                         a.sendMessage(VRNcore.vrn + "You are no longer invulnerable.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn2 + a.getName() + " &7is no longer invulnerable."));
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is no longer invulnerable."));
                     }
                 } else {
                     p.sendMessage(VRNcore.noton);

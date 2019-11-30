@@ -18,14 +18,14 @@ public class Invsee extends SimpleCommand {
     @Override
     protected void onCommand() {
         Player p = (Player) sender;
-        if (args.length == 0) {
+        if (args.length < 1) {
             if (p.hasPermission("vrn.invsee.self")) {
                 p.openInventory(p.getInventory());
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "Now showing your inventory."));
             } else {
                 p.sendMessage(VRNcore.noperm);
             }
-        } else if (args.length == 1) {
+        } else {
             Player a = Bukkit.getPlayerExact(args[0]);
             if (p.hasPermission("vrn.invsee.others")) {
                 if (a != null) {
@@ -37,8 +37,6 @@ public class Invsee extends SimpleCommand {
             } else {
                 p.sendMessage(VRNcore.noperm);
             }
-        } else {
-            p.sendMessage(VRNcore.tma);
         }
     }
 }
