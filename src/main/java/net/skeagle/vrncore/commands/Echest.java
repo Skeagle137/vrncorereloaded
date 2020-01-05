@@ -1,39 +1,31 @@
 package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
+
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Echest extends SimpleCommand {
 
     public Echest() {
         super("echest");
+        setDescription("Opens a player's ender chest.");
     }
 
     @Override
     protected void onCommand() {
-        Player p = (Player) sender;
+        checkConsole();
+        Player p = getPlayer();
         if (args.length < 1) {
-            if (p.hasPermission("vrn.echest.self")) {
-                p.openInventory(p.getEnderChest());
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "Now showing your inventory."));
-            } else {
-                p.sendMessage(VRNcore.noperm);
-            }
-        } else {
-            Player a = Bukkit.getPlayerExact(args[0]);
-            if (p.hasPermission("vrn.echest.others")) {
-                if (a != null) {
-                    p.openInventory(a.getEnderChest());
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "Now showing &a" + a.getName() + "&7's ender chest."));
-                } else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            } else {
-                p.sendMessage(VRNcore.noperm);
-            }
+            hasPerm("vrn.echest.self");
+            p.openInventory(p.getEnderChest());
+            say(p, "Now showing your inventory.");
+            return;
         }
+        Player a = findPlayer(args[0], VRNcore.noton);
+        hasPerm("vrn.echest.others");
+        p.openInventory(a.getEnderChest());
+        say(p, "Now showing &a" + a.getName() + "&7's ender chest.");
     }
 }

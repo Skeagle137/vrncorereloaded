@@ -6,34 +6,20 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class Rain extends SimpleCommand {
     public Rain() {
         super("rain");
+        setDescription("Set the weather to rainy.");
+        setPermission("vrn.weather");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override
     protected void onCommand() {
         checkConsole();
-        Player p = getPlayer();
-        if (p.hasPermission("vrn.weather")) {
-            if (args.length == 0) {
-                p.getLocation().getWorld().setStorm(true);
-                p.sendMessage(VRNcore.vrn + "Weather set to rain.");
-            }
-            else if (args.length == 1) {
-                if (args[0].equalsIgnoreCase("all")) {
-                    for(World w : Bukkit.getServer().getWorlds()) {
-                        w.setStorm(true);
-                    }
-                    p.sendMessage(VRNcore.vrn + "Weather set to rain in all worlds.");
-                }
-                else {
-                    p.sendMessage(VRNcore.no + "That is not a valid argument. Do '/rain all.'");
-                }
-            }
-        }
-        else {
-            p.sendMessage(VRNcore.noperm);
-        }
+        getPlayer().getLocation().getWorld().setStorm(true);
+        say(getPlayer(), "Weather set to rain.");
     }
 }

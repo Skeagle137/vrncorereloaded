@@ -8,30 +8,28 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.mineacademy.fo.command.SimpleCommand;
 
+import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class Rename extends SimpleCommand {
 
     public Rename() {
         super("rename");
+        setUsage("<new name>");
+        setDescription("Renames an item in hand.");
+        setPermission("vrn.rename");
+        setPermissionMessage(VRNcore.noperm);
+
     }
 
     @Override
     public void onCommand() {
-        Player p = (Player)sender;
+        checkConsole();
         String s = String.join(" ", args);
-        if (p.hasPermission("vrn.rename")) {
-            ItemStack is = p.getInventory().getItemInMainHand();
-            if (is != null) {
-            ItemMeta im = is.getItemMeta();
-            im.setDisplayName(VRNcore.color(s));
-            is.setItemMeta(im);
-                p.sendMessage(VRNcore.vrn + "Item successfully renamed.");
-            }
-            else {
-                p.sendMessage(VRNcore.no + "You must be holding an item in your main hand.");
-            }
-        }
-        else {
-            p.sendMessage(VRNcore.noperm);
-        }
+        ItemStack is = getPlayer().getInventory().getItemInMainHand();
+        ItemMeta im = is.getItemMeta();
+        im.setDisplayName(color(s));
+        is.setItemMeta(im);
+        say(getPlayer(),"Item successfully renamed.");
     }
 }

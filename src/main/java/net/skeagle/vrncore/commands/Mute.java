@@ -13,39 +13,32 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class Mute extends SimpleCommand implements Listener {
 
     private static ArrayList<String> mute = new ArrayList<String>();
 
     public Mute() {
         super("mute");
+        setMinArguments(1);
+        setUsage("<player>");
+        setDescription("Mute a player.");
+        setPermission("vrn.mute");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override
     public void onCommand() {
-        Player p = (Player)sender;
-        if (args.length == 0) {
-            p.sendMessage(VRNcore.no + "You must specify a player.");
-        } else if (args.length == 1) {
-            if (p.hasPermission("vrn.mute")) {
-                Player a = Bukkit.getPlayerExact(args[0]);
-                if (a != null) {
-                    if (!mute.contains(a.getName())) {
-                        mute.add(a.getName());
-                        a.sendMessage(VRNcore.vrn + "You are now muted.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is now muted."));
-                    } else {
-                        mute.remove(a.getName());
-                        a.sendMessage(VRNcore.vrn + "You are no longer muted.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is no longer muted."));
-                    }
-                } else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
+        Player a = findPlayer(args[0], VRNcore.noton);
+        if (!mute.contains(a.getName())) {
+            mute.add(a.getName());
+            say(a,"You are now muted.");
+            say(getSender(),"&a" + a.getName() + " &7is now muted.");
+        } else {
+            mute.remove(a.getName());
+           say(a,"You are no longer muted.");
+            say(getSender(),"&a" + a.getName() + " &7is no longer muted.");
         }
     }
     @EventHandler
@@ -53,7 +46,7 @@ public class Mute extends SimpleCommand implements Listener {
         Player p = e.getPlayer();
         if (mute.contains(p.getName())) {
             e.setCancelled(true);
-            p.sendMessage(VRNcore.no + "You are muted. You cannot chat.");
+            say(p,"&cYou are muted. You cannot chat.");
         }
     }
 }

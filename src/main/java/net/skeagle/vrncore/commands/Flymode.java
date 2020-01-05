@@ -1,46 +1,33 @@
 package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
+
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Flymode extends SimpleCommand {
 
     public Flymode() {
         super("fly");
+        setDescription("Toggle fly mode for yourself or another player.");
     }
 
     @Override
     protected void onCommand() {
         checkConsole();
-        Player p = (Player) sender;
-        if (args.length == 0) {
-            if (p.hasPermission("vrn.fly.self")) {
-                p.setAllowFlight(!p.getAllowFlight());
-                p.sendMessage(VRNcore.vrn + "Fly mode has been " + (p.getAllowFlight() ? "enabled" : "disabled") + ".");
-            } else {
-                p.sendMessage(VRNcore.noperm);
-            }
-        } else if (args.length == 1) {
-            if (p.hasPermission("vrn.fly.others")) {
-                Player a = Bukkit.getPlayerExact(args[0]);
-                if (a != null) {
-                    a.setAllowFlight(!a.getAllowFlight());
-                    a.sendMessage(VRNcore.vrn + "Fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
-                    p.sendMessage(VRNcore.vrn + "&a" + a.getName() + "&7's fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
-                }
-                else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
-
+        Player p = getPlayer();
+        if (args.length < 1) {
+            hasPerm("vrn.fly.self");
+            p.setAllowFlight(!p.getAllowFlight());
+            say(p, "Fly mode has been " + (p.getAllowFlight() ? "enabled" : "disabled") + ".");
+            return;
         }
+        hasPerm("vrn.fly.others");
+        Player a = findPlayer(args[0], VRNcore.noton);
+        a.setAllowFlight(!a.getAllowFlight());
+        say(a, "Fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
+        say(p, "&a" + a.getName() + "&7's fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
     }
 }
 

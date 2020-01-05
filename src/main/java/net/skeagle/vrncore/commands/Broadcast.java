@@ -2,17 +2,19 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import java.util.Collections;
+import static net.skeagle.vrncore.utils.VRNUtil.color;
 
 public class Broadcast extends SimpleCommand {
 
     public Broadcast() {
-        super("broadcast", Collections.singletonList("bc"));
+        super("broadcast|bc");
+        setMinArguments(1);
+        setUsage("<message>");
+        setDescription("Broadcast a message to the entire server.");
+        setPermission("vrn.broadcast");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override
@@ -21,17 +23,6 @@ public class Broadcast extends SimpleCommand {
         for (String arg : args) {
             sb.append(arg).append(" ");
         }
-        String message = sb.toString();
-        if (sender.hasPermission("vrn.broadcast")) {
-            if (args.length < 1) {
-                sender.sendMessage(VRNcore.no + "You must have a message to broadcast.");
-            }
-            else {
-                Bukkit.broadcastMessage("&8[&3&lVRN Broadcast&r&8] &b" + message);
-            }
-        }
-        else {
-            sender.sendMessage(VRNcore.noperm);
-        }
+        Bukkit.broadcastMessage(color("&8[&3&lVRN Broadcast&r&8] &b" + sb.toString()));
     }
 }

@@ -6,45 +6,33 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class Heal extends SimpleCommand {
 
     public Heal() {
         super("heal");
+        setDescription("Heal another player or yourself.");
     }
 
     @Override
     protected void onCommand() {
-		if (args.length == 0) {
-		    checkConsole();
-            Player p = getPlayer();
-            if (p.hasPermission("vrn.heal.self")) {
-                p.setHealth(20);
-                p.setFoodLevel(20);
-                p.setFireTicks(0);
-                p.sendMessage(VRNcore.vrn + "Your health and hunger are now full.");
-            }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
-        }
-        else if (args.length == 1) {
+        if (args.length < 1) {
             checkConsole();
             Player p = getPlayer();
-            if (p.hasPermission("vrn.heal.others")) {
-                Player a = Bukkit.getPlayerExact(args[0]);
-                if (a != null) {
-                    a.setHealth(20);
-                    a.setFoodLevel(20);
-                    a.setFireTicks(0);
-                    a.sendMessage(VRNcore.vrn + "Your health and hunger are now full.");
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + "&7's health and hunger are now full."));
-                } else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
+            hasPerm("vrn.heal.self");
+            p.setHealth(20);
+            p.setFoodLevel(20);
+            p.setFireTicks(0);
+            say(p, "Your health and hunger are now full.");
+            return;
         }
-	}
+        hasPerm("vrn.heal.others");
+        Player a = findPlayer(args[0], VRNcore.noton);
+        a.setHealth(20);
+        a.setFoodLevel(20);
+        a.setFireTicks(0);
+        say(a, "Your health and hunger are now full.");
+        say(getSender(), "&a" + a.getName() + "&7's health and hunger are now full.");
+    }
 }

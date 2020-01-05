@@ -11,77 +11,64 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class Vanish extends SimpleCommand implements Listener {
 
     private ArrayList<Player> vanished = new ArrayList<Player>();
 
-    private VRNcore plugin;
-
-    public Vanish(VRNcore vrncore) {
+    public Vanish() {
         super("vanish");
-        plugin = vrncore;
+        setUsage("<player>");
+        setDescription("Hide yourself or another player from other players.");
     }
 
     @Override
     public void onCommand() {
-        checkConsole();
-        Player p = (Player) sender;
-        if (args.length == 0) {
-            if (p.hasPermission("vrn.vanish.self")) {
-                if (!vanished.contains(p)) {
-
-                    for (Player pl : Bukkit.getOnlinePlayers()) {
-                        pl.hidePlayer(this.plugin, p);
-                    }
-                    vanished.add(p);
-                    p.sendMessage(VRNcore.vrn + "Vanish enabled.");
-                } else {
-
-                    for (Player pl : Bukkit.getOnlinePlayers()) {
-                        pl.showPlayer(this.plugin, p);
-                    }
-                    vanished.remove(p);
-                    p.sendMessage(VRNcore.vrn + "Vanish disabled.");
+        if (args.length < 1) {
+            checkConsole();
+            Player p = getPlayer();
+            hasPerm("vrn.vanish.self");
+            if (!vanished.contains(p)) {
+                for (Player pl : Bukkit.getOnlinePlayers()) {
+                    pl.hidePlayer(VRNcore.getInstance(), p);
                 }
+                vanished.add(p);
+                say(p, "Vanish enabled.");
             } else {
-                p.sendMessage(VRNcore.noperm);
+
+                for (Player pl : Bukkit.getOnlinePlayers()) {
+                    pl.showPlayer(VRNcore.getInstance(), p);
+                }
+                vanished.remove(p);
+                say(p, "Vanish disabled.");
             }
+            return;
         }
-        if (args.length == 1) {
-            if (p.hasPermission("vrn.vanish.others")) {
-                Player a = Bukkit.getPlayerExact(args[0]);
-                if (a != null) {
-                    if (!vanished.contains(a)) {
-
-                        for (Player pl : Bukkit.getOnlinePlayers()) {
-                            pl.hidePlayer(this.plugin, a);
-                        }
-                        vanished.add(a);
-                        a.sendMessage(VRNcore.vrn + "Vanish enabled.");
-                        p.sendMessage(VRNcore.vrn + "Vanish enabled for &a" + a.getName() + ".");
-                    } else {
-
-                        for (Player pl : Bukkit.getOnlinePlayers()) {
-                            pl.showPlayer(this.plugin, a);
-                        }
-                        vanished.remove(a);
-                        a.sendMessage(VRNcore.vrn + "Vanish disabled.");
-                        p.sendMessage(VRNcore.vrn + "Vanish disabled for &a" + a.getName() + ".");
-                    }
-                }
-                else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            } else {
-                p.sendMessage(VRNcore.noperm);
+        Player p = getPlayer();
+        hasPerm("vrn.vanish.others");
+        Player a = findPlayer(args[0], VRNcore.noton);
+        if (!vanished.contains(a)) {
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                pl.hidePlayer(VRNcore.getInstance(), a);
             }
+            vanished.add(a);
+            say(a, "Vanish enabled.");
+            say(p, "Vanish enabled for &a" + a.getName() + ".");
+        } else {
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                pl.showPlayer(VRNcore.getInstance(), a);
+            }
+            vanished.remove(a);
+            say(a, "Vanish disabled.");
+            say(p, "Vanish disabled for &a" + a.getName() + ".");
         }
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         for (Player p : vanished) {
-            e.getPlayer().hidePlayer(this.plugin, p);
+            e.getPlayer().hidePlayer(VRNcore.getInstance(), p);
         }
     }
 

@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.listeners;
 
-import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class GUIgive implements Listener {
     public void give(Player p) {
@@ -102,81 +103,81 @@ public class GUIgive implements Listener {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.BARRIER, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.BARRIER, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Command Block")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.COMMAND_BLOCK, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.COMMAND_BLOCK, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Repeating Command Block")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.REPEATING_COMMAND_BLOCK, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.REPEATING_COMMAND_BLOCK, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Chain Command Block")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.CHAIN_COMMAND_BLOCK, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Mob Spawner")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.SPAWNER, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.SPAWNER, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Structure Block")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.STRUCTURE_BLOCK, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.STRUCTURE_BLOCK, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Structure Void")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.STRUCTURE_VOID, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.STRUCTURE_VOID, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         } else if (i.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Debug Stick")) {
             if (e.getClick() == ClickType.LEFT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.DEBUG_STICK, 1));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             } else if (e.getClick() == ClickType.RIGHT) {
                 p.closeInventory();
                 p.getInventory().addItem(new ItemStack(Material.DEBUG_STICK, 64));
-                p.sendMessage(VRNcore.vrn + "You have received your item(s)");
+                say(p,"You have received your item(s)");
             }
         }
     }

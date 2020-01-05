@@ -8,23 +8,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
+import static net.skeagle.vrncore.utils.VRNUtil.color;
+
 public class Clearchat extends SimpleCommand {
 
     public Clearchat() {
         super("clearchat");
+        setDescription("Clears the chat.");
+        setPermission("vrn.clearchat");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override
     protected void onCommand() {
-	    Player p = (Player)sender;
-        if (p.hasPermission("vrn.clearchat")) {
-            for (int i = 0; i < 150; i++) {
-                Bukkit.broadcastMessage("");
-            }
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + p.getName() + " &7has cleared the chat."));
+        for (int i = 0; i < 150; i++) {
+            Bukkit.broadcastMessage("");
         }
-        else {
-            p.sendMessage(VRNcore.noperm);
-        }
-	}
+        Bukkit.broadcastMessage(color("&a" + getSender().getName() + " &7has cleared the chat."));
+    }
 }

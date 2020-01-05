@@ -10,12 +10,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import static net.skeagle.vrncore.utils.VRNUtil.color;
+
 public class SmallThings implements Listener {
     @EventHandler
     public void WorldChange(PlayerChangedWorldEvent e){
         Player p = e.getPlayer();
         String world = p.getWorld().getName();
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(VRNcore.color("&a&lCurrently in world: \"" + world + ".\"")));
+        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(color("&a&lCurrently in world: \"" + world + ".\"")));
     }
 
     public void Death(PlayerDeathEvent e) {

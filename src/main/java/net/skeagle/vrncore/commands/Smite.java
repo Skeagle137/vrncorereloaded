@@ -2,48 +2,33 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
+
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Smite extends SimpleCommand {
 
     public Smite() {
         super("smite");
+        setMinArguments(1);
+        setUsage("<player|*>");
+        setDescription("strike a player by summoning lightning at their location.");
+        setPermission("vrn.smite");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override
     public void onCommand() {
-        Player p = (Player) sender;
-        if (args.length == 0) {
-            if (p.hasPermission("vrn.smite.self")) {
-                p.getWorld().strikeLightning(p.getLocation());
-            } else {
-                p.sendMessage(VRNcore.noperm);
+        Player a = findPlayer(args[0], VRNcore.noton);
+        if (args[0].equalsIgnoreCase("*")) {
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                pl.getWorld().strikeLightning(pl.getLocation());
             }
+            say(getSender(), "smited all players.");
+            return;
         }
-        else if (args.length == 1) {
-            if (p.hasPermission("vrn.smite.others")) {
-                Player a = Bukkit.getPlayerExact(args[0]);
-                if (a != null) {
-                    a.getWorld().strikeLightning(a.getLocation());
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "smited &a" + a.getName() + "&7."));
-                }
-                else if (args[0].equalsIgnoreCase("all")) {
-                    for (Player pl : Bukkit.getOnlinePlayers()) {
-                        pl.getWorld().strikeLightning(pl.getLocation());
-                    }
-                    p.sendMessage(VRNcore.vrn + "smited all players.");
-                }
-                else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
-        }
+        a.getWorld().strikeLightning(a.getLocation());
+        say(getSender(), "smited &a" + a.getName() + "&7.");
     }
 }

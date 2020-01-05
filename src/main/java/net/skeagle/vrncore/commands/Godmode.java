@@ -12,49 +12,42 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class Godmode extends SimpleCommand implements Listener {
     private static ArrayList<String> god = new ArrayList<String>();
 
     public Godmode() {
         super("god");
+        setDescription("Make yourself or another player invulnerable.");
+        setUsage("[player]");
     }
 
     @Override
     protected void onCommand() {
-        Player p = (Player) sender;
-        if (args.length == 0) {
-            if (p.hasPermission("vrn.god.self")) {
-                if (!god.contains(p.getName())) {
-                    god.add(p.getName());
-                    p.sendMessage(VRNcore.vrn + "You are now invulnerable.");
-                } else {
-                    god.remove(p.getName());
-                    p.sendMessage(VRNcore.vrn + "You are no longer invulnerable.");
-                }
+        checkConsole();
+        Player p = getPlayer();
+        if (args.length < 1) {
+            hasPerm("vrn.god.self");
+            if (!god.contains(p.getName())) {
+                god.add(p.getName());
+                say(p, "You are now invulnerable.");
+            } else {
+                god.remove(p.getName());
+                say(p, "You are no longer invulnerable.");
             }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
-        } else if (args.length == 1) {
-            if (p.hasPermission("vrn.god.others")) {
-                Player a = Bukkit.getPlayerExact(args[0]);
-                if (a != null) {
-                    if (!god.contains(a.getName())) {
-                        god.add(a.getName());
-                        a.sendMessage(VRNcore.vrn + "You are now invulnerable.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is now invulnerable."));
-                    } else {
-                        god.remove(a.getName());
-                        a.sendMessage(VRNcore.vrn + "You are no longer invulnerable.");
-                        p.sendMessage(ChatColor.translateAlternateColorCodes('&', VRNcore.vrn + "&a" + a.getName() + " &7is no longer invulnerable."));
-                    }
-                } else {
-                    p.sendMessage(VRNcore.noton);
-                }
-            }
-            else {
-                p.sendMessage(VRNcore.noperm);
-            }
+            return;
+        }
+        hasPerm("vrn.god.others");
+        Player a = findPlayer(args[0], VRNcore.noton);
+        if (!god.contains(a.getName())) {
+            god.add(a.getName());
+            say(a, "You are now invulnerable.");
+            say(p, "&a" + a.getName() + " &7is now invulnerable.");
+        } else {
+            god.remove(a.getName());
+            say(a, "You are no longer invulnerable.");
+            say(p, "&a" + a.getName() + " &7is no longer invulnerable.");
         }
     }
 
