@@ -5,12 +5,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.mineacademy.fo.Common;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static org.mineacademy.fo.Valid.checkBoolean;
 
 public class TPAUtil {
     private static TPAUtil util;
@@ -75,20 +77,13 @@ public class TPAUtil {
         DelTask(Bukkit.getPlayer(u2));
     }
 
-    public void DelTPATimer(Player p, Player a, Plugin plugin) {
-        tasks.put(p, new BukkitRunnable() {
-            @Override
-            public void run() {
-                DelRequest(a.getUniqueId(), p.getUniqueId(), true);
-            }
-        }.runTaskLater(plugin, 120 * 20L));
+    public void DelTPATimer(Player p, Player a) {
+        tasks.put(p, Common.runTimer(20, () -> DelRequest(a.getUniqueId(), p.getUniqueId(), true)));
     }
 
-    public void DelTask(Player p) {
-        BukkitTask task = tasks.get(p);
-        if (task != null) {
-            task.cancel();
-            tasks.remove(p);
-        }
+    private void DelTask(Player p) {
+        checkBoolean(tasks.containsKey(p));
+        BukkitTask task = tasks.remove(p);
+        task.cancel();
     }
 }
