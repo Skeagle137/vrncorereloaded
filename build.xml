@@ -9,7 +9,7 @@
      -->
 
     <!-- Your MC test server location for Windows -->
-    <condition property="serverPath" value="C:\Users\Skeagle\Documents\VRN Network\Dev 1.14.4">
+    <condition property="serverPath" value="C:\Users\Skeagle\Documents\VRN Network\Dev 1.15.1">
         <os family="windows" />
     </condition>
 
@@ -25,6 +25,7 @@
 
     <!-- Ninja: Read your pom.xml file to find the Foundation version we will be using -->
     <xmlproperty file="pom.xml" prefix="pom" keeproot="false" />
+    <property name="pom.properties.foundation.version" value=""/>
     <property name="foundation.version" value="${pom.properties.foundation.version}"/>
 
     <!-- Finally, compile the plugin -->

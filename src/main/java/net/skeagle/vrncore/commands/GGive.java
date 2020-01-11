@@ -1,8 +1,7 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.GUIs.GGiveGUI;
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.listeners.GUIgive;
-import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class GGive extends SimpleCommand {
@@ -16,7 +15,7 @@ public class GGive extends SimpleCommand {
 
     @Override
     public void onCommand() {
-        GUIgive g = new GUIgive();
-        g.give(getPlayer());
+        checkConsole();
+        new GGiveGUI().displayTo(getPlayer());
     }
 }
