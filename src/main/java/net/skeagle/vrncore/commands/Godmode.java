@@ -1,9 +1,6 @@
 package net.skeagle.vrncore.commands;
+import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,27 +25,17 @@ public class Godmode extends SimpleCommand implements Listener {
         checkConsole();
         Player p = getPlayer();
         if (args.length < 1) {
+            PlayerCache cache = PlayerCache.getCache(p);
             hasPerm("vrn.god.self");
-            if (!god.contains(p.getName())) {
-                god.add(p.getName());
-                say(p, "You are now invulnerable.");
-            } else {
-                god.remove(p.getName());
-                say(p, "You are no longer invulnerable.");
-            }
-            return;
+            cache.setGodmode(!cache.isGodmode());
+            say(p, "You are " + (cache.isGodmode() ? "now" : "no longer") + " invulnerable.");
         }
         hasPerm("vrn.god.others");
         Player a = findPlayer(args[0], VRNcore.noton);
-        if (!god.contains(a.getName())) {
-            god.add(a.getName());
-            say(a, "You are now invulnerable.");
-            say(p, "&a" + a.getName() + " &7is now invulnerable.");
-        } else {
-            god.remove(a.getName());
-            say(a, "You are no longer invulnerable.");
-            say(p, "&a" + a.getName() + " &7is no longer invulnerable.");
-        }
+        PlayerCache cache = PlayerCache.getCache(a);
+        cache.setGodmode(!cache.isGodmode());
+        say(a, "You are " + (cache.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        say(p, "&a" + a.getName() + " &7is " + (cache.isGodmode() ? "now" : "no longer") + " invulnerable.");
     }
 
     @EventHandler

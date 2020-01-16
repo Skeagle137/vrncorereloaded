@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.listeners;
+package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.utils.NickNameUtil;
 import org.bukkit.ChatColor;

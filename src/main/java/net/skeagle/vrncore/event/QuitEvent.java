@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.listeners;
+package net.skeagle.vrncore.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;

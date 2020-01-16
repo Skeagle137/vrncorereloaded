@@ -17,7 +17,7 @@ import net.skeagle.vrncore.commands.warps.setwarp;
 import net.skeagle.vrncore.commands.warps.warp;
 import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
-import net.skeagle.vrncore.listeners.*;
+import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.utils.NickNameUtil;
 import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.plugin.PluginDescriptionFile;

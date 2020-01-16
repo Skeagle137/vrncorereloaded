@@ -1,8 +1,7 @@
-package net.skeagle.vrncore.listeners;
+package net.skeagle.vrncore.event;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.skeagle.vrncore.VRNcore;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
