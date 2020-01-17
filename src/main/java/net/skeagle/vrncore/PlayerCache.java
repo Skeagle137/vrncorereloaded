@@ -20,9 +20,6 @@ public class PlayerCache {
     private boolean muted;
     private boolean godmode;
 
-
-
-
     public static PlayerCache getCache(final Player p) {
 
         PlayerCache cache = cacheMap.get(p.getUniqueId());

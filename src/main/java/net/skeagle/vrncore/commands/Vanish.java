@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,8 +16,6 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Vanish extends SimpleCommand implements Listener {
 
-    private ArrayList<Player> vanished = new ArrayList<Player>();
-
     public Vanish() {
         super("vanish");
         setUsage("<player>");
@@ -29,53 +28,23 @@ public class Vanish extends SimpleCommand implements Listener {
             checkConsole();
             Player p = getPlayer();
             hasPerm("vrn.vanish.self");
-            if (!vanished.contains(p)) {
-                for (Player pl : Bukkit.getOnlinePlayers()) {
-                    pl.hidePlayer(VRNcore.getInstance(), p);
-                }
-                vanished.add(p);
-                say(p, "Vanish enabled.");
-            } else {
-
-                for (Player pl : Bukkit.getOnlinePlayers()) {
-                    pl.showPlayer(VRNcore.getInstance(), p);
-                }
-                vanished.remove(p);
-                say(p, "Vanish disabled.");
+            PlayerCache cache = PlayerCache.getCache(p);
+            cache.setVanished(!cache.isVanished());
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                pl.hidePlayer(VRNcore.getInstance(), p);
             }
+            say(p, "Vanish " + (cache.isVanished() ? "enabled." : "disabled."));
             return;
         }
-        Player p = getPlayer();
         hasPerm("vrn.vanish.others");
         Player a = findPlayer(args[0], VRNcore.noton);
-        if (!vanished.contains(a)) {
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                pl.hidePlayer(VRNcore.getInstance(), a);
-            }
-            vanished.add(a);
-            say(a, "Vanish enabled.");
-            say(p, "Vanish enabled for &a" + a.getName() + ".");
-        } else {
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                pl.showPlayer(VRNcore.getInstance(), a);
-            }
-            vanished.remove(a);
-            say(a, "Vanish disabled.");
-            say(p, "Vanish disabled for &a" + a.getName() + ".");
+        PlayerCache cache = PlayerCache.getCache(a);
+        cache.setVanished(!cache.isVanished());
+        for (Player pl : Bukkit.getOnlinePlayers()) {
+            pl.hidePlayer(VRNcore.getInstance(), a);
         }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        for (Player p : vanished) {
-            e.getPlayer().hidePlayer(VRNcore.getInstance(), p);
-        }
-    }
-
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        vanished.remove(e.getPlayer());
+        say(a, "Vanish " + (cache.isVanished() ? "enabled." : "disabled."));
+        say(getSender(), "Vanish " + (cache.isVanished() ? "enabled" : "disabled") + " for &a" + a.getName() + "&7.");
     }
 }
 
