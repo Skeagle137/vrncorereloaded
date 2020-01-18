@@ -95,6 +95,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Tpahere()); //vrn.tpahere
         registerCommand(new Skin()); //vrn.skin
         registerCommand(new Exptrade()); //vrn.exptrade
+        registerCommand(new Trails()); //vrn.trails
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
@@ -102,6 +103,7 @@ public class VRNcore extends SimplePlugin {
         registerEvents(new TotalPlayedListener());
         registerEvents(new NickListener(nickNameUtil));
         registerEvents(new BackListener());
+        registerEvents(new ArrowListener());
     }
 
 

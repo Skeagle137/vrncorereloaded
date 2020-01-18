@@ -1,8 +1,5 @@
 package net.skeagle.vrncore.GUIs;
 
-import lombok.Getter;
-import lombok.Setter;
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.utils.GGiveMaterial;
 
 import org.bukkit.entity.Player;
@@ -34,8 +31,6 @@ public class GGiveGUI extends MenuPagged<GGiveMaterial> {
         p.closeInventory();
         p.getInventory().addItem(ItemCreator.of(mat.getMaterial()).build().make());
         say(p, "You have received your item(s)");
-        PlayerCache cache = PlayerCache.getCache(p);
-
     }
 
     @Override

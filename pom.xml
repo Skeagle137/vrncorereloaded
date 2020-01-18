@@ -5,7 +5,7 @@
 
     <groupId>net.skeagle.vrncore</groupId>
     <artifactId>vrncore</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.5</version>
     <packaging>jar</packaging>
 
     <name>VRNcore</name>
