@@ -16,6 +16,7 @@ public class RemoveNick extends SimpleCommand {
         super("removenick");
         this.util = util;
         setDescription("Remove a nickname from yourself or another player.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     public void onCommand() {

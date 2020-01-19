@@ -12,6 +12,7 @@ public class Back extends SimpleCommand {
     public Back() {
         super("back");
         setDescription("Teleport back to a player's previous location.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     BackUtil back = BackUtil.getBack();

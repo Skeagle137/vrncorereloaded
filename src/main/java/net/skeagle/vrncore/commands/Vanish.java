@@ -20,6 +20,7 @@ public class Vanish extends SimpleCommand implements Listener {
         super("vanish");
         setUsage("<player>");
         setDescription("Hide yourself or another player from other players.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override

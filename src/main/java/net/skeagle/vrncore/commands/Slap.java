@@ -17,6 +17,7 @@ public class Slap extends SimpleCommand {
     public Slap() {
         super("slap");
         setDescription("Kill/slap a player.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override

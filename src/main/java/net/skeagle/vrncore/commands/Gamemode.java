@@ -23,6 +23,7 @@ public class Gamemode extends SimpleCommand {
         setMinArguments(1);
         setUsage("<gamemode> [player]");
         setDescription("Change the gamemode for yourself or another player.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override

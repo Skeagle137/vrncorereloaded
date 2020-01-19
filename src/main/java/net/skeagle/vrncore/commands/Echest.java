@@ -11,6 +11,7 @@ public class Echest extends SimpleCommand {
     public Echest() {
         super("echest");
         setDescription("Opens a player's ender chest.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override

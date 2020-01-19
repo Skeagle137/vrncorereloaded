@@ -13,6 +13,7 @@ public class Heal extends SimpleCommand {
     public Heal() {
         super("heal");
         setDescription("Heal another player or yourself.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override

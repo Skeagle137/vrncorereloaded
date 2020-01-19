@@ -11,6 +11,7 @@ public class Flymode extends SimpleCommand {
     public Flymode() {
         super("fly");
         setDescription("Toggle fly mode for yourself or another player.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     @Override

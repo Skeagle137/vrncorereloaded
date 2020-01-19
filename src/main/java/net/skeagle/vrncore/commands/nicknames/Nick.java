@@ -19,6 +19,7 @@ public class Nick extends SimpleCommand {
         setMinArguments(1);
         setUsage("<nickname> or <playername> <nickname>");
         setDescription("Sets nickname for yourself or another player.");
+        setPermissionMessage(VRNcore.noperm);
     }
 
     public void onCommand() {
