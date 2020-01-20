@@ -96,6 +96,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Skin()); //vrn.skin
         registerCommand(new Exptrade()); //vrn.exptrade
         registerCommand(new Trails()); //vrn.trails
+        registerCommand(new Demotroll()); //vrn.demo
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
