@@ -2,7 +2,6 @@ package net.skeagle.vrncore.commands.tpa;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.TPAUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -11,7 +10,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpa extends SimpleCommand {
 
-    TPAUtil util = TPAUtil.getUtil();
+    private TPAUtil util = TPAUtil.getUtil();
 
     public Tpa() {
         super("tpa");
@@ -22,6 +21,7 @@ public class Tpa extends SimpleCommand {
         setPermissionMessage(VRNcore.noperm);
     }
 
+    @Override
     public void onCommand() {
         checkConsole();
         Player p = getPlayer();

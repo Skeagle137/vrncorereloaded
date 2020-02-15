@@ -2,7 +2,6 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -17,10 +16,10 @@ public class Push extends SimpleCommand {
         setPermission("vrn.push");
     }
 
+    @Override
     public void onCommand() {
         Player p = findPlayer(args[0], VRNcore.noton);
-        p.setVelocity(p.getLocation().getDirection().multiply(-3));
-        p.setVelocity(new Vector(p.getVelocity().getX(), 1.5D, p.getVelocity().getZ()));
+        p.setVelocity(p.getEyeLocation().getDirection().multiply(-1.5).setY(2));
         say(getSender(), "&eYou pushed " + p.getName() + "!");
         //TODO: add optional arg to specify velocity
     }

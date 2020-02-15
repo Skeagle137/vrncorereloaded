@@ -9,7 +9,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpdeny extends SimpleCommand {
 
-    TPAUtil util = TPAUtil.getUtil();
+    private TPAUtil util = TPAUtil.getUtil();
 
     public Tpdeny() {
         super("tpdeny");
@@ -18,6 +18,7 @@ public class Tpdeny extends SimpleCommand {
         setPermissionMessage(VRNcore.noperm);
     }
 
+    @Override
     public void onCommand() {
         checkConsole();
         Player p = getPlayer();
@@ -27,8 +28,8 @@ public class Tpdeny extends SimpleCommand {
         }
         Player a = util.getStoredPlayer(p);
         checkNotNull(a, VRNcore.noton);
-        say(p,"&cDenied the current teleport request from " + a.getName() + ".");
-        say(a,"&cYour teleport request was denied.");
+        say(p, "&cDenied the current teleport request from " + a.getName() + ".");
+        say(a, "&cYour teleport request was denied.");
         util.DelRequest(p.getUniqueId(), a.getUniqueId(), false);
     }
 }

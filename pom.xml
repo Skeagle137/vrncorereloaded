@@ -5,7 +5,7 @@
 
     <groupId>net.skeagle.vrncore</groupId>
     <artifactId>vrncore</artifactId>
-    <version>4.0.7</version>
+    <version>4.1.2</version>
     <packaging>jar</packaging>
 
     <name>VRNcore</name>
@@ -17,7 +17,7 @@
         <main.class>net.skeagle.vrncore.VRNcore</main.class>
 
         <!-- The Foundation version - change to latest version from https://github.com/kangarko/Foundation/releases -->
-        <foundation.version>5.1.5</foundation.version>
+        <foundation.version>5.2.0</foundation.version>
 
         <!-- The Java version your plugin uses, see bstats.org for what most servers have and use that -->
         <java.version>1.8</java.version>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15.1-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -138,7 +138,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.mineacademy:Game*</include>
-                                    <include>com.github.kangarko:Foundation*</include>
+                                    <include>com.kangarko.github:Foundation*</include>
                                 </includes>
                                 <excludes>
                                     <exclude>org.mineacademy:GameAPI*</exclude>

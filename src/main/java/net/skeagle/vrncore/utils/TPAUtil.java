@@ -2,8 +2,6 @@ package net.skeagle.vrncore.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.mineacademy.fo.Common;
 
@@ -70,15 +68,15 @@ public class TPAUtil {
 
     public void DelRequest(final UUID u1, final UUID u2, boolean showmsg) {
         if (showmsg) {
-            say(Bukkit.getPlayer(u2),"&cThe teleport request has expired.");
-            say(Bukkit.getPlayer(u1),"&cThe teleport request from " + Bukkit.getPlayer(u2).getName() + " has expired.");
+            say(Bukkit.getPlayer(u2), "&cThe teleport request has expired.");
+            say(Bukkit.getPlayer(u1), "&cThe teleport request from " + Bukkit.getPlayer(u2).getName() + " has expired.");
         }
         StoredPlayer.remove(u1, u2);
         DelTask(Bukkit.getPlayer(u2));
     }
 
     public void DelTPATimer(Player p, Player a) {
-        tasks.put(p, Common.runTimer(20, () -> DelRequest(a.getUniqueId(), p.getUniqueId(), true)));
+        tasks.put(p, Common.runLater(20 * 120, () -> DelRequest(a.getUniqueId(), p.getUniqueId(), true)));
     }
 
     private void DelTask(Player p) {

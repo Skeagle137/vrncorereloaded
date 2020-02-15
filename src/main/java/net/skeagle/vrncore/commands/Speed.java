@@ -36,7 +36,7 @@ public class Speed extends SimpleCommand {
             } else {
                 p.setWalkSpeed((float) calcWalk(speed));
             }
-            say(p, "Your " + (p.isFlying() ? "flying" : "walking") + " speed has been set to &a" + (p.isFlying() ? (calcFly(speed) * 10)  : ((int) calcWalk(speed) * 10)) + "&7.");
+            say(p, "Your " + (p.isFlying() ? "flying" : "walking") + " speed has been set to &a" + (p.isFlying() ? (calcFly(speed) / 10) : ((int) calcWalk(speed) / 10)) + "&7.");
         } else {
             say(p, "&cThe speed value specified is not a number.");
         }
@@ -52,7 +52,7 @@ public class Speed extends SimpleCommand {
     }
 
     private double calcFly(int speed) {
-        if (speed > 10)  {
+        if (speed > 10) {
             return 1;
         }
         if (speed < 0) {
@@ -62,7 +62,7 @@ public class Speed extends SimpleCommand {
     }
 
     private double calcWalk(int speed) {
-        if (speed > 10)  {
+        if (speed > 10) {
             return 1;
         }
         if (speed < 0) {

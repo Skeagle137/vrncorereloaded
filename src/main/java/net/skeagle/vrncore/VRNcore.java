@@ -1,6 +1,7 @@
 package net.skeagle.vrncore;
+
+import net.md_5.bungee.api.ChatColor;
 import net.skeagle.vrncore.commands.*;
-import net.skeagle.vrncore.commands.Gamemode;
 import net.skeagle.vrncore.commands.homes.delhome;
 import net.skeagle.vrncore.commands.homes.home;
 import net.skeagle.vrncore.commands.homes.homes;
@@ -21,8 +22,6 @@ import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.utils.NickNameUtil;
 import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.plugin.PluginDescriptionFile;
-
-import net.md_5.bungee.api.ChatColor;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
@@ -48,8 +47,8 @@ public class VRNcore extends SimplePlugin {
         nickNameUtil.loadNicks();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
-            ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
-            ChatColor.GREEN + "----------------------------------------");
+                ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
+                ChatColor.GREEN + "----------------------------------------");
         //commands
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
@@ -97,6 +96,8 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Exptrade()); //vrn.exptrade
         registerCommand(new Trails()); //vrn.trails
         registerCommand(new Demotroll()); //vrn.demo
+        registerCommand(new Spawnmob()); //vrn.spawnmob
+        //registerCommand(new CustomEnchants()); //vrn.enchants
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
@@ -108,6 +109,7 @@ public class VRNcore extends SimplePlugin {
     }
 
 
+    @Override
     public void onPluginStop() {
         nickNameUtil.saveNicks();
         resources.save();

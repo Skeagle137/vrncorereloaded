@@ -9,7 +9,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpaccept extends SimpleCommand {
 
-    TPAUtil util = TPAUtil.getUtil();
+    private TPAUtil util = TPAUtil.getUtil();
 
     public Tpaccept() {
         super("tpaccept");
@@ -18,6 +18,7 @@ public class Tpaccept extends SimpleCommand {
         setPermissionMessage(VRNcore.noperm);
     }
 
+    @Override
     public void onCommand() {
         checkConsole();
         Player p = getPlayer();

@@ -9,7 +9,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpahere extends SimpleCommand {
 
-    TPAUtil util = TPAUtil.getUtil();
+    private TPAUtil util = TPAUtil.getUtil();
 
     public Tpahere() {
         super("tpahere");
@@ -20,6 +20,7 @@ public class Tpahere extends SimpleCommand {
         setPermissionMessage(VRNcore.noperm);
     }
 
+    @Override
     public void onCommand() {
         checkConsole();
         Player p = getPlayer();

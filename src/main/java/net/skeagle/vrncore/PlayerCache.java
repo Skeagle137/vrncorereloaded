@@ -16,6 +16,7 @@ public class PlayerCache {
 
     private String nickname;
     private CompParticle arrowtrail;
+    private CompParticle playertrail;
     private boolean vanished;
     private boolean muted;
     private boolean godmode;

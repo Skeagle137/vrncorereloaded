@@ -32,7 +32,7 @@ public class PlayerListener implements Listener {
             if (!pl.getName().equals(p.getName())) {
                 Bukkit.broadcastMessage(color("&7[&b+&7] &5" + p.getName() + " &dhas joined."));
                 if (!p.hasPlayedBefore()) {
-                    say(pl,"&e" + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!");
+                    say(pl, "&e" + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!");
                     Common.log("&e" + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!");
                 }
             } else {
@@ -50,8 +50,7 @@ public class PlayerListener implements Listener {
      ************************/
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e)
-    {
+    public void onPlayerQuit(PlayerQuitEvent e) {
         e.setQuitMessage(null);
         Bukkit.broadcastMessage(color("&7[&c-&7] &5" + e.getPlayer().getName() + " &dhas left."));
     }
@@ -66,7 +65,7 @@ public class PlayerListener implements Listener {
         PlayerCache cache = PlayerCache.getCache(p);
         if (cache.isMuted()) {
             e.setCancelled(true);
-            say(p,"&cYou are muted. You cannot chat.");
+            say(p, "&cYou are muted. You cannot chat.");
         }
     }
 

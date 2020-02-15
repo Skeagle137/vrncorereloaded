@@ -1,5 +1,5 @@
 name: VRNcore
 version: ${project.version}
-main: ${main.class}
+main: net.skeagle.vrncore.VRNcore
 description: ${project.description}
 api-version: 1.13

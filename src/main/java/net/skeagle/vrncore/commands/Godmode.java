@@ -1,4 +1,5 @@
 package net.skeagle.vrncore.commands;
+
 import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ public class Godmode extends SimpleCommand implements Listener {
             hasPerm("vrn.god.self");
             cache.setGodmode(!cache.isGodmode());
             say(p, "You are " + (cache.isGodmode() ? "now" : "no longer") + " invulnerable.");
+            return;
         }
         hasPerm("vrn.god.others");
         Player a = findPlayer(args[0], VRNcore.noton);
