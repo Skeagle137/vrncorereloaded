@@ -19,11 +19,17 @@ import net.skeagle.vrncore.commands.warps.warp;
 import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
+import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.NickNameUtil;
 import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
+import org.mineacademy.fo.settings.YamlStaticConfig;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class VRNcore extends SimplePlugin {
 
@@ -34,6 +40,7 @@ public class VRNcore extends SimplePlugin {
 
     private Resources resources;
     private NickNameUtil nickNameUtil;
+    //private RandomMOTD motdTask;
 
     public VRNcore() {
         this.resources = new Resources(this);
@@ -49,6 +56,9 @@ public class VRNcore extends SimplePlugin {
         Common.log(ChatColor.GREEN + "----------------------------------------",
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
                 ChatColor.GREEN + "----------------------------------------");
+        //tasks
+        //motdTask = new RandomMOTD();
+        //motdTask.runTaskTimer(this, 0, Settings.Motd.UPDATE_DELAY.getTimeTicks());
         //commands
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
@@ -106,11 +116,35 @@ public class VRNcore extends SimplePlugin {
         registerEvents(new NickListener(nickNameUtil));
         registerEvents(new BackListener());
         registerEvents(new ArrowListener());
+        registerEvents(new RandomMOTD());
     }
 
+    @Override
+    public List<Class<? extends YamlStaticConfig>> getSettings() {
+        return Arrays.asList(Settings.class);
+    }
+
+    @Override
+    protected void onPluginReload() {
+        cleanBeforeReload();
+    }
+
+    private void cleanBeforeReload() {
+        //stopTasks(motdTask);
+    }
+
+    private void stopTasks(final BukkitRunnable task) {
+        if (task != null) {
+            try {
+                task.cancel();
+            } catch (final IllegalStateException ignored) {
+            }
+        }
+    }
 
     @Override
     public void onPluginStop() {
+        cleanBeforeReload();
         nickNameUtil.saveNicks();
         resources.save();
         Common.log(ChatColor.RED + "----------------------------------------",

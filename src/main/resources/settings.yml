@@ -1,0 +1,11 @@
+Motd:
+  Enabled: true
+  First_Line_Static: true
+  First_Line_Text: "My server"
+  Messages:
+    - "Have a great time!"
+    - "Check out our website! http://example.com"
+    - "Join the discord! http://discord.gg/example"
+    - "Join now!"
+    - "Now supporting the latest mc version!"
+Version: 1

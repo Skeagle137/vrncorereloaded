@@ -1,9 +1,6 @@
 package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -30,6 +27,6 @@ public class Rename extends SimpleCommand {
         ItemMeta im = is.getItemMeta();
         im.setDisplayName(color(s));
         is.setItemMeta(im);
-        say(getPlayer(),"Item successfully renamed.");
+        say(getPlayer(), "Item successfully renamed.");
     }
 }
