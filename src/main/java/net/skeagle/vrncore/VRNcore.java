@@ -20,7 +20,6 @@ import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.utils.NickNameUtil;
 import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,27 +30,26 @@ import org.mineacademy.fo.settings.YamlStaticConfig;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.skeagle.vrncore.utils.VRNUtil.color;
+
 public class VRNcore extends SimplePlugin {
 
     private PluginDescriptionFile pdf = this.getDescription();
     private String pv = pdf.getVersion();
-    public static String noperm = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &cYou do not have permission to do this."));
-    public static String noton = (ChatColor.translateAlternateColorCodes('&', "&8[&9&lVRN&r&8] &cThat player is not online."));
+    public static String noperm = color(Settings.PREFIX + "&cYou do not have permission to do this.");
+    public static String noton = color(Settings.PREFIX + "&cplayer is not online.");
 
     private Resources resources;
-    private NickNameUtil nickNameUtil;
     //private RandomMOTD motdTask;
 
     public VRNcore() {
         this.resources = new Resources(this);
-        this.nickNameUtil = new NickNameUtil(resources);
     }
 
     @Override
     public void onPluginStart() {
         //config stuff
         resources.load();
-        nickNameUtil.loadNicks();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
@@ -85,9 +83,9 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Gamemode()); //vrn.gamemode.self / vrn.gamemode.others
         registerCommand(new Heal()); //vrn.heal.self / vrn.heal.others
         registerCommand(new Flymode()); //vrn.fly.self / vrn.fly.others
-        registerCommand(new Nick(nickNameUtil)); //vrn.nick.self / vrn.nick.others
-        registerCommand(new Realname(nickNameUtil)); //vrn.realname
-        registerCommand(new RemoveNick(nickNameUtil)); //vrn.nick.self / vrn.nick.others
+        registerCommand(new Nick()); //vrn.nick.self / vrn.nick.others
+        registerCommand(new Realname()); //vrn.realname
+        registerCommand(new RemoveNick()); //vrn.nick.self / vrn.nick.others
         registerCommand(new Push()); //vrn.push
         registerCommand(new Back()); //vrn.back
         registerCommand(new home(resources)); //vrn.home
@@ -113,7 +111,6 @@ public class VRNcore extends SimplePlugin {
         registerEvents(new InvCloseListener());
         registerEvents(new InvClickListener());
         registerEvents(new TotalPlayedListener());
-        registerEvents(new NickListener(nickNameUtil));
         registerEvents(new BackListener());
         registerEvents(new ArrowListener());
         registerEvents(new RandomMOTD());
@@ -145,7 +142,6 @@ public class VRNcore extends SimplePlugin {
     @Override
     public void onPluginStop() {
         cleanBeforeReload();
-        nickNameUtil.saveNicks();
         resources.save();
         Common.log(ChatColor.RED + "----------------------------------------",
                 ChatColor.RED + "VRNcore " + pv + " is now disabled.",

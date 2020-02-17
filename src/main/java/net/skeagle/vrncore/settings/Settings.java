@@ -27,7 +27,11 @@ public class Settings extends SimpleSettings {
         }
     }
 
+    public static String PREFIX;
+
     private static void init() {
         pathPrefix(null);
+
+        PREFIX = getString("Prefix");
     }
 }

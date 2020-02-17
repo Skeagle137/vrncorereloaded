@@ -15,8 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.mineacademy.fo.Common;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.*;
 
 public class PlayerListener implements Listener {
 
@@ -27,22 +26,22 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         e.setJoinMessage(null);
-        Player p = e.getPlayer();
-        for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
-            if (!pl.getName().equals(p.getName())) {
-                Bukkit.broadcastMessage(color("&7[&b+&7] &5" + p.getName() + " &dhas joined."));
-                if (!p.hasPlayedBefore()) {
-                    say(pl, "&e" + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!");
-                    Common.log("&e" + p.getName() + " &6has joined for the first time. Welcome, &e" + p.getName() + "&6!");
-                }
-            } else {
-                if (!p.hasPlayedBefore()) {
-                    say(p, "&dWelcome to &b&lVRN Network&r&d, &5" + p.getName() + "&d!");
-                    return;
-                }
-                say(p, "&dWelcome back, &5" + p.getName() + "&d!");
+        PlayerCache cache = PlayerCache.getCache(e.getPlayer());
+        if (!e.getPlayer().hasPlayedBefore()) {
+            e.setJoinMessage(color("&e" + e.getPlayer().getName() + " &6has joined for the first time. Welcome, &e" + e.getPlayer().getName() + "&6!"));
+            return;
+        }
+        if (cache.getNickname() != null) {
+            e.getPlayer().setDisplayName(color(cache.getNickname() + "&r"));
+            e.getPlayer().setPlayerListName(color(cache.getNickname() + "&r"));
+        }
+        Common.logNoPrefix(color("&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName() + " &dhas joined.")));
+        for (Player pl : Bukkit.getOnlinePlayers()) {
+            if (pl.getUniqueId() != e.getPlayer().getUniqueId()) {
+                sayNoPrefix(pl, "&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName() + " &dhas joined."));
             }
         }
+        say(e.getPlayer(), "&dWelcome back, &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName()) + "&d!");
     }
 
     /************************
@@ -51,8 +50,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        e.setQuitMessage(null);
-        Bukkit.broadcastMessage(color("&7[&c-&7] &5" + e.getPlayer().getName() + " &dhas left."));
+        e.setQuitMessage(color("&7[&c-&7] &5" + e.getPlayer().getName() + " &dhas left."));
+        PlayerCache cache = PlayerCache.getCache(e.getPlayer());
+        if (cache.getNickname() != null) {
+            if (e.getQuitMessage() != null && !e.getQuitMessage().equals("")) {
+                e.setQuitMessage(e.getQuitMessage().replaceAll(e.getPlayer().getName(), color(cache.getNickname() + "&r")));
+            }
+        }
     }
 
     /************************

@@ -1,21 +1,17 @@
 package net.skeagle.vrncore.commands.nicknames;
 
+import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.utils.NickNameUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
-
-import java.util.UUID;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Realname extends SimpleCommand {
 
-    private NickNameUtil util;
-
-    public Realname(NickNameUtil util) {
+    public Realname() {
         super("realname");
-        this.util = util;
         setMinArguments(1);
         setUsage("<player>");
         setDescription("Look up a player's real name from their nick name.");
@@ -23,9 +19,15 @@ public class Realname extends SimpleCommand {
         setPermissionMessage(VRNcore.noperm);
     }
 
+    @Override
     public void onCommand() {
-        UUID nick = util.getPlayerFromNickName(args[0]);
-        checkNotNull(nick, "&cThere is no player that has that nickname.");
-        say(getSender(), "&7The player with the nickname " + args[0] + "&r&7 is called &a" + Bukkit.getPlayer(nick).getName() + "&7.");
+        for (Player pl : Bukkit.getOnlinePlayers()) {
+            PlayerCache cache = PlayerCache.getCache(pl);
+            if (cache.getNickname().equalsIgnoreCase(args[0])) {
+                say(getSender(), "&7The player with the nickname " + args[0] + "&r&7 is called &a" + pl.getName() + "&7.");
+                return;
+            }
+        }
+        say(getSender(), "&cThere is no player online that has that nickname.");
     }
 }
