@@ -8,5 +8,9 @@ Motd:
     - "Join the discord! http://discord.gg/example"
     - "Join now!"
     - "Now supporting the latest mc version!"
+Afk:
+  Seconds_Delay: 10
+  Stop_Counting_Playtime: 5
+  Kick_Time_In_Seconds: 3600
 Prefix: "&8[&9&lServer&8] &7"
 Version: 1

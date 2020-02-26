@@ -20,6 +20,7 @@ import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrncore.tasks.AFKTask;
 import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -27,20 +28,20 @@ import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.YamlStaticConfig;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static net.skeagle.vrncore.utils.VRNUtil.color;
 
 public class VRNcore extends SimplePlugin {
 
-    private PluginDescriptionFile pdf = this.getDescription();
-    private String pv = pdf.getVersion();
+    private final PluginDescriptionFile pdf = this.getDescription();
+    private final String pv = pdf.getVersion();
     public static String noperm = color(Settings.PREFIX + "&cYou do not have permission to do this.");
-    public static String noton = color(Settings.PREFIX + "&cplayer is not online.");
+    public static String noton = color(Settings.PREFIX + "&cThat player is not online.");
 
-    private Resources resources;
-    //private RandomMOTD motdTask;
+    private final Resources resources;
+    private AFKTask afktask;
 
     public VRNcore() {
         this.resources = new Resources(this);
@@ -55,8 +56,8 @@ public class VRNcore extends SimplePlugin {
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
                 ChatColor.GREEN + "----------------------------------------");
         //tasks
-        //motdTask = new RandomMOTD();
-        //motdTask.runTaskTimer(this, 0, Settings.Motd.UPDATE_DELAY.getTimeTicks());
+        afktask = new AFKTask();
+        afktask.runTaskTimer(this, 0, Settings.Afk.SECONDS_DELAY * 20L);
         //commands
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
@@ -105,12 +106,12 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Trails()); //vrn.trails
         registerCommand(new Demotroll()); //vrn.demo
         registerCommand(new Spawnmob()); //vrn.spawnmob
-        //registerCommand(new CustomEnchants()); //vrn.enchants
+        registerCommand(new CustomEnchants()); //vrn.enchants
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
         registerEvents(new InvClickListener());
-        registerEvents(new TotalPlayedListener());
+        registerEvents(new AFKListener());
         registerEvents(new BackListener());
         registerEvents(new ArrowListener());
         registerEvents(new RandomMOTD());
@@ -118,7 +119,7 @@ public class VRNcore extends SimplePlugin {
 
     @Override
     public List<Class<? extends YamlStaticConfig>> getSettings() {
-        return Arrays.asList(Settings.class);
+        return Collections.singletonList(Settings.class);
     }
 
     @Override
@@ -127,7 +128,7 @@ public class VRNcore extends SimplePlugin {
     }
 
     private void cleanBeforeReload() {
-        //stopTasks(motdTask);
+        stopTasks(afktask);
     }
 
     private void stopTasks(final BukkitRunnable task) {

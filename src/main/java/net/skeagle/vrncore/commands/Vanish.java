@@ -27,7 +27,7 @@ public class Vanish extends SimpleCommand implements Listener {
             PlayerCache cache = PlayerCache.getCache(p);
             cache.setVanished(!cache.isVanished());
             for (Player pl : Bukkit.getOnlinePlayers()) {
-                if (!cache.isVanished()) {
+                if (cache.isVanished()) {
                     pl.hidePlayer(VRNcore.getInstance(), p);
                     return;
                 }
@@ -41,7 +41,7 @@ public class Vanish extends SimpleCommand implements Listener {
         PlayerCache cache = PlayerCache.getCache(a);
         cache.setVanished(!cache.isVanished());
         for (Player pl : Bukkit.getOnlinePlayers()) {
-            if (!cache.isVanished()) {
+            if (cache.isVanished()) {
                 pl.hidePlayer(VRNcore.getInstance(), a);
                 return;
             }

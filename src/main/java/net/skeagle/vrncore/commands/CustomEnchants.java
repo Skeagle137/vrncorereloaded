@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.enchants.ExecuteEnchant;
-import net.skeagle.vrncore.enchants.ExplosiveEnchant;
+import net.skeagle.vrncore.enchants.enchantment.ExecuteEnchant;
+import net.skeagle.vrncore.enchants.enchantment.ExplosiveEnchant;
 import org.mineacademy.fo.command.SimpleCommand;
 import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.model.SimpleEnchant;
@@ -29,6 +29,6 @@ public class CustomEnchants extends SimpleCommand {
                         .build().makeSurvival()
         );
 
-        say(getPlayer(), "given item.");
+        say(getPlayer(), "given items.");
     }
 }

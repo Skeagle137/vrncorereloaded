@@ -35,7 +35,7 @@ public class PlayerListener implements Listener {
             e.getPlayer().setDisplayName(color(cache.getNickname() + "&r"));
             e.getPlayer().setPlayerListName(color(cache.getNickname() + "&r"));
         }
-        Common.logNoPrefix(color("&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName() + " &dhas joined.")));
+        Common.logNoPrefix(color("&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName()) + " &dhas joined."));
         for (Player pl : Bukkit.getOnlinePlayers()) {
             if (pl.getUniqueId() != e.getPlayer().getUniqueId()) {
                 sayNoPrefix(pl, "&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName() + " &dhas joined."));
