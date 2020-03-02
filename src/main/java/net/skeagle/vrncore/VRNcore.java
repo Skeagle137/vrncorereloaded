@@ -106,7 +106,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Trails()); //vrn.trails
         registerCommand(new Demotroll()); //vrn.demo
         registerCommand(new Spawnmob()); //vrn.spawnmob
-        registerCommand(new CustomEnchants()); //vrn.enchants
+        registerCommand(new Enchant()); //vrn.enchant
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());

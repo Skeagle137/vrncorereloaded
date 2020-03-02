@@ -22,31 +22,31 @@ public class Vanish extends SimpleCommand implements Listener {
     public void onCommand() {
         if (args.length < 1) {
             checkConsole();
-            Player p = getPlayer();
+            final Player p = getPlayer();
             hasPerm("vrn.vanish.self");
-            PlayerCache cache = PlayerCache.getCache(p);
-            cache.setVanished(!cache.isVanished());
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                if (cache.isVanished()) {
+            final PlayerCache cache = PlayerCache.getCache(p);
+            for (final Player pl : Bukkit.getOnlinePlayers()) {
+                if (!cache.isVanished()) {
                     pl.hidePlayer(VRNcore.getInstance(), p);
                     return;
                 }
                 pl.showPlayer(VRNcore.getInstance(), p);
             }
+            cache.setVanished(!cache.isVanished());
             say(p, "Vanish " + (cache.isVanished() ? "enabled." : "disabled."));
             return;
         }
         hasPerm("vrn.vanish.others");
-        Player a = findPlayer(args[0], VRNcore.noton);
-        PlayerCache cache = PlayerCache.getCache(a);
-        cache.setVanished(!cache.isVanished());
-        for (Player pl : Bukkit.getOnlinePlayers()) {
-            if (cache.isVanished()) {
+        final Player a = findPlayer(args[0], VRNcore.noton);
+        final PlayerCache cache = PlayerCache.getCache(a);
+        for (final Player pl : Bukkit.getOnlinePlayers()) {
+            if (!cache.isVanished()) {
                 pl.hidePlayer(VRNcore.getInstance(), a);
                 return;
             }
             pl.showPlayer(VRNcore.getInstance(), a);
         }
+        cache.setVanished(!cache.isVanished());
         say(a, "Vanish " + (cache.isVanished() ? "enabled." : "disabled."));
         say(getSender(), "Vanish " + (cache.isVanished() ? "enabled" : "disabled") + " for &a" + a.getName() + "&7.");
     }

@@ -15,7 +15,6 @@ import org.mineacademy.fo.remain.CompSound;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
 import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public class ExecuteEnchant extends SimpleEnchantment implements IVRNEnchant {
@@ -29,14 +28,13 @@ public class ExecuteEnchant extends SimpleEnchantment implements IVRNEnchant {
 
     @Override
     protected void onDamage(final int level, final LivingEntity damager, final EntityDamageByEntityEvent e) {
+        if (!(e instanceof LivingEntity)) return;
         final GenericEvent ge = new GenericEvent();
-        ge.checkEntity(e.getEntity());
         if (ge.calcChance(8, level)) {
             if (((LivingEntity) e.getEntity()).getHealth() < 1 + level) {
                 ((LivingEntity) e.getEntity()).setHealth(0);
                 CompParticle.FLAME.spawn(e.getEntity().getLocation().add(0, 1, 0));
                 CompSound.WITHER_HURT.play(e.getEntity().getLocation(), 1, 0.8F);
-                say(damager, "works");
                 if (e.getEntity() instanceof Player) {
                     sayNoPrefix(e.getEntity(), "&c&lEXECUTED &7by " + damager.getName() + "'s insta-kill below &c" + (1 + level) + "❤");
                 }
@@ -51,7 +49,7 @@ public class ExecuteEnchant extends SimpleEnchantment implements IVRNEnchant {
 
     @Override
     public int setRarityPoints() {
-        return 160;
+        return 250;
     }
 
     @Override

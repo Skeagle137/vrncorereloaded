@@ -17,11 +17,12 @@ public enum ApplyToItem {
     ROD(CompMaterial.FISHING_ROD),
     ELYTRA(CompMaterial.ELYTRA),
     CROSSBOW(CompMaterial.CROSSBOW),
+    HORSE(CompMaterial.DIAMOND_HORSE_ARMOR, CompMaterial.GOLDEN_HORSE_ARMOR, CompMaterial.IRON_HORSE_ARMOR, CompMaterial.LEATHER_HORSE_ARMOR),
     ANY(CompMaterial.values());
 
-    private CompMaterial[] appliesTo;
+    private final CompMaterial[] appliesTo;
 
-    ApplyToItem(CompMaterial... appliesTo) {
+    ApplyToItem(final CompMaterial... appliesTo) {
         this.appliesTo = appliesTo;
     }
 

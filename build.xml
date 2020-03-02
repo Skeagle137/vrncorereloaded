@@ -9,7 +9,7 @@
      -->
 
     <!-- Your MC test server location for Windows -->
-    <condition property="serverPath" value="C:\Users\Skeagle\Documents\VRN Network\Dev 1.15.1">
+    <condition property="serverPath" value="C:\Users\Skeagle\Documents\VRN Network\Dev 1.15.2">
         <os family="windows" />
     </condition>
 

@@ -32,12 +32,12 @@ public class ExplosiveEnchant extends SimpleEnchantment implements IVRNEnchant {
 
     @Override
     public int setRarityPoints() {
-        return 50;
+        return 70;
     }
 
     @Override
     public int setRarityFactor() {
-        return 80;
+        return 130;
     }
 
     @Override
