@@ -26,7 +26,7 @@ public class VenomEnchant extends SimpleEnchantment implements IVRNEnchant {
 
     @Override
     protected void onDamage(final int level, final LivingEntity damager, final EntityDamageByEntityEvent e) {
-        if (!(e instanceof LivingEntity)) return;
+        if (!(e.getEntity() instanceof LivingEntity)) return;
 
         final GenericEvent ge = new GenericEvent();
         if (ge.calcChance(15)) {

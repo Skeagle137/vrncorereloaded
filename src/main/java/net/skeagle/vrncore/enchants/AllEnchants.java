@@ -1,9 +1,6 @@
 package net.skeagle.vrncore.enchants;
 
-import net.skeagle.vrncore.enchants.enchantment.ExecuteEnchant;
-import net.skeagle.vrncore.enchants.enchantment.ExplosiveEnchant;
-import net.skeagle.vrncore.enchants.enchantment.GillsEnchant;
-import net.skeagle.vrncore.enchants.enchantment.VenomEnchant;
+import net.skeagle.vrncore.enchants.enchantment.*;
 import org.bukkit.enchantments.Enchantment;
 
 public enum AllEnchants {
@@ -48,6 +45,7 @@ public enum AllEnchants {
     EXPLOSIVE("explosive", ExplosiveEnchant.getInstance(), true),
     VENOM("venom", VenomEnchant.getInstance(), true),
     GILLS("gills", GillsEnchant.getInstance(), true),
+    AUTOSMELT("auto_smelt", AutoSmeltEnchant.getInstance(), true),
     ;
 
     private final String name;

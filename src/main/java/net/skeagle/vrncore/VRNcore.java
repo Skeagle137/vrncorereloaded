@@ -65,13 +65,13 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new GGive()); //vrn.ggive
         registerCommand(new Craft()); //vrn.craft
         registerCommand(new Smite()); //vrn.smite.others
-        registerCommand(new Echest()); //vrn.echest.self / vrn.echest.others
+        registerCommand(new Echest()); //vrn.echest.self|others
         registerCommand(new Invsee()); //vrn.invsee
         registerCommand(new Broadcast()); //vrn.broadcast
         registerCommand(new Mute()); //vrn.mute
-        registerCommand(new Godmode()); //vrn.god.self / vrn.god.others
+        registerCommand(new Godmode()); //vrn.god.self|others
         registerCommand(new Speed()); //vrn.speed
-        registerCommand(new Slap()); //vrn.kill.self / vrn.kill.others
+        registerCommand(new Slap()); //vrn.slap.self|others
         registerCommand(new Sun()); //vrn.weather
         registerCommand(new Rain()); //vrn.weather
         registerCommand(new Day()); //vrn.time
@@ -79,14 +79,14 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Pweather()); //vrn.pweather
         registerCommand(new Ptime()); //vrn.ptime
         registerCommand(new Rename()); //vrn.rename
-        registerCommand(new Vanish()); //vrn.vanish.self / vrn.vanish.others
+        registerCommand(new Vanish()); //vrn.vanish.self|others
         registerCommand(new Clearchat()); //vrn.clearchat
-        registerCommand(new Gamemode()); //vrn.gamemode.self / vrn.gamemode.others
-        registerCommand(new Heal()); //vrn.heal.self / vrn.heal.others
-        registerCommand(new Flymode()); //vrn.fly.self / vrn.fly.others
-        registerCommand(new Nick()); //vrn.nick.self / vrn.nick.others
+        registerCommand(new Gamemode()); //vrn.gamemode.self|others
+        registerCommand(new Heal()); //vrn.heal.self|others
+        registerCommand(new Flymode()); //vrn.fly.self|others
+        registerCommand(new Nick()); //vrn.nick.self|others
         registerCommand(new Realname()); //vrn.realname
-        registerCommand(new RemoveNick()); //vrn.nick.self / vrn.nick.others
+        registerCommand(new RemoveNick()); //vrn.nick.self|others
         registerCommand(new Push()); //vrn.push
         registerCommand(new Back()); //vrn.back
         registerCommand(new home(resources)); //vrn.home
@@ -107,6 +107,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Demotroll()); //vrn.demo
         registerCommand(new Spawnmob()); //vrn.spawnmob
         registerCommand(new Enchant()); //vrn.enchant
+        registerCommand(new TimePlayed()); //vrn.timeplayed.setself|getself|setothers|getothers
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());

@@ -10,12 +10,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
-import static org.mineacademy.fo.Valid.checkBoolean;
 
 public class TPAUtil {
     private static TPAUtil util;
-    private Map<Player, BukkitTask> tasks = new HashMap<>();
-    private HashMap<UUID, UUID> StoredPlayer = new HashMap<>();
+    private final Map<Player, BukkitTask> tasks = new HashMap<>();
+    private final HashMap<UUID, UUID> StoredPlayer = new HashMap<>();
     private boolean tpahere;
 
     private TPAUtil() {
@@ -29,12 +28,12 @@ public class TPAUtil {
         return util;
     }
 
-    public void setTpahere(boolean tpahere) {
+    public void setTpahere(final boolean tpahere) {
         this.tpahere = tpahere;
     }
 
     public boolean hasRequest(final Player p) {
-        UUID uuid = StoredPlayer.get(p.getUniqueId());
+        final UUID uuid = StoredPlayer.get(p.getUniqueId());
         return uuid != null;
     }
 
@@ -44,7 +43,7 @@ public class TPAUtil {
 
     public Player getStoredPlayer(final Player p) {
         if (hasRequest(p)) {
-            UUID uuid = StoredPlayer.get(p.getUniqueId());
+            final UUID uuid = StoredPlayer.get(p.getUniqueId());
             return Bukkit.getPlayer(uuid);
         }
         say(p, "&cThat player is not online.");
@@ -66,7 +65,7 @@ public class TPAUtil {
         DelTask(a);
     }
 
-    public void DelRequest(final UUID u1, final UUID u2, boolean showmsg) {
+    public void DelRequest(final UUID u1, final UUID u2, final boolean showmsg) {
         if (showmsg) {
             say(Bukkit.getPlayer(u2), "&cThe teleport request has expired.");
             say(Bukkit.getPlayer(u1), "&cThe teleport request from " + Bukkit.getPlayer(u2).getName() + " has expired.");
@@ -75,13 +74,14 @@ public class TPAUtil {
         DelTask(Bukkit.getPlayer(u2));
     }
 
-    public void DelTPATimer(Player p, Player a) {
+    public void DelTPATimer(final Player p, final Player a) {
         tasks.put(p, Common.runLater(20 * 120, () -> DelRequest(a.getUniqueId(), p.getUniqueId(), true)));
     }
 
-    private void DelTask(Player p) {
-        checkBoolean(tasks.containsKey(p));
-        BukkitTask task = tasks.remove(p);
-        task.cancel();
+    private void DelTask(final Player p) {
+        if (tasks.containsKey(p)) {
+            final BukkitTask task = tasks.remove(p);
+            task.cancel();
+        }
     }
 }
