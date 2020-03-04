@@ -3,7 +3,6 @@ package net.skeagle.vrncore.enchants.enchantment;
 import lombok.Getter;
 import net.skeagle.vrncore.enchants.ApplyToItem;
 import net.skeagle.vrncore.enchants.IVRNEnchant;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +11,7 @@ import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AutoSmeltEnchant extends SimpleEnchantment implements IVRNEnchant {
     @Getter
@@ -25,29 +25,29 @@ public class AutoSmeltEnchant extends SimpleEnchantment implements IVRNEnchant {
     protected void onBreakBlock(final int level, final BlockBreakEvent e) {
         CompMaterial mat;
         final ItemStack item = e.getPlayer().getEquipment().getItemInMainHand();
-        float fortune = 0;
+        int fortune = 0;
         if (item.getEnchantments().containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
-            final int fortunelevel = item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-            fortune = (float) ((1 / (fortunelevel + 2)) + ((fortunelevel + 1) / 2));
+            fortune = calcFortune(item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS));
 
-        }
-        int amount = 1;
-        if (fortune != 0) {
-            amount = (int) fortune;
         }
         if (e.getBlock().getType() == CompMaterial.GOLD_ORE.toMaterial()) {
             mat = CompMaterial.GOLD_INGOT;
-            e.setCancelled(true);
-            e.getBlock().setType(Material.AIR);
-            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(amount));
+            e.setDropItems(false);
+            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(fortune));
         }
         if (e.getBlock().getType() == CompMaterial.IRON_ORE.toMaterial()) {
             mat = CompMaterial.IRON_INGOT;
-            e.setCancelled(true);
-            e.getBlock().setType(Material.AIR);
-            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(amount));
+            e.setDropItems(false);
+            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(fortune));
         }
 
+    }
+
+    private int calcFortune(final int level) {
+        final int min = 1;
+        final int max = level + 1;
+        if (Math.random() > (float) (100 / (max + 1))) return min;
+        return ThreadLocalRandom.current().nextInt(max - min + 1) + min;
     }
 
     @Override
