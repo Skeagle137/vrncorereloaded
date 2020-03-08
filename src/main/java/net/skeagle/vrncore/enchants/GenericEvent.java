@@ -30,6 +30,6 @@ public class GenericEvent {
         if (level < 2) {
             return 1;
         }
-        return chanceFactor * (level - 1);
+        return chanceFactor * level;
     }
 }

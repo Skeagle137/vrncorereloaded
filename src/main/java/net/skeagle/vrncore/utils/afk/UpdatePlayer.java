@@ -7,26 +7,26 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 @Getter
-public class AFKPlayer {
+public class UpdatePlayer {
 
     private final Player player;
     private final UUID uuid;
-    private int secondsPlayed;
+    private int timeAfk;
     @Setter
     private MouseLocation lastMouseLocation;
     @Setter
     private int secondsAFK;
 
-    public AFKPlayer(final Player player, final UUID uuid) {
+    public UpdatePlayer(final Player player, final UUID uuid) {
         this.secondsAFK = 0;
         this.player = player;
         this.uuid = uuid;
     }
 
-    public void setSecondsPlayed(final int secondsPlayed) {
-        if (this.secondsPlayed == -1) {
+    public void setTimeAfk(final int secondsPlayed) {
+        if (this.timeAfk == -1) {
             return;
         }
-        this.secondsPlayed = secondsPlayed;
+        this.timeAfk = secondsPlayed;
     }
 }

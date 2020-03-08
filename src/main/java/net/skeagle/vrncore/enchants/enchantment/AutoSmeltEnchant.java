@@ -40,7 +40,6 @@ public class AutoSmeltEnchant extends SimpleEnchantment implements IVRNEnchant {
             e.setDropItems(false);
             e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(fortune));
         }
-
     }
 
     private int calcFortune(final int level) {

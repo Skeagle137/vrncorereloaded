@@ -20,7 +20,7 @@ import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.tasks.AFKTask;
+import net.skeagle.vrncore.tasks.UpdatePlayerTask;
 import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,7 +41,7 @@ public class VRNcore extends SimplePlugin {
     public static String noton = color(Settings.PREFIX + "&cThat player is not online.");
 
     private final Resources resources;
-    private AFKTask afktask;
+    private UpdatePlayerTask afktask;
 
     public VRNcore() {
         this.resources = new Resources(this);
@@ -56,7 +56,7 @@ public class VRNcore extends SimplePlugin {
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
                 ChatColor.GREEN + "----------------------------------------");
         //tasks
-        afktask = new AFKTask();
+        afktask = new UpdatePlayerTask();
         afktask.runTaskTimer(this, 0, Settings.Afk.SECONDS_DELAY * 20L);
         //commands
         registerCommand(new Kick()); //vrn.kick
@@ -108,6 +108,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Spawnmob()); //vrn.spawnmob
         registerCommand(new Enchant()); //vrn.enchant
         registerCommand(new TimePlayed()); //vrn.timeplayed.setself|getself|setothers|getothers
+        registerCommand(new Hallucinate()); //vrn.hallucinate.self|others
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());

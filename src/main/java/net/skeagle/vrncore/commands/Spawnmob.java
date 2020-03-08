@@ -1,6 +1,7 @@
 package net.skeagle.vrncore.commands;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -31,7 +32,9 @@ public class Spawnmob extends SimpleCommand {
             amount = findNumber(1, "&cPlease specify a valid amount of the mob.");
             checkBoolean(amount > 0, "&cAmount of mobs cannot be less than one.");
         }
-        location = getPlayer().getTargetBlock(null, 20).getLocation().add(0, 1, 0);
+        final Block b = getPlayer().getTargetBlock(null, 20);
+        location = new Location(b.getWorld(), b.getLocation().getX(), b.getLocation().getY() + 1, b.getLocation().getZ());
+
         for (int i = 0; i < amount; i++) {
             location.getWorld().spawnEntity(location, entityType);
         }

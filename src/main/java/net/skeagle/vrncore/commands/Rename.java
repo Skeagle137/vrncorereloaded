@@ -22,9 +22,13 @@ public class Rename extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        String s = String.join(" ", args);
-        ItemStack is = getPlayer().getInventory().getItemInMainHand();
-        ItemMeta im = is.getItemMeta();
+        final String s = String.join(" ", args);
+        final ItemStack is = getPlayer().getInventory().getItemInMainHand();
+        final ItemMeta im = is.getItemMeta();
+        if (im == null) {
+            say(getPlayer(), "&cYou must have an item in your hand.");
+            return;
+        }
         im.setDisplayName(color(s));
         is.setItemMeta(im);
         say(getPlayer(), "Item successfully renamed.");
