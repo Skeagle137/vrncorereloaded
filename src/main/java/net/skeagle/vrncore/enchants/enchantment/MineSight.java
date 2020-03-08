@@ -150,7 +150,7 @@ public class MineSight extends SimpleEnchantment implements IVRNEnchant {
 
         public GlowAPI.Color getColorFrom(final Block b) {
             for (final Sorter sorter : Sorter.values()) {
-                if (b.getType() == sorter.getBlock().toMaterial()) {
+                if (b.getType() == sorter.getBlock().getMaterial()) {
                     return sorter.getColor();
                 }
             }
@@ -170,7 +170,7 @@ public class MineSight extends SimpleEnchantment implements IVRNEnchant {
         final ArrayList<Block> newBlocks = new ArrayList<>();
         for (final Block b : blocks) {
             for (final Sorter sort : Sorter.values()) {
-                if (b.getType() == sort.getBlock().toMaterial()) {
+                if (b.getType() == sort.getBlock().getMaterial()) {
                     newBlocks.add(b);
                 }
             }

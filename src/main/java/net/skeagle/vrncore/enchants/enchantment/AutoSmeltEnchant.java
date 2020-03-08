@@ -30,12 +30,12 @@ public class AutoSmeltEnchant extends SimpleEnchantment implements IVRNEnchant {
             fortune = calcFortune(item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS));
 
         }
-        if (e.getBlock().getType() == CompMaterial.GOLD_ORE.toMaterial()) {
+        if (e.getBlock().getType() == CompMaterial.GOLD_ORE.getMaterial()) {
             mat = CompMaterial.GOLD_INGOT;
             e.setDropItems(false);
             e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(fortune));
         }
-        if (e.getBlock().getType() == CompMaterial.IRON_ORE.toMaterial()) {
+        if (e.getBlock().getType() == CompMaterial.IRON_ORE.getMaterial()) {
             mat = CompMaterial.IRON_INGOT;
             e.setDropItems(false);
             e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), mat.toItem(fortune));
