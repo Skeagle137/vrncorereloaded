@@ -1,4 +1,4 @@
 /.idea/
-vrncorereloaded.iml
-.gitignore
-build.xml
+!/.gitignore
+!/build.xml
+!/vrncorereloaded.iml
