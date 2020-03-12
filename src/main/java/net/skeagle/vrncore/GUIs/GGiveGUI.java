@@ -1,7 +1,6 @@
 package net.skeagle.vrncore.GUIs;
 
 import net.skeagle.vrncore.utils.GGiveMaterial;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -16,9 +15,9 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 public class GGiveGUI extends MenuPagged<GGiveMaterial> {
 
     public GGiveGUI() {
-        super(9, null, new ArrayList<>(Arrays.asList(GGiveMaterial.values())));
+        super(null, new ArrayList<>(Arrays.asList(GGiveMaterial.values())));
+        setSize(9);
         setTitle("&9&lGUI /give");
-
     }
 
     @Override

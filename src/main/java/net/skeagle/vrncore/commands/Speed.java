@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -13,13 +13,13 @@ public class Speed extends SimpleCommand {
         setUsage("<speed>");
         setDescription("Change your fly and walk speed.");
         setPermission("vrn.speed");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (args.length < 1) {
             if (p.isFlying()) {
                 p.setFlySpeed((float) 0.1);
@@ -30,7 +30,7 @@ public class Speed extends SimpleCommand {
             return;
         }
         if (isInt(args[0])) {
-            int speed = Integer.parseInt(args[0]);
+            final int speed = Integer.parseInt(args[0]);
             if (p.isFlying()) {
                 p.setFlySpeed((float) calcFly(speed));
             } else {
@@ -42,16 +42,16 @@ public class Speed extends SimpleCommand {
         }
     }
 
-    private boolean isInt(String s) {
+    private boolean isInt(final String s) {
         try {
             Integer.parseInt(s);
-        } catch (NumberFormatException nfe) {
+        } catch (final NumberFormatException nfe) {
             return false;
         }
         return true;
     }
 
-    private double calcFly(int speed) {
+    private double calcFly(final int speed) {
         if (speed > 10) {
             return 1;
         }
@@ -61,7 +61,7 @@ public class Speed extends SimpleCommand {
         return (double) speed / 10;
     }
 
-    private double calcWalk(int speed) {
+    private double calcWalk(final int speed) {
         if (speed > 10) {
             return 1;
         }

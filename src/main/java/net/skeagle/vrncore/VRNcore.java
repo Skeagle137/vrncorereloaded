@@ -31,14 +31,10 @@ import org.mineacademy.fo.settings.YamlStaticConfig;
 import java.util.Collections;
 import java.util.List;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
-
 public class VRNcore extends SimplePlugin {
 
     private final PluginDescriptionFile pdf = this.getDescription();
     private final String pv = pdf.getVersion();
-    public static String noperm = color(Settings.PREFIX + "&cYou do not have permission to do this.");
-    public static String noton = color(Settings.PREFIX + "&cThat player is not online.");
 
     private final Resources resources;
     private UpdatePlayerTask afktask;

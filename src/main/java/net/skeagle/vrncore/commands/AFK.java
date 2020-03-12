@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -10,13 +10,13 @@ import static net.skeagle.vrncore.utils.VRNUtil.color;
 
 public class AFK extends SimpleCommand {
 
-    private HashMap<Player, Integer> afkList = new HashMap<>();
-    private HashMap<Player, Integer> afkAmount = new HashMap<>();
+    private final HashMap<Player, Integer> afkList = new HashMap<>();
+    private final HashMap<Player, Integer> afkAmount = new HashMap<>();
 
     public AFK() {
         super("afk");
         setDescription("Set yourself as afk.");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     private boolean isAFK(final Player p) {

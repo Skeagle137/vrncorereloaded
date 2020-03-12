@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.enchants.AllEnchants;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -21,7 +21,7 @@ public class Enchant extends SimpleCommand {
         super("enchant|ench");
         setDescription("Enchants the item held in your main hand.");
         setPermission("vrn.enchant");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

@@ -1,13 +1,13 @@
 package net.skeagle.vrncore.commands.warps;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Resources;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.WarpsHomesUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class setwarp extends SimpleCommand {
-    private Resources r;
-    private WarpsHomesUtil util;
+    private final Resources r;
+    private final WarpsHomesUtil util;
 
     public setwarp(final Resources r) {
         super("setwarp");
@@ -17,7 +17,7 @@ public class setwarp extends SimpleCommand {
         setUsage("<name>");
         setDescription("Create a warp.");
         setPermission("vrn.setwarp");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

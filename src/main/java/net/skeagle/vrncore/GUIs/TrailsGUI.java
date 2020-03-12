@@ -38,7 +38,7 @@ public class TrailsGUI extends Menu {
             @Override
             public void onClickedInMenu(final Player p, final Menu menu, final ClickType click)
             {
-                PlayerCache cache = PlayerCache.getCache(p);
+                final PlayerCache cache = PlayerCache.getCache(p);
                     if (click.isLeftClick()) {
                         //if (cache.getPlayertrail() == null) {
                         //    animateTitle("&cNo trail to reset");
@@ -60,7 +60,7 @@ public class TrailsGUI extends Menu {
 
             @Override
             public ItemStack getItem() {
-                PlayerCache cache = PlayerCache.getCache(getViewer());
+                final PlayerCache cache = PlayerCache.getCache(getViewer());
                 return ItemCreator.of(CompMaterial.REDSTONE,
                         "&6&lReset trails",
                         "",
@@ -102,14 +102,15 @@ public class TrailsGUI extends Menu {
     private final class ArrowTrailSelection extends MenuPagged<VRNParticle> {
 
         private ArrowTrailSelection() {
-            super(9 * 3, null, Arrays.stream(VRNParticle.values()).filter(VRNParticle::isUsable).collect(Collectors.toList()));
+            super(null, Arrays.stream(VRNParticle.values()).filter(VRNParticle::isUsable).collect(Collectors.toList()));
+            setSize(9 * 3);
             setTitle("&9Arrow Trails");
 
         }
 
         @Override
         protected ItemStack convertToItemStack(final VRNParticle particle) {
-            PlayerCache cache = PlayerCache.getCache(getViewer());
+            final PlayerCache cache = PlayerCache.getCache(getViewer());
 
             return ItemCreator.of(particle.getMaterial(),
                     "&6" + particle.getParticleName(),
@@ -122,7 +123,7 @@ public class TrailsGUI extends Menu {
         @Override
         protected void onPageClick(final Player p, final VRNParticle particle, final ClickType click) {
             animateTitle("&2Arrow trail successfully set");
-            PlayerCache cache = PlayerCache.getCache(p);
+            final PlayerCache cache = PlayerCache.getCache(p);
             cache.setArrowtrail(particle.getParticle());
             restartMenu();
         }

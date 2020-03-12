@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -14,18 +14,18 @@ public class Kick extends SimpleCommand {
         setUsage("<player> [reason]");
         setDescription("Kick a player from the server.");
         setPermission("vrn.kick");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     protected void onCommand() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 1; i < args.length; i++) {
             sb.append(args[i]).append(" ");
         }
-        String reason = sb.toString();
+        final String reason = sb.toString();
 
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         if (args.length == 1) {
             a.kickPlayer(color("&cYou have been kicked by " + getSender().getName() + "."));
             Bukkit.broadcastMessage(color("&a" + a.getName() + " &7was kicked by&c " + getSender().getName() + "&7."));

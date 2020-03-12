@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.tpa;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.TPAUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -10,7 +10,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpa extends SimpleCommand {
 
-    private TPAUtil util = TPAUtil.getUtil();
+    private final TPAUtil util = TPAUtil.getUtil();
 
     public Tpa() {
         super("tpa");
@@ -18,14 +18,14 @@ public class Tpa extends SimpleCommand {
         setUsage("<player>");
         setDescription("Request to teleport to another player.");
         setPermission("vrn.tpa");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        Player p = getPlayer();
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player p = getPlayer();
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         if (p.getName().equalsIgnoreCase(args[0])) {
             say(p, "&cYou cannot teleport to yourself.");
             return;

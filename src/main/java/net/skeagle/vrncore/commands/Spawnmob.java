@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
@@ -19,6 +20,7 @@ public class Spawnmob extends SimpleCommand {
         setUsage("<mob> <x> <y> <z> <amount>");
         setDescription("Spawns a mob where the player is looking or at a specific location");
         setPermission("vrn.spawnmob");
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

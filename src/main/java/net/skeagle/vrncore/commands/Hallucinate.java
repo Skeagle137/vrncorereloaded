@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands;
 
 import net.minecraft.server.v1_15_R1.*;
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ public class Hallucinate extends SimpleCommand {
     public Hallucinate() {
         super("hallucinate|hallu");
         setDescription("Make another player see hallucinations >:)");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Hallucinate extends SimpleCommand {
             return;
         }
         hasPerm("vrn.hallucinate.others");
-        final Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         sendHallucination(a);
         say(getSender(), "Sent &a" + a.getName() + "&7 a hallucination.");
     }

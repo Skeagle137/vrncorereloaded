@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -13,13 +13,13 @@ public class TPall extends SimpleCommand {
         super("tpall");
         setDescription("Teleport everyone online to your location.");
         setPermission("vrn.tpall");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        for (Player pl : Bukkit.getOnlinePlayers()) {
+        for (final Player pl : Bukkit.getOnlinePlayers()) {
             if (pl != getPlayer()) {
                 say(pl,"Teleporting...");
                 pl.teleport(getPlayer().getLocation());

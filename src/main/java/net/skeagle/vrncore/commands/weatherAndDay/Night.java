@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands.weatherAndDay;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -10,7 +10,7 @@ public class Night extends SimpleCommand {
         super("night");
         setDescription("Set the time to night.");
         setPermission("vrn.time");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

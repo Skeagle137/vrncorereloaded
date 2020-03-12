@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands.weatherAndDay;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -16,13 +16,13 @@ public class Ptime extends SimpleCommand {
         setUsage("<day|night|reset>");
         setDescription("Change your personal time.");
         setPermission("vrn.ptime");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     protected void onCommand() {
         checkConsole();
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (args[0].equalsIgnoreCase("day")) {
             p.setPlayerTime(1000, true);
             say(p, "Personal time set to day.");

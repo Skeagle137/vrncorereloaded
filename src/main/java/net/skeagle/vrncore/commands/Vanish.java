@@ -2,6 +2,7 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -15,7 +16,7 @@ public class Vanish extends SimpleCommand implements Listener {
         super("vanish");
         setUsage("<player>");
         setDescription("Hide yourself or another player from other players.");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class Vanish extends SimpleCommand implements Listener {
             return;
         }
         hasPerm("vrn.vanish.others");
-        final Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         final PlayerCache cache = PlayerCache.getCache(a);
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             if (!cache.isVanished()) {

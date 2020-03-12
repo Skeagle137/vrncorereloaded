@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -14,13 +14,13 @@ public class TPhere extends SimpleCommand {
         setUsage("<player>");
         setDescription("Teleport a player to your location.");
         setPermission("vrn.tphere");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         say(a, "Teleporting...");
         a.teleport(getPlayer().getLocation());
     }

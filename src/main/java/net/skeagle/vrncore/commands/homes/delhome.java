@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.homes;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Resources;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.WarpsHomesUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class delhome extends SimpleCommand {
-    private Resources r;
-    private WarpsHomesUtil util;
+    private final Resources r;
+    private final WarpsHomesUtil util;
 
     public delhome(final Resources r) {
         super("delhome");
@@ -20,7 +20,7 @@ public class delhome extends SimpleCommand {
         setUsage("<name>");
         setDescription("Remove a home.");
         setPermission("vrn.delhome");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

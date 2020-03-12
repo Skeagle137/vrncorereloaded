@@ -1,13 +1,13 @@
 package net.skeagle.vrncore.commands.homes;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Resources;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.WarpsHomesUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class sethome extends SimpleCommand {
-    private Resources r;
-    private WarpsHomesUtil util;
+    private final Resources r;
+    private final WarpsHomesUtil util;
 
     public sethome(final Resources r) {
         super("sethome");
@@ -17,7 +17,7 @@ public class sethome extends SimpleCommand {
         setUsage("<name>");
         setDescription("Create a Home.");
         setPermission("vrn.sethome");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

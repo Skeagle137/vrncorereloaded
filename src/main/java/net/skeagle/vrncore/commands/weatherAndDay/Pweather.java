@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands.weatherAndDay;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -18,13 +18,13 @@ public class Pweather extends SimpleCommand {
         setUsage("<sun|rain|reset>");
         setDescription("Change your personal weather.");
         setPermission("vrn.pweather");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     protected void onCommand() {
         checkConsole();
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (args[0].equalsIgnoreCase("sun")) {
             p.setPlayerWeather(CLEAR);
             say(p,"Personal weather set to sun.");

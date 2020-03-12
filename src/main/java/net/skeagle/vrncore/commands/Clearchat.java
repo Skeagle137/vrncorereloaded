@@ -1,11 +1,7 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import static net.skeagle.vrncore.utils.VRNUtil.color;
@@ -16,7 +12,7 @@ public class Clearchat extends SimpleCommand {
         super("clearchat");
         setDescription("Clears the chat.");
         setPermission("vrn.clearchat");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

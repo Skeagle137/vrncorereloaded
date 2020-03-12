@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class Craft extends SimpleCommand {
@@ -9,7 +9,7 @@ public class Craft extends SimpleCommand {
         super("craft");
         setDescription("Opens a crafting table interface.");
         setPermission("vrn.craft");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

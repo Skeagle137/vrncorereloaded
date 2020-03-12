@@ -11,6 +11,9 @@ import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class VRNUtil {
 
+    public static String noperm = color(Settings.PREFIX + "&cYou do not have permission to do this.");
+    public static String noton = color(Settings.PREFIX + "&cThat player is not online.");
+
     public static void say(final CommandSender cs, final String... message) {
         if (cs == null) return;
         for (final String msg : message) {

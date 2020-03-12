@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.tpa;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.TPAUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -9,25 +9,25 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpdeny extends SimpleCommand {
 
-    private TPAUtil util = TPAUtil.getUtil();
+    private final TPAUtil util = TPAUtil.getUtil();
 
     public Tpdeny() {
         super("tpdeny");
         setDescription("Deny a pending teleport request.");
         setPermission("vrn.tpdeny");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (!util.hasRequest(p)) {
             say(p, "&cYou do not have any pending teleport requests.");
             return;
         }
-        Player a = util.getStoredPlayer(p);
-        checkNotNull(a, VRNcore.noton);
+        final Player a = util.getStoredPlayer(p);
+        checkNotNull(a, VRNUtil.noton);
         say(p, "&cDenied the current teleport request from " + a.getName() + ".");
         say(a, "&cYour teleport request was denied.");
         util.DelRequest(p.getUniqueId(), a.getUniqueId(), false);

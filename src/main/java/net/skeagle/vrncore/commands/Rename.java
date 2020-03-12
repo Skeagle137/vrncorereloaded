@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -15,7 +15,7 @@ public class Rename extends SimpleCommand {
         setUsage("<new name>");
         setDescription("Renames an item in hand.");
         setPermission("vrn.rename");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
 
     }
 

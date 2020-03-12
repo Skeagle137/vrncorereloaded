@@ -1,10 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -19,12 +15,12 @@ public class Invsee extends SimpleCommand {
         setUsage("<player>");
         setDescription("View another player's inventory.");
         setPermission("vrn.invsee");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     protected void onCommand() {
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         getPlayer().openInventory(a.getInventory());
         say(getPlayer(),"Now showing &a" + a.getName() + "&7's inventory.");
     }

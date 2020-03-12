@@ -1,17 +1,11 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -23,7 +17,7 @@ public class Gamemode extends SimpleCommand {
         setMinArguments(1);
         setUsage("<gamemode> [player]");
         setDescription("Change the gamemode for yourself or another player.");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
@@ -34,7 +28,7 @@ public class Gamemode extends SimpleCommand {
 
         if (args.length == 1) {
             checkConsole();
-            Player p = getPlayer();
+            final Player p = getPlayer();
             hasPerm("vrn.gamemode.self");
             if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("s") || args[0].equalsIgnoreCase("survival")) {
                 p.setGameMode(GameMode.SURVIVAL);
@@ -53,7 +47,7 @@ public class Gamemode extends SimpleCommand {
             }
             return;
         }
-        Player a = findPlayer(args[1], VRNcore.noton);
+        final Player a = findPlayer(args[1], VRNUtil.noton);
         hasPerm("vrn.gamemode.others");
         if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("s")) {
             a.setGameMode(GameMode.SURVIVAL);

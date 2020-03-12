@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.nicknames;
 
 import net.skeagle.vrncore.PlayerCache;
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -14,17 +14,17 @@ public class Nick extends SimpleCommand {
         setMinArguments(1);
         setUsage("<nickname> or <playername> <nickname>");
         setDescription("Sets nickname for yourself or another player.");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         if (args.length == 1) {
             checkConsole();
-            Player p = getPlayer();
+            final Player p = getPlayer();
             hasPerm("vrn.nick.self");
-            String nick = color(args[0] + "&r");
-            PlayerCache cache = PlayerCache.getCache(p);
+            final String nick = color(args[0] + "&r");
+            final PlayerCache cache = PlayerCache.getCache(p);
             cache.setNickname(nick);
             p.setDisplayName(nick);
             p.setPlayerListName(nick);
@@ -32,9 +32,9 @@ public class Nick extends SimpleCommand {
             return;
         }
         hasPerm("nicknames.nick.other");
-        Player a = findPlayer(args[0], VRNcore.noton);
-        String nick = color(args[1] + "&r");
-        PlayerCache cache = PlayerCache.getCache(a);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
+        final String nick = color(args[1] + "&r");
+        final PlayerCache cache = PlayerCache.getCache(a);
         cache.setNickname(nick);
         a.setDisplayName(nick);
         a.setPlayerListName(nick);

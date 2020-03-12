@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.warps;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Resources;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.WarpsHomesUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class delwarp extends SimpleCommand {
-    private Resources r;
-    private WarpsHomesUtil util;
+    private final Resources r;
+    private final WarpsHomesUtil util;
 
     public delwarp(final Resources r) {
         super("delwarp");
@@ -20,7 +20,7 @@ public class delwarp extends SimpleCommand {
         setUsage("<name>");
         setDescription("Remove a warp.");
         setPermission("vrn.delwarp");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

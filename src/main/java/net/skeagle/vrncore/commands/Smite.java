@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -15,14 +15,14 @@ public class Smite extends SimpleCommand {
         setUsage("<player|*>");
         setDescription("strike a player by summoning lightning at their location.");
         setPermission("vrn.smite");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         if (args[0].equalsIgnoreCase("*")) {
-            for (Player pl : Bukkit.getOnlinePlayers()) {
+            for (final Player pl : Bukkit.getOnlinePlayers()) {
                 pl.getWorld().strikeLightning(pl.getLocation());
             }
             say(getSender(), "smited all players.");

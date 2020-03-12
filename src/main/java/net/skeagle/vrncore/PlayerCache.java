@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class PlayerCache extends YamlSectionConfig {
 
-    private static Map<UUID, PlayerCache> cacheMap = new HashMap<>();
+    private static final Map<UUID, PlayerCache> cacheMap = new HashMap<>();
 
     private String nickname;
     private CompParticle arrowtrail;
@@ -22,6 +22,7 @@ public class PlayerCache extends YamlSectionConfig {
     private boolean muted;
     private boolean godmode;
     private YamlConfig.TimeHelper timeplayed;
+    private LocationList homes;
 
     protected PlayerCache(final String uuid) {
         super(uuid);
@@ -51,6 +52,9 @@ public class PlayerCache extends YamlSectionConfig {
 
         if (isSet("Timeplayed"))
             timeplayed = getTime("Timeplayed");
+
+        if (isSet("Homes"))
+            homes = getLocations("Homes");
     }
 
     public void setNickname(final String nickname) {
@@ -93,6 +97,12 @@ public class PlayerCache extends YamlSectionConfig {
         this.timeplayed = timeplayed;
 
         save("Timeplayed", timeplayed);
+    }
+
+    public void setHomes(final LocationList homes) {
+        this.homes = homes;
+
+        save("Homes", homes);
     }
 
     public static PlayerCache getCache(final Player p) {

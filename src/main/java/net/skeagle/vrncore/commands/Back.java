@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.BackUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -12,14 +12,15 @@ public class Back extends SimpleCommand {
     public Back() {
         super("back");
         setDescription("Teleport back to a player's previous location.");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     BackUtil back = BackUtil.getBack();
 
+    @Override
     public void onCommand() {
         checkConsole();
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (args.length < 1) {
             hasPerm("vrn.back.self");
             if (back.hasBackLoc(p.getUniqueId())) {
@@ -30,7 +31,7 @@ public class Back extends SimpleCommand {
             say(p, "&cYou do not have anywhere to teleport back to.");
             return;
         }
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         hasPerm("vrn.back.others");
         if (back.hasBackLoc(a.getUniqueId())) {
             back.teleToBackLoc(p.getUniqueId(), a);

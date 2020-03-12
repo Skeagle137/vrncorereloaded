@@ -1,8 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.VRNcore;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -13,14 +11,14 @@ public class Heal extends SimpleCommand {
     public Heal() {
         super("heal");
         setDescription("Heal another player or yourself.");
-        setPermissionMessage(VRNcore.noperm);
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     protected void onCommand() {
         if (args.length < 1) {
             checkConsole();
-            Player p = getPlayer();
+            final Player p = getPlayer();
             hasPerm("vrn.heal.self");
             p.setHealth(20);
             p.setFoodLevel(20);
@@ -29,7 +27,7 @@ public class Heal extends SimpleCommand {
             return;
         }
         hasPerm("vrn.heal.others");
-        Player a = findPlayer(args[0], VRNcore.noton);
+        final Player a = findPlayer(args[0], VRNUtil.noton);
         a.setHealth(20);
         a.setFoodLevel(20);
         a.setFireTicks(0);
