@@ -5,6 +5,8 @@ import net.skeagle.vrncore.utils.homes.HomesManager;
 import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class homes extends SimpleCommand {
 
     public homes() {
@@ -20,10 +22,11 @@ public class homes extends SimpleCommand {
         checkConsole();
         final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
         if (man.homeNames().size() != 0) {
-            returnTell("&7Currently showing a list of &a" + man.homeNames().size() +
+            say(getPlayer(), "&7Currently showing a list of &a" + man.homeNames().size() +
                     "&7 home(s): &a" + String.join("&7,&a ", man.homeNames()) + "&7.");
+            return;
         }
-        returnTell("&cYou do not have any homes available.");
+        say(getPlayer(), "&cYou do not have any homes available.");
     }
 }
 

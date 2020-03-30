@@ -7,6 +7,8 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class home extends SimpleCommand {
 
     public home() {
@@ -22,8 +24,11 @@ public class home extends SimpleCommand {
     public void onCommand() {
         checkConsole();
         final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (!man.teleHome(getPlayer(), args[0])) returnTell("&cThat home does not exist.");
-        returnTell("&7Teleporting...");
+        if (!man.teleHome(getPlayer(), args[0])) {
+            say(getPlayer(), "&cThat home does not exist.");
+            return;
+        }
+        say(getPlayer(), "&7Teleporting...");
     }
 
     /*

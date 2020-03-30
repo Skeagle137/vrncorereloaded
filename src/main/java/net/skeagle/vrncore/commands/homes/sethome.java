@@ -5,6 +5,8 @@ import net.skeagle.vrncore.utils.homes.HomesManager;
 import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 
 public class sethome extends SimpleCommand {
 
@@ -21,8 +23,10 @@ public class sethome extends SimpleCommand {
     public void onCommand() {
         checkConsole();
         final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (!man.setHome(args[0], getPlayer().getLocation()))
-            returnTell("&cA home with that name already exists.");
-        returnTell("&7Home set, teleport to it with &a/home " + args[0] + "&7.");
+        if (!man.setHome(args[0], getPlayer().getLocation())) {
+            say(getPlayer(), "&cA home with that name already exists.");
+            return;
+        }
+        say(getPlayer(), "&7Home set, teleport to it with &a/home " + args[0] + "&7.");
     }
 }

@@ -7,6 +7,8 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
 
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
 public class delhome extends SimpleCommand {
 
     public delhome() {
@@ -22,9 +24,11 @@ public class delhome extends SimpleCommand {
     public void onCommand() {
         checkConsole();
         final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (!man.delHome(args[0]))
-            returnTell("&cThat home does not exist.");
-        returnTell("&7Home &a" + args[0] + "&7 successfully deleted.");
+        if (!man.delHome(args[0])) {
+            say(getPlayer(), "&cThat home does not exist.");
+            return;
+        }
+        say(getPlayer(), "&7Home &a" + args[0] + "&7 successfully deleted.");
     }
 
 
