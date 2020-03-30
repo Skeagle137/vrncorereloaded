@@ -1,0 +1,6 @@
+name: VRNcore
+version: 4.2.2
+main: net.skeagle.vrncore.VRNcore
+author: Skeagle
+description: The core plugin for VRN Network.
+api-version: 1.13
