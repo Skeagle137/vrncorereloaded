@@ -12,15 +12,15 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class WarpsHomesUtil {
 
-    private Resources r;
+    private final Resources r;
 
-    public WarpsHomesUtil(Resources r) {
+    public WarpsHomesUtil(final Resources r) {
         this.r = r;
     }
 
-    private String searchForEqual(String value, String path) {
+    private String searchForEqual(final String value, final String path) {
         if (r.getWarps().get(path) != null) {
-            for (String key : r.getWarps().getConfigurationSection(path).getKeys(false)) {
+            for (final String key : r.getWarps().getConfigurationSection(path).getKeys(false)) {
                 if (value.equalsIgnoreCase(key)) {
                     return key;
                 }
@@ -29,18 +29,18 @@ public class WarpsHomesUtil {
         return null;
     }
 
-    public List<String> returnArray(String path) {
-        List<String> keys = new ArrayList<>();
-        for (String key : r.getWarps().getConfigurationSection(path).getKeys(false)) {
+    public List<String> returnArray(final String path) {
+        final List<String> keys = new ArrayList<>();
+        for (final String key : r.getWarps().getConfigurationSection(path).getKeys(false)) {
             r.getWarps().getString(key);
             keys.add(key);
         }
         return keys;
     }
 
-    public void setValues(Player p, String path, String value, boolean homes) {
-        String locPath = path + value;
-        String msg = homes ? "home" : "warp";
+    public void setValues(final Player p, final String path, final String value, final boolean homes) {
+        final String locPath = path + value;
+        final String msg = homes ? "home" : "warp";
         if (r.getWarps().get(locPath) == null) {
             if (searchForEqual(value, path) != null) {
                 say(p, "&cThat " + msg + " already exists.");
@@ -59,9 +59,9 @@ public class WarpsHomesUtil {
         say(p, "&cThat " + msg + " already exists.");
     }
 
-    public void delValues(Player p, String path, String value, boolean homes) {
+    public void delValues(final Player p, final String path, final String value, final boolean homes) {
         String loc = value;
-        String msg = homes ? "home" : "warp";
+        final String msg = homes ? "home" : "warp";
         if (r.getWarps().get(path + value) == null) {
             if (searchForEqual(value, path) == null) {
                 say(p, "&cThat " + msg + " does not exist.");
@@ -69,7 +69,7 @@ public class WarpsHomesUtil {
             }
             loc = searchForEqual(value, path);
         }
-        String locPath = path + loc;
+        final String locPath = path + loc;
         r.getWarps().set(locPath + ".world", null);
         r.getWarps().set(locPath + ".x", null);
         r.getWarps().set(locPath + ".y", null);
@@ -81,9 +81,9 @@ public class WarpsHomesUtil {
         say(p, "&7The " + msg + "&a " + loc + "&7 has been deleted.");
     }
 
-    public void teleportToLoc(Player p, String path, String value, boolean homes) {
+    public void teleportToLoc(final Player p, final String path, final String value, final boolean homes) {
         String locPath = path + value;
-        String msg = homes ? "home" : "warp";
+        final String msg = homes ? "home" : "warp";
         if (r.getWarps().get(locPath) == null) {
             if (searchForEqual(value, path) == null) {
                 say(p, "&cThat " + msg + " does not exist.");
@@ -92,7 +92,7 @@ public class WarpsHomesUtil {
             locPath = path + searchForEqual(value, path);
         }
         say(p, "&7Teleporting...");
-        String world = (String) r.getWarps().get(locPath + ".world");
+        final String world = (String) r.getWarps().get(locPath + ".world");
         if (world == null) {
             say(p, "&cThe world that this " + msg + " is located in does not exist.");
             return;

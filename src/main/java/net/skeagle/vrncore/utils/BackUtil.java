@@ -24,16 +24,16 @@ public class BackUtil {
         return back;
     }
 
-    public void setBackLoc(UUID id, Location loc) {
+    public void setBackLoc(final UUID id, final Location loc) {
         this.backLoc.remove(id);
         this.backLoc.put(id, loc);
     }
 
-    public boolean hasBackLoc(UUID id) {
+    public boolean hasBackLoc(final UUID id) {
         return this.backLoc.containsKey(id);
     }
 
-    public void teleToBackLoc(UUID id, Player targetLoc) {
+    public void teleToBackLoc(final UUID id, final Player targetLoc) {
         Bukkit.getPlayer(id).teleport(backLoc.get(targetLoc.getUniqueId()));
     }
 }

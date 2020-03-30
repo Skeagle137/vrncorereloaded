@@ -44,24 +44,6 @@ public class VRNUtil {
         return i;
     }
 
-    public static String timeToMessage(final int time) {
-        final long days = time / 86400L;
-        final long hours = (time % 86400L) / 3600L;
-        final long minutes = (time % 86400L % 3600L) / 60L;
-        final long seconds = time % 86400L % 3600L % 60L;
-        return ((days != 0) ? days + " " + timeGrammarCheck("days", time) + ", " : "") +
-                ((hours != 0) ? hours + " " + timeGrammarCheck("hours", time) + ", " : "") +
-                ((minutes != 0) ? minutes + " " + timeGrammarCheck("minutes", time) + ", " : "") +
-                ((seconds != 0) ? seconds + " " + timeGrammarCheck("seconds", time) : "");
-    }
-
-    private static String timeGrammarCheck(final String s, final int i) {
-        if (i != 1) {
-            return s;
-        }
-        return s.substring(s.length() - 1);
-    }
-
     public static void sayActionBar(final Player p, final String msg) {
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                 TextComponent.fromLegacyText(color(msg)));

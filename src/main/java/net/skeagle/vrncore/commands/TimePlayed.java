@@ -9,8 +9,8 @@ import org.mineacademy.fo.settings.YamlConfig;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
-import static net.skeagle.vrncore.utils.VRNUtil.timeToMessage;
 
 public class TimePlayed extends SimpleCommand {
 
@@ -29,7 +29,7 @@ public class TimePlayed extends SimpleCommand {
         }
         switch (args[0].toLowerCase()) {
             case "set":
-                final int time = findNumber(1, "&cYou must include a time.");
+                final int time = findNumber(2, "&cYou must include a time.");
                 if (args.length > 1) {
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[1], VRNUtil.noton);
@@ -49,13 +49,13 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.getothers");
                     final Player a = findPlayer(args[1], VRNUtil.noton);
                     final PlayerCache cache2 = PlayerCache.getCache(a);
-                    say(getSender(), "&a" + a.getName() + "&7's time played is &a" + cache2.getTimeplayed() + "&7.");
+                    say(getSender(), "&a" + a.getName() + "&7's time played is &a" + timeToMessage(cache2.getTimeplayed().getTimeSeconds()) + "&7.");
                     return;
                 }
                 checkConsole();
                 hasPerm("vrn.timeplayed.getself");
                 final PlayerCache cache2 = PlayerCache.getCache(getPlayer());
-                say(getPlayer(), "Your time played is &a" + cache2.getTimeplayed() + "&7.");
+                say(getPlayer(), "Your time played is &a" + timeToMessage(cache2.getTimeplayed().getTimeSeconds()) + "&7.");
                 return;
             default:
                 say(getSender(), "&cThat is not a valid argument. Please use set or get.");

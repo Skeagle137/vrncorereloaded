@@ -15,10 +15,6 @@ public class Resources
         warps.load();
     }
 
-    public void reload() {
-        this.load();
-    }
-
     public void save() {
         warps.save();
     }

@@ -26,6 +26,7 @@ public class PlayerCache extends YamlSectionConfig {
 
     protected PlayerCache(final String uuid) {
         super(uuid);
+        setHeader("This is the main settings file.\n\n");
         loadConfiguration(null, "data.db");
     }
 

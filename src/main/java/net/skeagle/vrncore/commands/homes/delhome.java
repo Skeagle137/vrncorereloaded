@@ -1,43 +1,42 @@
 package net.skeagle.vrncore.commands.homes;
 
-import net.skeagle.vrncore.utils.Resources;
-import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.WarpsHomesUtil;
+import net.skeagle.vrncore.utils.homes.HomesManager;
+import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class delhome extends SimpleCommand {
-    private final Resources r;
-    private final WarpsHomesUtil util;
 
-    public delhome(final Resources r) {
+    public delhome() {
         super("delhome");
-        this.r = r;
-        util = new WarpsHomesUtil(r);
         setMinArguments(1);
         setUsage("<name>");
         setDescription("Remove a home.");
-        setPermission("vrn.delhome");
-        setPermissionMessage(VRNUtil.noperm);
+        setPermission("norsehomes.delhome");
+        setPermissionMessage("&cYou do not have permission.");
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        util.delValues(getPlayer(), "homes." + getPlayer().getUniqueId() + ".", args[0], true);
+        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
+        if (!man.delHome(args[0]))
+            returnTell("&cThat home does not exist.");
+        returnTell("&7Home &a" + args[0] + "&7 successfully deleted.");
     }
 
+
+    /*
+    tab complete, because who is going to remember
+    each of those 100 homes they set?
+    */
     @Override
     protected List<String> tabComplete() {
-        if (args.length == 1) {
-            if (this.r.getWarps().get("homes." + getPlayer().getUniqueId()) != null) {
-                return completeLastWord(util.returnArray("homes." + getPlayer().getUniqueId()));
-            } else {
-                return completeLastWord("");
-            }
+        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
+        if (man.homeNames().size() != 0) {
+            if (args.length == 1) return completeLastWord(man.homeNames());
         }
-        return new ArrayList<>();
+        return completeLastWord("");
     }
 }
