@@ -23,6 +23,6 @@ public class setwarp extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        util.setValues(getPlayer(), "warps.", args[0], false);
+        util.setValues(getPlayer(), args[0]);
     }
 }

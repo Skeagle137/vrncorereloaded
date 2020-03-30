@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.commands.homes;
 
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.homes.HomesManager;
 import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -13,8 +14,8 @@ public class delhome extends SimpleCommand {
         setMinArguments(1);
         setUsage("<name>");
         setDescription("Remove a home.");
-        setPermission("norsehomes.delhome");
-        setPermissionMessage("&cYou do not have permission.");
+        setPermission("vrn.delhome");
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

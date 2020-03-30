@@ -26,14 +26,14 @@ public class delwarp extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        util.delValues(getPlayer(), "warps.", args[0], false);
+        util.delValues(getPlayer(), args[0]);
     }
 
     @Override
     protected List<String> tabComplete() {
         if (args.length == 1) {
-            if (this.r.getWarps().get("warps.") != null) {
-                return completeLastWord(util.returnArray("warps."));
+            if (r.getWarps().get("warps.") != null) {
+                return completeLastWord(util.returnArray());
             } else {
                 return completeLastWord("");
             }

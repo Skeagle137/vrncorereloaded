@@ -22,6 +22,6 @@ public class RegisteredHome {
         if (loc.getBlock().getType() != CompMaterial.AIR.getMaterial()) {
             return CompMaterial.fromBlock(loc.getBlock());
         }
-        return CompMaterial.BARRIER; //icon representation of home being in the air
+        return CompMaterial.BARRIER;
     }
 }

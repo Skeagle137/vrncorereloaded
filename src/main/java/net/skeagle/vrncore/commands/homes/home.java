@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.commands.homes;
 
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.homes.HomesManager;
 import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -13,8 +14,8 @@ public class home extends SimpleCommand {
         setMinArguments(1);
         setUsage("<name>");
         setDescription("Teleport to the specified home.");
-        setPermission("norsehomes.home");
-        setPermissionMessage("&cYou do not have permission.");
+        setPermission("vrn.home");
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override

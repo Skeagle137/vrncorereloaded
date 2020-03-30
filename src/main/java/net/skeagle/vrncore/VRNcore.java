@@ -22,6 +22,7 @@ import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.tasks.UpdatePlayerTask;
 import net.skeagle.vrncore.utils.Resources;
+import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
@@ -47,6 +48,7 @@ public class VRNcore extends SimplePlugin {
     public void onPluginStart() {
         //config stuff
         resources.load();
+        HomesResource.getInstance().loadAllHomes();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
@@ -85,10 +87,10 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new RemoveNick()); //vrn.nick.self|others
         registerCommand(new Push()); //vrn.push
         registerCommand(new Back()); //vrn.back
-        registerCommand(new home(resources)); //vrn.home
-        registerCommand(new homes(resources)); //vrn.homes
-        registerCommand(new delhome(resources)); //vrn.home
-        registerCommand(new sethome(resources)); //vrn.sethome
+        registerCommand(new home()); //vrn.home
+        registerCommand(new homes()); //vrn.homes
+        registerCommand(new delhome()); //vrn.home
+        registerCommand(new sethome()); //vrn.sethome
         registerCommand(new warp(resources)); //vrn.warp
         registerCommand(new warps(resources)); //vrn.warps
         registerCommand(new delwarp(resources)); //vrn.delwarp

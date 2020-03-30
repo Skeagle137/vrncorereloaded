@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.commands.homes;
 
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.homes.HomesManager;
 import net.skeagle.vrncore.utils.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -9,8 +10,8 @@ public class homes extends SimpleCommand {
     public homes() {
         super("homes");
         setDescription("List all available homes.");
-        setPermission("norsehomes.homes");
-        setPermissionMessage("&cYou do not have permission.");
+        setPermission("vrn.homes");
+        setPermissionMessage(VRNUtil.noperm);
     }
 
     //comma separated list of homes

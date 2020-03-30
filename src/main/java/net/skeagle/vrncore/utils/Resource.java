@@ -42,9 +42,5 @@ public class Resource extends YamlConfiguration {
     public String getName() {
         return this.name;
     }
-
-    public File getFile() {
-        return this.file;
-    }
 }
 

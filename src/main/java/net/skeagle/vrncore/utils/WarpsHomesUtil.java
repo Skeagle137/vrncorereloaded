@@ -18,9 +18,9 @@ public class WarpsHomesUtil {
         this.r = r;
     }
 
-    private String searchForEqual(final String value, final String path) {
-        if (r.getWarps().get(path) != null) {
-            for (final String key : r.getWarps().getConfigurationSection(path).getKeys(false)) {
+    private String searchForEqual(final String value) {
+        if (r.getWarps().get("warps.") != null) {
+            for (final String key : r.getWarps().getConfigurationSection("warps.").getKeys(false)) {
                 if (value.equalsIgnoreCase(key)) {
                     return key;
                 }
@@ -29,21 +29,20 @@ public class WarpsHomesUtil {
         return null;
     }
 
-    public List<String> returnArray(final String path) {
+    public List<String> returnArray() {
         final List<String> keys = new ArrayList<>();
-        for (final String key : r.getWarps().getConfigurationSection(path).getKeys(false)) {
+        for (final String key : r.getWarps().getConfigurationSection("warps.").getKeys(false)) {
             r.getWarps().getString(key);
             keys.add(key);
         }
         return keys;
     }
 
-    public void setValues(final Player p, final String path, final String value, final boolean homes) {
-        final String locPath = path + value;
-        final String msg = homes ? "home" : "warp";
+    public void setValues(final Player p, final String value) {
+        final String locPath = "warps." + value;
         if (r.getWarps().get(locPath) == null) {
-            if (searchForEqual(value, path) != null) {
-                say(p, "&cThat " + msg + " already exists.");
+            if (searchForEqual(value) != null) {
+                say(p, "&cThat warp already exists.");
                 return;
             }
             r.getWarps().set(locPath + ".world", p.getWorld().getName());
@@ -53,23 +52,22 @@ public class WarpsHomesUtil {
             r.getWarps().set(locPath + ".yaw", p.getLocation().getYaw());
             r.getWarps().set(locPath + ".pitch", p.getLocation().getPitch());
             r.getWarps().save();
-            say(p, "&aThe " + msg + " was successfully set. Teleport to it with /" + msg + ".");
+            say(p, "&aThe warp was successfully set. Teleport to it with /warp.");
             return;
         }
-        say(p, "&cThat " + msg + " already exists.");
+        say(p, "&cThat warp already exists.");
     }
 
-    public void delValues(final Player p, final String path, final String value, final boolean homes) {
+    public void delValues(final Player p, final String value) {
         String loc = value;
-        final String msg = homes ? "home" : "warp";
-        if (r.getWarps().get(path + value) == null) {
-            if (searchForEqual(value, path) == null) {
-                say(p, "&cThat " + msg + " does not exist.");
+        if (r.getWarps().get("warps." + value) == null) {
+            if (searchForEqual(value) == null) {
+                say(p, "&cThat warp does not exist.");
                 return;
             }
-            loc = searchForEqual(value, path);
+            loc = searchForEqual(value);
         }
-        final String locPath = path + loc;
+        final String locPath = "warps." + loc;
         r.getWarps().set(locPath + ".world", null);
         r.getWarps().set(locPath + ".x", null);
         r.getWarps().set(locPath + ".y", null);
@@ -78,23 +76,22 @@ public class WarpsHomesUtil {
         r.getWarps().set(locPath + ".pitch", null);
         r.getWarps().set(locPath, null);
         r.getWarps().save();
-        say(p, "&7The " + msg + "&a " + loc + "&7 has been deleted.");
+        say(p, "&7The warp &a" + loc + "&7 has been deleted.");
     }
 
-    public void teleportToLoc(final Player p, final String path, final String value, final boolean homes) {
-        String locPath = path + value;
-        final String msg = homes ? "home" : "warp";
+    public void teleportToLoc(final Player p, final String value) {
+        String locPath = "warps." + value;
         if (r.getWarps().get(locPath) == null) {
-            if (searchForEqual(value, path) == null) {
-                say(p, "&cThat " + msg + " does not exist.");
+            if (searchForEqual(value) == null) {
+                say(p, "&cThat warp does not exist.");
                 return;
             }
-            locPath = path + searchForEqual(value, path);
+            locPath = "warps." + searchForEqual(value);
         }
         say(p, "&7Teleporting...");
         final String world = (String) r.getWarps().get(locPath + ".world");
         if (world == null) {
-            say(p, "&cThe world that this " + msg + " is located in does not exist.");
+            say(p, "&cThe world that this warp is located in does not exist.");
             return;
         }
         p.teleport(new Location(Bukkit.getWorld(world),

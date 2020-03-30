@@ -3,10 +3,7 @@ package net.skeagle.vrncore.commands.warps;
 import net.skeagle.vrncore.utils.Resources;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.WarpsHomesUtil;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.mineacademy.fo.command.SimpleCommand;
-
-import java.util.List;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -26,10 +23,10 @@ public class warps extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        final FileConfiguration config = this.r.getWarps();
-        if (config.get("warps.") != null) {
-            final List<String> warps = util.returnArray("warps.");
-            say(getPlayer(), "&7Currently showing a list of &a" + warps.size() + "&7 warp(s): &a" + String.join("&7,&a ", warps) + "&7.");
+        if (r.getWarps().get("warps.") != null) {
+            say(getPlayer(), "&7Currently showing a list of &a"
+                    + util.returnArray().size() + "&7 warp(s): &a"
+                    + String.join("&7,&a ", util.returnArray()) + "&7.");
         } else {
             say(getPlayer(),"&cThere are currently no warps available.");
         }

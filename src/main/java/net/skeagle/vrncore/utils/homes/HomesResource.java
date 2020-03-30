@@ -26,16 +26,6 @@ public class HomesResource {
         return new HomesManager(uuid);
     }
 
-    /*
-    public boolean delAllHomes(Player p) {
-        for (HomesManager man : manData)
-            if (man.getUUID().equals(p.getUniqueId()))
-                if (man.delAllHomes())
-                    return true;
-        return false;
-    }
-     */
-
     public void loadAllHomes() {
         manData.clear();
 
