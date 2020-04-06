@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.utils.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,14 +11,14 @@ import java.util.*;
 
 public abstract class CustomInventory {
 
-    private UUID uuid;
+    private final UUID uuid;
 
-    private Inventory inv;
-    private Map<Integer, InvAction> actions;
-    private static Map<UUID, CustomInventory> inventoriesByUUID = new HashMap<>();
+    private final Inventory inv;
+    private final Map<Integer, InvAction> actions;
+    private static final Map<UUID, CustomInventory> inventoriesByUUID = new HashMap<>();
     public static Map<UUID, UUID> openInventories = new HashMap<>();
 
-    public CustomInventory(int size, String title) {
+    public CustomInventory(final int size, final String title) {
 
         this.uuid = UUID.randomUUID();
 
@@ -32,12 +32,12 @@ public abstract class CustomInventory {
         void click(Player player);
     }
 
-    protected void setItem(int slot, ItemStack stack, InvAction action, String name, String[] lore) {
+    protected void setItem(final int slot, final ItemStack stack, final InvAction action, final String name, final String[] lore) {
 
-        ItemMeta meta = stack.getItemMeta();
-        List<String> loreList = new ArrayList<>();
+        final ItemMeta meta = stack.getItemMeta();
+        final List<String> loreList = new ArrayList<>();
 
-        for (String s : lore) {
+        for (final String s : lore) {
             loreList.add(ChatColor.translateAlternateColorCodes('&', s));
         }
 
@@ -52,7 +52,7 @@ public abstract class CustomInventory {
         }
     }
 
-    public void open(Player p) {
+    public void open(final Player p) {
         p.openInventory(inv);
         openInventories.put(p.getUniqueId(), getUUID());
     }

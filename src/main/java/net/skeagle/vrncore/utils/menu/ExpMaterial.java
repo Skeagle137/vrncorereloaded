@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.utils.menu;
 
 import org.bukkit.Material;
 
@@ -17,10 +17,10 @@ public enum ExpMaterial {
     REDSTONE_DUST(0.015625, Material.REDSTONE); //  1/128
 
 
-    private double worth;
-    private Material icon;
+    private final double worth;
+    private final Material icon;
 
-    ExpMaterial(double worth, Material icon) {
+    ExpMaterial(final double worth, final Material icon) {
         this.worth = worth;
         this.icon = icon;
     }

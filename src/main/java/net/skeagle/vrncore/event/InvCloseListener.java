@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.event;
 
-import net.skeagle.vrncore.utils.CustomInventory;
+import net.skeagle.vrncore.utils.menu.CustomInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,19 +12,19 @@ import java.util.UUID;
 public class InvCloseListener implements Listener {
 
     @EventHandler
-    public void onClose(InventoryCloseEvent e){
+    public void onClose(final InventoryCloseEvent e){
 
-        Player p = (Player) e.getPlayer();
-        UUID playerUUID = p.getUniqueId();
+        final Player p = (Player) e.getPlayer();
+        final UUID playerUUID = p.getUniqueId();
 
         CustomInventory.openInventories.remove(playerUUID);
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent e){
+    public void onQuit(final PlayerQuitEvent e){
 
-        Player player = e.getPlayer();
-        UUID playerUUID = player.getUniqueId();
+        final Player player = e.getPlayer();
+        final UUID playerUUID = player.getUniqueId();
 
         CustomInventory.openInventories.remove(playerUUID);
     }

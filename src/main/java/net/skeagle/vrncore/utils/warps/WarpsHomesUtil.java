@@ -1,5 +1,6 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.utils.warps;
 
+import net.skeagle.vrncore.utils.Resources;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

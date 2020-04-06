@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.utils.GGiveMaterial;
+import net.skeagle.vrncore.utils.menu.GGiveMaterial;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;

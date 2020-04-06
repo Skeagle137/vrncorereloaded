@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.utils.CustomInventory;
+import net.skeagle.vrncore.utils.menu.CustomInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,10 +9,10 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 class ExpTradeAmount extends CustomInventory {
 
-    ExpTradeAmount(Player p, String name, Material icon, Double worth) {
+    ExpTradeAmount(final Player p, final String name, final Material icon, final Double worth) {
         super(9, "Exp Trade - Choose Amount");
-        ItemStack i = new ItemStack(Material.AIR);
-        int amount = i.getAmount();
+        final ItemStack i = new ItemStack(Material.AIR);
+        final int amount = i.getAmount();
         i.setType(icon);
         i.setAmount(amount);
 
@@ -22,14 +22,14 @@ class ExpTradeAmount extends CustomInventory {
 
         setItem(2, new ItemStack(Material.MAP), player ->
         {
-            int newAmount = i.getAmount() - 10;
+            final int newAmount = i.getAmount() - 10;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3-10" , new String[]{"&7Click to decrease item amount by &b10"});
 
         setItem(3, new ItemStack(Material.PAPER), player ->
         {
-            int newAmount = i.getAmount() - 1;
+            final int newAmount = i.getAmount() - 1;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3-1", new String[]{"&7Click to decrease item amount by &b1"});
@@ -42,14 +42,14 @@ class ExpTradeAmount extends CustomInventory {
 
         setItem(5, new ItemStack(Material.PAPER), player ->
         {
-            int newAmount = 1 + i.getAmount();
+            final int newAmount = 1 + i.getAmount();
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3+1", new String[]{"&7Click to increase item amount by &b1"});
 
         setItem(6, new ItemStack(Material.MAP), player ->
         {
-            int newAmount = 10 + i.getAmount();
+            final int newAmount = 10 + i.getAmount();
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3+10", new String[]{"&7Click to increase item amount by &b10"});
@@ -58,9 +58,9 @@ class ExpTradeAmount extends CustomInventory {
                 new ExpTradeGUI(p).open(player), "&7&lBack", new String[]{});
     }
 
-    private ExpTradeAmount(Player p, String name, Material icon, Double worth, int amountnew) {
+    private ExpTradeAmount(final Player p, final String name, final Material icon, final Double worth, int amountnew) {
         super(9, "Exp Trade - Choose Amount");
-        ItemStack i = new ItemStack(Material.AIR);
+        final ItemStack i = new ItemStack(Material.AIR);
         i.setType(icon);
         if (amountnew < 1) {
             amountnew = 1;
@@ -69,13 +69,13 @@ class ExpTradeAmount extends CustomInventory {
             amountnew = 64;
         }
         i.setAmount(amountnew);
-        int finalAmountnew = amountnew;
+        final int finalAmountnew = amountnew;
 
 
         setItem(0, new ItemStack(Material.EMERALD_BLOCK), player ->
         {
 
-            for(ItemStack item : p.getInventory().getContents()) {
+            for(final ItemStack item : p.getInventory().getContents()) {
                 if (item != null && item.getType() == i.getType()) {
                     if (item.getAmount() >= finalAmountnew) {
                         new ExpTradeConfirm(p, name, icon, worth, finalAmountnew).open(player);
@@ -90,14 +90,14 @@ class ExpTradeAmount extends CustomInventory {
 
         setItem(2, new ItemStack(Material.MAP), player ->
         {
-            int newAmount = finalAmountnew - 10;
+            final int newAmount = finalAmountnew - 10;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3-10" , new String[]{"&7Click to decrease item amount by &b10"});
 
         setItem(3, new ItemStack(Material.PAPER), player ->
         {
-            int newAmount = finalAmountnew - 1;
+            final int newAmount = finalAmountnew - 1;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3-1", new String[]{"&7Click to decrease item amount by &b1"});
@@ -110,14 +110,14 @@ class ExpTradeAmount extends CustomInventory {
 
         setItem(5, new ItemStack(Material.PAPER), player ->
         {
-            int newAmount = 1 + finalAmountnew;
+            final int newAmount = 1 + finalAmountnew;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3+1", new String[]{"&7Click to increase item amount by &b1"});
 
         setItem(6, new ItemStack(Material.MAP), player ->
         {
-            int newAmount = 10 + finalAmountnew;
+            final int newAmount = 10 + finalAmountnew;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
         }, "&3+10", new String[]{"&7Click to increase item amount by &b10"});

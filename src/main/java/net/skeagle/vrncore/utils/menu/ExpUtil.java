@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.utils.menu;
 
 import org.bukkit.entity.Player;
 
@@ -17,7 +17,7 @@ public class ExpUtil {
          *
          * @return the amount of exp the Player has
          */
-        public static int getExp(Player player) {
+        public static int getExp(final Player player) {
             return getExpFromLevel(player.getLevel())
                     + Math.round(getExpToNext(player.getLevel()) * player.getExp());
         }
@@ -37,7 +37,7 @@ public class ExpUtil {
          *
          * @return the total experience calculated
          */
-        public static int getExpFromLevel(int level) {
+        public static int getExpFromLevel(final int level) {
             if (level > 30) {
                 return (int) (4.5 * level * level - 162.5 * level + 2220);
             }
@@ -54,7 +54,7 @@ public class ExpUtil {
          *
          * @return the level calculated
          */
-        public static double getLevelFromExp(double exp) {
+        public static double getLevelFromExp(final double exp) {
             if (exp > 1395) {
                 return (Math.sqrt(72 * exp - 54215) + 325) / 18;
             }
@@ -75,7 +75,7 @@ public class ExpUtil {
          *                        5[Current Level] - 38 (at levels 16-30)
          *                        9[Current Level] - 158 (at level 31+)"
          */
-        private static int getExpToNext(int level) {
+        private static int getExpToNext(final int level) {
             if (level > 30) {
                 return 9 * level - 158;
             }
@@ -94,16 +94,16 @@ public class ExpUtil {
          * @param player the Player affected
          * @param exp the amount of experience to add or remove
          */
-        public static void changeExp(Player player, int exp) {
+        public static void changeExp(final Player player, int exp) {
             exp += getExp(player);
 
             if (exp < 0) {
                 exp = 0;
             }
 
-            double levelAndExp = getLevelFromExp(exp);
+            final double levelAndExp = getLevelFromExp(exp);
 
-            int level = (int) levelAndExp;
+            final int level = (int) levelAndExp;
             player.setLevel(level);
             player.setExp((float) (levelAndExp - level));
         }

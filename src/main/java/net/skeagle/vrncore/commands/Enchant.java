@@ -49,7 +49,9 @@ public class Enchant extends SimpleCommand {
                             .enchant(new SimpleEnchant(enchant.getEnchant(), (args.length < 2 ? 1 : findNumber(1, "&cPlease specify a valid enchant level."))))
                             .build().makeSurvival()
             );
-            i.addUnsafeEnchantments(map);
+            for (final Enchantment e : map.keySet()) {
+                i.addUnsafeEnchantment(e, map.get(e));
+            }
         } else {
             i.addUnsafeEnchantment(enchant.getEnchant(), (args.length < 2 ? 1 : findNumber(1, "&cPlease specify a valid enchant level.")));
         }

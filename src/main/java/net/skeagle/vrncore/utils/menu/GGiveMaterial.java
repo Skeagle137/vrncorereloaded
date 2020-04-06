@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.utils.menu;
 
 import org.mineacademy.fo.remain.CompMaterial;
 
@@ -12,10 +12,10 @@ public enum GGiveMaterial {
     STRUCT_BLOCK(CompMaterial.STRUCTURE_BLOCK, "Structure Block"),
     DEBUG_STICK(CompMaterial.DEBUG_STICK, "Debug Stick");
 
-    private CompMaterial mat;
-    private String name;
+    private final CompMaterial mat;
+    private final String name;
 
-    GGiveMaterial(CompMaterial mat, String name) {
+    GGiveMaterial(final CompMaterial mat, final String name) {
         this.mat = mat;
         this.name = name;
     }
