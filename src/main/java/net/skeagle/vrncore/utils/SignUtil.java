@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.event;
+package net.skeagle.vrncore.utils;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -24,7 +24,12 @@ import java.util.stream.IntStream;
 
 import static net.skeagle.vrncore.utils.VRNUtil.color;
 
-public class SignListener {
+public class SignUtil {
+    /*
+
+    CREDIT TO FROSTEDSNOWMAN: https://www.spigotmc.org/threads/signmenu-1-15-2-get-player-sign-input.249381/
+
+     */
     private static final int ACTION_INDEX = 9;
     private static final int SIGN_LINES = 4;
 
@@ -33,7 +38,7 @@ public class SignListener {
 
     private final Map<Player, Menu> inputReceivers;
 
-    public SignListener(final Plugin plugin) {
+    public SignUtil(final Plugin plugin) {
         this.inputReceivers = new HashMap<>();
         this.listen();
     }

@@ -3,6 +3,8 @@ package net.skeagle.vrncore.tasks;
 import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.AFKManager;
+import net.skeagle.vrncore.utils.timerewards.RewardManager;
+import net.skeagle.vrncore.utils.timerewards.TimeRewards;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.remain.Remain;
@@ -18,8 +20,14 @@ public class UpdatePlayerTask extends BukkitRunnable {
         for (final Player pl : Remain.getOnlinePlayers()) {
             final AFKManager manager = AFKManager.getAfkManager(pl);
             final PlayerCache cache = PlayerCache.getCache(pl);
+            final TimeRewards reward;
             int time = cache.getTimeplayed().getTimeSeconds();
-            if (!updateAFKPlayer(pl) && !manager.isAfk()) {
+            if (!updateAFKPlayer(pl) || !manager.isAfk()) {
+                reward = RewardManager.getInstance().getReward(String.valueOf(time));
+                if (reward != null)
+                    if (reward.checkPerm(pl))
+                        reward.doReward(pl);
+
                 time += Settings.Afk.SECONDS_DELAY;
                 cache.setTimeplayed(YamlConfig.TimeHelper.fromSeconds(time));
                 if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING) {

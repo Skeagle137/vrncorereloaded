@@ -23,6 +23,7 @@ import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.tasks.UpdatePlayerTask;
 import net.skeagle.vrncore.utils.Resources;
 import net.skeagle.vrncore.utils.homes.HomesResource;
+import net.skeagle.vrncore.utils.timerewards.RewardManager;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
@@ -49,6 +50,7 @@ public class VRNcore extends SimplePlugin {
         //config stuff
         resources.load();
         HomesResource.getInstance().loadAllHomes();
+        RewardManager.getInstance().loadRewards();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",

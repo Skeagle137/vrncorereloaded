@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 import org.mineacademy.fo.settings.YamlConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
@@ -29,16 +28,18 @@ public class TimePlayed extends SimpleCommand {
         }
         switch (args[0].toLowerCase()) {
             case "set":
-                final int time = findNumber(2, "&cYou must include a time.");
-                if (args.length > 1) {
+                final int time;
+                if (args.length > 2) {
+                    time = findNumber(2, "&cYou must include a time.");
                     hasPerm("vrn.timeplayed.setothers");
-                    final Player a = findPlayer(args[1], VRNUtil.noton);
+                    final Player a = findPlayer(args[2], VRNUtil.noton);
                     final PlayerCache cache = PlayerCache.getCache(a);
                     cache.setTimeplayed(YamlConfig.TimeHelper.fromSeconds(time));
                     say(getSender(), "Time played set to &a" + timeToMessage(time) + "&7 for &a" + a.getName() + "&7.");
                     return;
                 }
                 checkConsole();
+                time = findNumber(1, "&cYou must include a time.");
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache = PlayerCache.getCache(getPlayer());
                 cache.setTimeplayed(YamlConfig.TimeHelper.fromSeconds(time));
@@ -76,6 +77,6 @@ public class TimePlayed extends SimpleCommand {
                     return completeLastWordPlayerNames();
                 }
         }
-        return new ArrayList<>();
+        return completeLastWord("");
     }
 }

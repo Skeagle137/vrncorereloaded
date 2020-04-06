@@ -12,7 +12,7 @@
 
     <properties>
         <main.class>net.skeagle.vrncore.VRNcore</main.class>
-        <!--https://github.com/kangarko/Foundation/releases-->
+        <!-- https://github.com/kangarko/Foundation/releases -->
         <foundation.version>5.3.6</foundation.version>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,0 +1,12 @@
+permission: vrn.rewards.perm
+use_permission: false
+commands:
+  - "give %player% diamond 1"
+messages:
+  - "&aYou leveled up!"
+use_actionbar: true
+actionmessage: "&dreward recieved!"
+fireworks: true
+enable_title: true
+title: "&b&lLEVEL UP!"
+subtitle: "&9Next reward in: 1 hour"
