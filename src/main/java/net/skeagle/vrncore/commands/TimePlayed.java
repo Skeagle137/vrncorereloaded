@@ -28,9 +28,8 @@ public class TimePlayed extends SimpleCommand {
         }
         switch (args[0].toLowerCase()) {
             case "set":
-                final int time;
+                final int time = findNumber(1, "&cYou must include a time.");
                 if (args.length > 2) {
-                    time = findNumber(2, "&cYou must include a time.");
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[2], VRNUtil.noton);
                     final PlayerCache cache = PlayerCache.getCache(a);
@@ -39,7 +38,6 @@ public class TimePlayed extends SimpleCommand {
                     return;
                 }
                 checkConsole();
-                time = findNumber(1, "&cYou must include a time.");
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache = PlayerCache.getCache(getPlayer());
                 cache.setTimeplayed(YamlConfig.TimeHelper.fromSeconds(time));
