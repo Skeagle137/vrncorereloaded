@@ -12,12 +12,14 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.server.v1_15_R1.EntityPlayer;
 import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_15_R1.PacketPlayOutUpdateHealth;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -25,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.logging.Level;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -70,6 +71,16 @@ public class Skin extends SimpleCommand {
             pm.remove("textures", property);
             pm.put("textures", new Property("textures", texture, signature));
             reloadSkin(p);
+            p.updateInventory();
+            final PlayerInventory inventory = p.getInventory();
+            inventory.setHeldItemSlot(inventory.getHeldItemSlot());
+            final float experience = p.getExp();
+            final int totalExperience = p.getTotalExperience();
+            p.setExp(experience);
+            p.setTotalExperience(totalExperience);
+            p.getInventory().setItemInMainHand(p.getInventory().getItemInMainHand());
+            p.getInventory().setItemInOffHand(p.getInventory().getItemInOffHand());
+            p.setWalkSpeed(p.getWalkSpeed());
             say(p, "&aYour skin has been changed successfully.");
         } catch (final IOException e) {
             System.err.println("Could not get skin data from session servers!");
@@ -99,16 +110,8 @@ public class Skin extends SimpleCommand {
         ep.playerConnection.sendPacket(removeInfo);
         ep.playerConnection.sendPacket(addInfo);
         sendPackets(p, respawn, teleport);
-        try {
-            p.getClass().getDeclaredMethod("updateScaledHealth", new Class[0]).invoke(p);
-        } catch (final ReflectiveOperationException ex) {
-            VRNcore.getInstance().getLogger().log(Level.WARNING, "failed to update health", ex);
-        }
-        final PacketContainer health = new PacketContainer(PacketType.Play.Server.UPDATE_HEALTH);
-        health.getFloat().write(0, (float) p.getHealth());
-        health.getFloat().write(1, p.getSaturation());
-        health.getIntegers().write(0, p.getFoodLevel());
-        sendPackets(p, health);
+        final PacketPlayOutUpdateHealth health = new PacketPlayOutUpdateHealth((float) p.getHealth(), p.getFoodLevel(), p.getSaturation());
+        ep.playerConnection.sendPacket(health);
     }
 
     private void sendPackets(final Player p, final PacketContainer... packets) {
