@@ -21,9 +21,9 @@ import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.tasks.UpdatePlayerTask;
-import net.skeagle.vrncore.utils.Resources;
 import net.skeagle.vrncore.utils.homes.HomesResource;
 import net.skeagle.vrncore.utils.timerewards.RewardManager;
+import net.skeagle.vrncore.utils.warps.WarpsResource;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
@@ -38,18 +38,13 @@ public class VRNcore extends SimplePlugin {
     private final PluginDescriptionFile pdf = this.getDescription();
     private final String pv = pdf.getVersion();
 
-    private final Resources resources;
     private UpdatePlayerTask afktask;
-
-    public VRNcore() {
-        this.resources = new Resources(this);
-    }
 
     @Override
     public void onPluginStart() {
         //config stuff
-        resources.load();
         HomesResource.getInstance().loadAllHomes();
+        WarpsResource.getInstance().loadAllWarps();
         RewardManager.getInstance().loadRewards();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
@@ -93,10 +88,10 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new homes()); //vrn.homes
         registerCommand(new delhome()); //vrn.home
         registerCommand(new sethome()); //vrn.sethome
-        registerCommand(new warp(resources)); //vrn.warp
-        registerCommand(new warps(resources)); //vrn.warps
-        registerCommand(new delwarp(resources)); //vrn.delwarp
-        registerCommand(new setwarp(resources)); //vrn.setwarp
+        registerCommand(new warp()); //vrn.warp
+        registerCommand(new warps()); //vrn.warps
+        registerCommand(new delwarp()); //vrn.delwarp
+        registerCommand(new setwarp()); //vrn.setwarp
         registerCommand(new Tpa()); //vrn.tpa
         registerCommand(new Tpaccept()); //vrn.tpaccept
         registerCommand(new Tpdeny()); //vrn.tpdeny
@@ -145,7 +140,6 @@ public class VRNcore extends SimplePlugin {
     @Override
     public void onPluginStop() {
         cleanBeforeReload();
-        resources.save();
         Common.log(ChatColor.RED + "----------------------------------------",
                 ChatColor.RED + "VRNcore " + pv + " is now disabled.",
                 ChatColor.RED + "----------------------------------------");

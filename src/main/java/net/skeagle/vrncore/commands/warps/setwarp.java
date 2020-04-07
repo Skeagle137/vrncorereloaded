@@ -1,18 +1,13 @@
 package net.skeagle.vrncore.commands.warps;
 
-import net.skeagle.vrncore.utils.Resources;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.warps.WarpsHomesUtil;
+import net.skeagle.vrncore.utils.warps.WarpsResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class setwarp extends SimpleCommand {
-    private final Resources r;
-    private final WarpsHomesUtil util;
 
-    public setwarp(final Resources r) {
+    public setwarp() {
         super("setwarp");
-        this.r = r;
-        util = new WarpsHomesUtil(r);
         setMinArguments(1);
         setUsage("<name>");
         setDescription("Create a warp.");
@@ -23,6 +18,8 @@ public class setwarp extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        util.setValues(getPlayer(), args[0]);
+        if (WarpsResource.getInstance().setWarp(getPlayer(), args[0]))
+            returnTell("&7Warp set, teleport to it with &a/warp " + args[0] + "&7.");
+        returnTell("&cA warp with that name already exists.");
     }
 }

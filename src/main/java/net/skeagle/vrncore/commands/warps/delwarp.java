@@ -1,21 +1,15 @@
 package net.skeagle.vrncore.commands.warps;
 
-import net.skeagle.vrncore.utils.Resources;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.warps.WarpsHomesUtil;
+import net.skeagle.vrncore.utils.warps.WarpsResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class delwarp extends SimpleCommand {
-    private final Resources r;
-    private final WarpsHomesUtil util;
 
-    public delwarp(final Resources r) {
+    public delwarp() {
         super("delwarp");
-        this.r = r;
-        util = new WarpsHomesUtil(r);
         setMinArguments(1);
         setUsage("<name>");
         setDescription("Remove a warp.");
@@ -26,18 +20,17 @@ public class delwarp extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        util.delValues(getPlayer(), args[0]);
+        if (WarpsResource.getInstance().delWarp(args[0]))
+            returnTell("&7Warp &a" + args[0] + "&7 successfully deleted.");
+        returnTell("&cThat warp does not exist.");
     }
 
     @Override
     protected List<String> tabComplete() {
-        if (args.length == 1) {
-            if (r.getWarps().get("warps.") != null) {
-                return completeLastWord(util.returnArray());
-            } else {
-                return completeLastWord("");
-            }
+        final List<String> names = WarpsResource.getInstance().getWarpNames();
+        if (!names.isEmpty()) {
+            if (args.length == 1) return completeLastWord(names);
         }
-        return new ArrayList<>();
+        return completeLastWord("");
     }
 }

@@ -1,20 +1,15 @@
 package net.skeagle.vrncore.commands.warps;
 
-import net.skeagle.vrncore.utils.Resources;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.warps.WarpsHomesUtil;
+import net.skeagle.vrncore.utils.warps.WarpsResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import java.util.List;
 
 public class warps extends SimpleCommand {
-    private final Resources r;
-    private final WarpsHomesUtil util;
 
-    public warps(final Resources r) {
+    public warps() {
         super("warps");
-        this.r = r;
-        util = new WarpsHomesUtil(r);
         setDescription("List all available warps.");
         setPermission("vrn.warps");
         setPermissionMessage(VRNUtil.noperm);
@@ -23,13 +18,12 @@ public class warps extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        if (r.getWarps().get("warps.") != null) {
-            say(getPlayer(), "&7Currently showing a list of &a"
-                    + util.returnArray().size() + "&7 warp(s): &a"
-                    + String.join("&7,&a ", util.returnArray()) + "&7.");
-        } else {
-            say(getPlayer(),"&cThere are currently no warps available.");
+        final List<String> names = WarpsResource.getInstance().getWarpNames();
+        if (!names.isEmpty()) {
+            returnTell("&7Currently showing a list of &a" + names.size() +
+                    "&7 warp(s): &a" + String.join("&7,&a ", names) + "&7.");
         }
+        returnTell("&cThere are no warps available.");
     }
 }
 
