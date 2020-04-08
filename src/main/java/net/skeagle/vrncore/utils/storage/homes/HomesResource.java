@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.homes;
+package net.skeagle.vrncore.utils.storage.homes;
 
 import lombok.AccessLevel;
 import lombok.Getter;

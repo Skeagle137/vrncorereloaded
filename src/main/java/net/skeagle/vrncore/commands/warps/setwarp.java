@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.warps;
 
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.warps.WarpsResource;
+import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class setwarp extends SimpleCommand {

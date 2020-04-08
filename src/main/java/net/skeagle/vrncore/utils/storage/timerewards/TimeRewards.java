@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.timerewards;
+package net.skeagle.vrncore.utils.storage.timerewards;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;

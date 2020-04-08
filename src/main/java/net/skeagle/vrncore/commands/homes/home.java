@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.commands.homes;
 
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.homes.HomesManager;
-import net.skeagle.vrncore.utils.homes.HomesResource;
+import net.skeagle.vrncore.utils.storage.homes.HomesManager;
+import net.skeagle.vrncore.utils.storage.homes.HomesResource;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;

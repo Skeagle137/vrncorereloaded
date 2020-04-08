@@ -1,6 +1,7 @@
-package net.skeagle.vrncore.utils.warps;
+package net.skeagle.vrncore.utils.storage.warps;
 
 import lombok.Getter;
+import net.skeagle.vrncore.utils.storage.LocationSerialization;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.settings.YamlConfig;
@@ -26,13 +27,13 @@ public class WarpsManager extends YamlConfig {
     void setLoc(final Location loc) {
         this.loc = loc;
 
-        save("Location", loc);
+        save("Location", LocationSerialization.serialize(loc));
     }
 
     @Override
     protected void onLoadFinish() {
         if (isSet("Location")) {
-            loc = getLocation("Location");
+            loc = LocationSerialization.deserialize(getString("Location"));
         }
     }
 

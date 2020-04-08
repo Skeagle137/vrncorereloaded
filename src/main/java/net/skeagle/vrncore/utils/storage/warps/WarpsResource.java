@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.warps;
+package net.skeagle.vrncore.utils.storage.warps;
 
 import lombok.AccessLevel;
 import lombok.Getter;
