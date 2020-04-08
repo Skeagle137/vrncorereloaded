@@ -11,7 +11,7 @@ public class WarpsManager extends YamlConfig {
 
     WarpsManager(final String name) {
         setHeader();
-        loadConfiguration(null, "warps/" + name.toLowerCase() + (!name.toLowerCase().endsWith(".yml") ? ".yml" : ""));
+        loadConfiguration(null, "warps/" + name + (!name.toLowerCase().endsWith(".yml") ? ".yml" : ""));
     }
 
     Location loc;
