@@ -44,6 +44,11 @@ public class HomesManager extends YamlConfig {
         return false;
     }
 
+    public void delHome(final RegisteredHome home) {
+        save(home.getName(), null);
+        homes.remove(home);
+    }
+
     public boolean teleHome(final Player p, final String name) {
         for (final RegisteredHome home : homes) {
             if (name.equalsIgnoreCase(home.getName())) {

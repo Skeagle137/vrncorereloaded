@@ -3,7 +3,9 @@ package net.skeagle.vrncore.utils.storage.warps;
 import lombok.Getter;
 import net.skeagle.vrncore.utils.storage.LocationSerialization;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.remain.CompMaterial;
 import org.mineacademy.fo.settings.YamlConfig;
 
 @Getter
@@ -24,6 +26,14 @@ public class WarpsManager extends YamlConfig {
         return false;
     }
 
+    public CompMaterial getIcon() {
+        final Block block_below = loc.clone().add(0, -1, 0).getBlock();
+        if (block_below.getType() != CompMaterial.AIR.getMaterial()) {
+            return CompMaterial.fromBlock(block_below);
+        }
+        return CompMaterial.BARRIER;
+    }
+
     void setLoc(final Location loc) {
         this.loc = loc;
 
@@ -37,7 +47,7 @@ public class WarpsManager extends YamlConfig {
         }
     }
 
-    String getName() {
+    public String getName() {
         return getFileName().replace(".yml", "");
     }
 

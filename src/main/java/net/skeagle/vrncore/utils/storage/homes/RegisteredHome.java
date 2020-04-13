@@ -3,6 +3,7 @@ package net.skeagle.vrncore.utils.storage.homes;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.mineacademy.fo.remain.CompMaterial;
 
 @Getter
@@ -18,9 +19,10 @@ public class RegisteredHome {
     }
 
 
-    public CompMaterial getIcon(final Location loc) {
-        if (loc.getBlock().getType() != CompMaterial.AIR.getMaterial()) {
-            return CompMaterial.fromBlock(loc.getBlock());
+    public CompMaterial getIcon() {
+        final Block block_below = loc.clone().add(0, -1, 0).getBlock();
+        if (block_below.getType() != CompMaterial.AIR.getMaterial()) {
+            return CompMaterial.fromBlock(block_below);
         }
         return CompMaterial.BARRIER;
     }

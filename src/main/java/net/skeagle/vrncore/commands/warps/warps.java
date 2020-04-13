@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.commands.warps;
 
+import net.skeagle.vrncore.GUIs.WarpsGUI;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -20,8 +21,8 @@ public class warps extends SimpleCommand {
         checkConsole();
         final List<String> names = WarpsResource.getInstance().getWarpNames();
         if (!names.isEmpty()) {
-            returnTell("&7Currently showing a list of &a" + names.size() +
-                    "&7 warp(s): &a" + String.join("&7,&a ", names) + "&7.");
+            new WarpsGUI().displayTo(getPlayer());
+            return;
         }
         returnTell("&cThere are no warps available.");
     }

@@ -1,8 +1,10 @@
 package net.skeagle.vrncore.commands.homes;
 
+import net.skeagle.vrncore.GUIs.HomesGUI;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.storage.homes.HomesManager;
 import net.skeagle.vrncore.utils.storage.homes.HomesResource;
+import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -20,10 +22,13 @@ public class homes extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (man.homeNames().size() != 0) {
-            say(getPlayer(), "&7Currently showing a list of &a" + man.homeNames().size() +
-                    "&7 home(s): &a" + String.join("&7,&a ", man.homeNames()) + "&7.");
+        Player a = null;
+        if (!(args.length < 1)) {
+            a = findPlayer(args[0], VRNUtil.noton);
+        }
+        final HomesManager man = HomesResource.getInstance().getHome(a != null ? a.getUniqueId() : getPlayer().getUniqueId());
+        if (!man.homeNames().isEmpty()) {
+            new HomesGUI(a != null ? a : getPlayer()).displayTo(a != null ? a : getPlayer());
             return;
         }
         say(getPlayer(), "&cYou do not have any homes available.");
