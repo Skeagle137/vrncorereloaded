@@ -16,7 +16,8 @@ import org.mineacademy.fo.settings.YamlConfig;
 import java.util.List;
 import java.util.Random;
 
-import static net.skeagle.vrncore.utils.VRNUtil.*;
+import static net.skeagle.vrncore.utils.VRNUtil.sayActionBar;
+import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 @Getter
 public class TimeRewards extends YamlConfig {
@@ -64,7 +65,6 @@ public class TimeRewards extends YamlConfig {
         for (String command : commands) {
             command = command.replaceAll("%player%", p.getName());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            say(p, command);
         }
         if (fireworks) {
             p.setInvulnerable(true);
