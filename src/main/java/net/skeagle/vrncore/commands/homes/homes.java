@@ -28,7 +28,7 @@ public class homes extends SimpleCommand {
         }
         final HomesManager man = HomesResource.getInstance().getHome(a != null ? a.getUniqueId() : getPlayer().getUniqueId());
         if (!man.homeNames().isEmpty()) {
-            new HomesGUI(a != null ? a : getPlayer()).displayTo(a != null ? a : getPlayer());
+            new HomesGUI(a != null ? a : getPlayer()).displayTo(getPlayer());
             return;
         }
         say(getPlayer(), "&cYou do not have any homes available.");
