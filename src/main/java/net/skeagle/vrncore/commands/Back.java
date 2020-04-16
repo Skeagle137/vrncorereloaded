@@ -12,10 +12,11 @@ public class Back extends SimpleCommand {
     public Back() {
         super("back");
         setDescription("Teleport back to a player's previous location.");
+        setPermission("vrn.back");
         setPermissionMessage(VRNUtil.noperm);
     }
 
-    BackUtil back = BackUtil.getBack();
+    private final BackUtil back = BackUtil.getBack();
 
     @Override
     public void onCommand() {

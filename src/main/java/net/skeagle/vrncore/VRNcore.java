@@ -69,6 +69,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Slap()); //vrn.slap.self|others
         registerCommand(new Sun()); //vrn.weather
         registerCommand(new Rain()); //vrn.weather
+        registerCommand(new Thunder()); //vrn.weather
         registerCommand(new Day()); //vrn.time
         registerCommand(new Night()); //vrn.time
         registerCommand(new Pweather()); //vrn.pweather
