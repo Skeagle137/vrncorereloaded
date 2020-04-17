@@ -20,6 +20,7 @@ import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrncore.tasks.PlayerTrailTask;
 import net.skeagle.vrncore.tasks.UpdatePlayerTask;
 import net.skeagle.vrncore.utils.storage.homes.HomesResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
@@ -39,6 +40,7 @@ public class VRNcore extends SimplePlugin {
     private final String pv = pdf.getVersion();
 
     private UpdatePlayerTask afktask;
+    private PlayerTrailTask trailtask;
 
     @Override
     public void onPluginStart() {
@@ -53,6 +55,8 @@ public class VRNcore extends SimplePlugin {
         //tasks
         afktask = new UpdatePlayerTask();
         afktask.runTaskTimer(this, 0, Settings.Afk.SECONDS_DELAY * 20L);
+        trailtask = new PlayerTrailTask();
+        trailtask.runTaskTimer(this, 0, 3L);
         //commands
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
@@ -127,6 +131,7 @@ public class VRNcore extends SimplePlugin {
 
     private void cleanBeforeReload() {
         stopTasks(afktask);
+        stopTasks(trailtask);
     }
 
     private void stopTasks(final BukkitRunnable task) {

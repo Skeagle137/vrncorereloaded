@@ -2,6 +2,7 @@ package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.VRNParticle;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -17,32 +18,36 @@ public class ArrowListener implements Listener {
 
     @EventHandler
     public void onArrowShot(final ProjectileLaunchEvent e) {
-        if (e.getEntity().getShooter() instanceof Player) {
-            if (e.getEntity() instanceof Arrow) {
-                final PlayerCache cache = PlayerCache.getCache(((Player) e.getEntity().getShooter()));
-                final CompParticle particle = cache.getArrowtrail();
-                if (particle != null) {
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            if (!e.getEntity().isValid() || e.getEntity().isOnGround()) {
-                                cancel();
+        if (e.getEntity().getShooter() instanceof Player && e.getEntity() instanceof Arrow) {
+            final CompParticle particle = PlayerCache.getCache((Player) e.getEntity().getShooter()).getArrowtrail();
+            if (particle != null) {
+                final String perm = VRNParticle.getNameFromParticle(particle);
+                if (perm != null) {
+                    if (((Player) e.getEntity().getShooter()).hasPermission("vrn.arrowtrails." + perm)) {
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (!e.getEntity().isValid() || e.getEntity().isOnGround()) {
+                                    cancel();
 
-                                return;
+                                    return;
+                                }
+                                if (particle != CompParticle.REDSTONE) {
+                                    particle.spawn(e.getEntity().getLocation());
+                                } else {
+                                    spawnRedstone(e.getEntity().getLocation());
+                                }
                             }
-                            if (particle != CompParticle.REDSTONE) {
-                                particle.spawn(e.getEntity().getLocation());
-                            } else {
-                                spawnRedstone(e.getEntity().getLocation());
-                            }
-                        }
-                    }.runTaskTimer(VRNcore.getInstance(), 0, 1);
+                        }.runTaskTimer(VRNcore.getInstance(), 0, 1);
+                    } else {
+                        PlayerCache.getCache((Player) e.getEntity().getShooter()).setArrowtrail(null);
+                    }
                 }
             }
         }
     }
 
-    public final void spawnRedstone(final Location location) {
+    private void spawnRedstone(final Location location) {
         location.getWorld().spawnParticle(Particle.REDSTONE, location, 1, new Particle.DustOptions(Color.RED, 1.0f));
     }
 }
