@@ -267,7 +267,7 @@ public class TrailsGUI extends Menu {
 
             return super.getItemAt(slot);
         }
-        
+
         @Override
         protected String[] getInfo() {
             return null;
