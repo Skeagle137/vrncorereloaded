@@ -4,7 +4,6 @@ import net.skeagle.vrncore.enchants.AllEnchants;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.mineacademy.fo.Common;
 import org.mineacademy.fo.command.SimpleCommand;
 import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.model.SimpleEnchant;
@@ -12,7 +11,6 @@ import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -33,7 +31,6 @@ public class Enchant extends SimpleCommand {
             return;
         }
         final ItemStack i = getPlayer().getInventory().getItemInMainHand();
-        final Map<Enchantment, Integer> map = i.getEnchantments();
         if (args[0].equalsIgnoreCase("all")) {
             for (final Enchantment ench : Enchantment.values()) {
                 i.addUnsafeEnchantment(ench, (args.length < 2 ? 1 : findNumber(1, "&cPlease specify a valid enchant level.")));
@@ -48,13 +45,9 @@ public class Enchant extends SimpleCommand {
             getPlayer().getInventory().setItemInMainHand(
                     ItemCreator.of(CompMaterial.fromMaterial(i.getType()))
                             .enchant(new SimpleEnchant(enchant.getEnchant(), (args.length < 2 ? 1 : findNumber(1, "&cPlease specify a valid enchant level."))))
+                            .meta(i.getItemMeta())
                             .build().makeSurvival()
             );
-            Common.runLater(20, () -> {
-                for (final Enchantment e : map.keySet()) {
-                    i.addUnsafeEnchantment(e, map.get(e));
-                }
-            });
         } else {
             i.addUnsafeEnchantment(enchant.getEnchant(), (args.length < 2 ? 1 : findNumber(1, "&cPlease specify a valid enchant level.")));
         }

@@ -51,7 +51,7 @@ public class MineSight extends SimpleEnchantment implements IVRNEnchant {
         }
         doGlow(blockCorrespondingEntity, p);
         cooldown.add(p);
-        Common.runLater((level + 1) * 20, () -> {
+        Common.runLater((level) * 20, () -> {
             PacketPlayOutEntityDestroy destroy;
             for (final EntityShulker shulk : blockCorrespondingEntity.values()) {
                 destroy = new PacketPlayOutEntityDestroy(shulk.getId());
@@ -85,7 +85,7 @@ public class MineSight extends SimpleEnchantment implements IVRNEnchant {
     }
 
     private ArrayList<Block> getBlocks(final Block start, final int level) {
-        final int radius = level * 5;
+        final int radius = level + 3;
         final ArrayList<Block> blocks = new ArrayList<>();
         for (double x = start.getLocation().getX() - radius; x <= start.getLocation().getX() + radius; x++) {
             for (double y = start.getLocation().getY() - radius; y <= start.getLocation().getY() + radius; y++) {

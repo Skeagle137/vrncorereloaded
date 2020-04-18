@@ -34,7 +34,7 @@ public class Spawnmob extends SimpleCommand {
             amount = findNumber(1, "&cPlease specify a valid amount of the mob.");
             checkBoolean(amount > 0, "&cAmount of mobs cannot be less than one.");
         }
-        final Block b = getPlayer().getTargetBlock(null, 20);
+        final Block b = getPlayer().getTargetBlock(null, 50);
         location = new Location(b.getWorld(), b.getLocation().getX() + 0.5, b.getLocation().getY() + 1, b.getLocation().getZ() + 0.5);
 
         for (int i = 0; i < amount; i++) {
