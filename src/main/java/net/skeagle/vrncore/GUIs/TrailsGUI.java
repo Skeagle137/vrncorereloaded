@@ -12,7 +12,9 @@ import org.mineacademy.fo.menu.button.ButtonMenu;
 import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.remain.CompMaterial;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class TrailsGUI extends Menu {
@@ -272,5 +274,14 @@ public class TrailsGUI extends Menu {
         protected String[] getInfo() {
             return null;
         }
+    }
+
+    private List<VRNParticle> getColorableTrails() {
+        return new ArrayList<>(Arrays.asList(
+                VRNParticle.POTION,
+                VRNParticle.POTION_SPLASH,
+                VRNParticle.NOTE,
+                VRNParticle.REDSTONE
+        ));
     }
 }
