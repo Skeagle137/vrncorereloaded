@@ -38,7 +38,7 @@ public class PlayerCache extends YamlSectionConfig {
         if (isSet("Arrowtrail"))
             arrowtrail = get("Arrowtrail", CompParticle.class);
 
-        if (isSet("PlayerTrail"))
+        if (isSet("Playertrail"))
             playertrail = get("Playertrail", CompParticle.class);
 
         if (isSet("Vanish"))

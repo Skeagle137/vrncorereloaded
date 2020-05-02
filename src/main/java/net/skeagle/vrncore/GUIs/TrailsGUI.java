@@ -50,6 +50,9 @@ public class TrailsGUI extends Menu {
                         animateTitle("&5Arrow trail reset");
                         cache.setArrowtrail(null);
                     }
+                if (click.isRightClick() && click.isShiftClick()) {
+
+                }
                     restartMenu();
             }
 
@@ -129,7 +132,7 @@ public class TrailsGUI extends Menu {
                             "&3&lInstructions",
                             "",
                             "&bClick to apply an available trail.",
-                            "&bShift click to see the trail",
+                            "&bMiddle click to see the trail",
                             "&boptions customization menu.").build().make();
                 }
             };
@@ -221,7 +224,7 @@ public class TrailsGUI extends Menu {
                             "&3&lInstructions",
                             "",
                             "&bClick to apply an available trail.",
-                            "&bShift click to see the trail",
+                            "&bMiddle click to see the trail",
                             "&boptions customization menu.").build().make();
                 }
             };
