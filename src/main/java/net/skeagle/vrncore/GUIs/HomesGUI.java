@@ -21,9 +21,8 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 public class HomesGUI extends MenuPagged<RegisteredHome> {
 
     public HomesGUI(final Player p) {
-        super(null, HomesResource.getInstance().getHome(p.getUniqueId()).getHomes());
-        setSize(9 * 4);
-        setTitle("Viewing " + (p == getViewer() ? "" : p.getDisplayName() + "&r's ") + "homes");
+        super(HomesResource.getInstance().getHome(p.getUniqueId()).getHomes());
+        setTitle("Viewing " + (p == getViewer() ? "your " : p.getDisplayName() + "&r's ") + "homes");
     }
 
     @Override

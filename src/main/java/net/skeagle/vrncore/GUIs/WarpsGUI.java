@@ -20,8 +20,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 public class WarpsGUI extends MenuPagged<WarpsManager> {
 
     public WarpsGUI() {
-        super(null, WarpsResource.getInstance().getManData());
-        setSize(9 * 4);
+        super(WarpsResource.getInstance().getManData());
         setTitle("Global warps list");
     }
 
