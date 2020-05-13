@@ -17,18 +17,20 @@ public class PlayerTrailTask extends BukkitRunnable {
     @Override
     public void run() {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
-            if (PlayerCache.getCache(pl).getPlayertrail() != null) {
-                final CompParticle particle = PlayerCache.getCache(pl).getPlayertrail();
-                final String perm = VRNParticle.getNameFromParticle(particle);
-                if (perm != null) {
-                    if (pl.hasPermission("vrn.playertrails." + perm)) {
-                        if (particle != CompParticle.REDSTONE) {
-                            spawnInt(particle, pl.getLocation(), 3);
+            if (!PlayerCache.getCache(pl).isVanished()) {
+                if (PlayerCache.getCache(pl).getPlayertrail() != null) {
+                    final CompParticle particle = PlayerCache.getCache(pl).getPlayertrail();
+                    final String perm = VRNParticle.getNameFromParticle(particle);
+                    if (perm != null) {
+                        if (pl.hasPermission("vrn.playertrails." + perm)) {
+                            if (particle != CompParticle.REDSTONE) {
+                                spawnInt(particle, pl.getLocation(), 3);
+                            } else {
+                                spawnRedstone(pl.getLocation(), 3);
+                            }
                         } else {
-                            spawnRedstone(pl.getLocation(), 3);
+                            PlayerCache.getCache(pl).setPlayertrail(null);
                         }
-                    } else {
-                        PlayerCache.getCache(pl).setPlayertrail(null);
                     }
                 }
             }

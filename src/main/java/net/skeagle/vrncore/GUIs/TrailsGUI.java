@@ -2,14 +2,17 @@ package net.skeagle.vrncore.GUIs;
 
 import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.utils.VRNParticle;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.mineacademy.fo.ItemUtil;
 import org.mineacademy.fo.menu.Menu;
 import org.mineacademy.fo.menu.MenuPagged;
 import org.mineacademy.fo.menu.button.Button;
 import org.mineacademy.fo.menu.button.ButtonMenu;
 import org.mineacademy.fo.menu.model.ItemCreator;
+import org.mineacademy.fo.remain.CompColor;
 import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.ArrayList;
@@ -31,29 +34,39 @@ public class TrailsGUI extends Menu {
                 "&7trail selection menu.");
         ResetButton = new Button() {
             @Override
-            public void onClickedInMenu(final Player p, final Menu menu, final ClickType click)
-            {
+            public void onClickedInMenu(final Player p, final Menu menu, final ClickType click) {
                 final PlayerCache cache = PlayerCache.getCache(p);
-                    if (click.isLeftClick()) {
-                        if (cache.getPlayertrail() == null) {
-                            animateTitle("&cNo trail to reset");
-                            return;
-                        }
-                        animateTitle("&5Player trail reset");
-                        cache.setPlayertrail(null);
+                if (click.isLeftClick()) {
+                    if (cache.getPlayertrail() == null) {
+                        animateTitle("&cNo trail to reset");
+                        return;
                     }
-                    if (click.isRightClick()) {
-                        if (cache.getArrowtrail() == null) {
-                            animateTitle("&cNo trail to reset");
-                            return;
-                        }
-                        animateTitle("&5Arrow trail reset");
-                        cache.setArrowtrail(null);
-                    }
-                if (click.isRightClick() && click.isShiftClick()) {
-
+                    animateTitle("&5Player trail reset");
+                    cache.setPlayertrail(null);
                 }
-                    restartMenu();
+                if (click.isRightClick()) {
+                    if (cache.getArrowtrail() == null) {
+                        animateTitle("&cNo trail to reset");
+                        return;
+                    }
+                    animateTitle("&5Arrow trail reset");
+                    cache.setArrowtrail(null);
+                }
+                if (click.isShiftClick() && click.isLeftClick()) {
+                    if (cache.getPlayertrail() == null) {
+                        animateTitle("&cNo player trail active to configure");
+                        return;
+                    }
+                    new TrailsGUI.OptionsMenu(false).displayTo(p);
+                }
+                if (click.isShiftClick() && click.isRightClick()) {
+                    if (cache.getArrowtrail() == null) {
+                        animateTitle("&cNo arrow trail active to configure");
+                        return;
+                    }
+                    new TrailsGUI.OptionsMenu(true).displayTo(p);
+                }
+                restartMenu();
             }
 
             @Override
@@ -65,7 +78,9 @@ public class TrailsGUI extends Menu {
                         "&7Player trail: " + (cache.getPlayertrail() != null ? "&a" + cache.getPlayertrail() : "&cnone"),
                         "&7Arrow trail: " + (cache.getArrowtrail() != null ? "&a" + cache.getArrowtrail() : "&cnone"),
                         "&bLeft click &7to reset player trail.",
-                        "&dRight click &7to reset arrow trail.")
+                        "&aShift left click &7to edit player trail.",
+                        "&dRight click &7to reset arrow trail.",
+                        "&9Shift right click &7to edit arrow trail.")
                         .glow(cache.getArrowtrail() != null || cache.getPlayertrail() != null)
                         .build().make();
             }
@@ -276,6 +291,110 @@ public class TrailsGUI extends Menu {
         @Override
         protected String[] getInfo() {
             return null;
+        }
+    }
+
+    private final class OptionsMenu extends Menu {
+
+        private final Button color;
+        private final Button info;
+        private final Button style;
+        private final Button back;
+
+        OptionsMenu(final boolean arrow) {
+            color = new Button() {
+                @Override
+                public void onClickedInMenu(final Player p, final Menu menu, final ClickType click) {
+                }
+
+                @Override
+                public ItemStack getItem() {
+                    final PlayerCache cache = PlayerCache.getCache(getViewer());
+                    return ItemCreator.of(CompMaterial.RED_DYE,
+                            "&6&lReset trails",
+                            "",
+                            "&bLeft click &7to reset player trail.",
+                            "&dRight click &7to reset arrow trail.")
+                            .glow(cache.getArrowtrail() != null || cache.getPlayertrail() != null)
+                            .build().make();
+                }
+            };
+            style = new ButtonMenu(new OptionsColorMenu(), CompMaterial.FEATHER,
+                    "&d&lArrow trail selection menu",
+                    "",
+                    "&7Click to open the arrow",
+                    "&7trail selection menu.");
+            info = new Button() {
+                @Override
+                public void onClickedInMenu(final Player player, final Menu menu, final ClickType clickType) {
+                }
+
+                @Override
+                public ItemStack getItem() {
+                    return ItemCreator.of(CompMaterial.MAP,
+                            "&3&lInstructions",
+                            "",
+                            "&bClick the color button to change",
+                            "&bthe color of the trail. Click the style",
+                            "&bbutton to change how the trail",
+                            "&bmoves around the " + (arrow ? "arrow" : "player") + "in game.")
+                            .build().make();
+                }
+            };
+            back = new ButtonMenu(new TrailsGUI(), CompMaterial.ARROW,
+                    "&e&lBack to main menu");
+        }
+
+        @Override
+        public ItemStack getItemAt(final int slot) {
+
+            if (slot == 2)
+                return color.getItem();
+
+            if (slot == 4)
+                return info.getItem();
+
+            if (slot == 6)
+                return style.getItem();
+
+            if (slot == 8)
+                return back.getItem();
+
+            return null;
+        }
+
+        @Override
+        protected String[] getInfo() {
+            return null;
+        }
+    }
+
+    private final class OptionsColorMenu extends MenuPagged<ChatColor> {
+
+        private OptionsColorMenu() {
+            super(Arrays.stream(ChatColor.values()).filter(ChatColor::isColor).collect(Collectors.toList()));
+            setTitle("&9Change Trail Color");
+        }
+
+        @Override
+        protected ItemStack convertToItemStack(final ChatColor color) {
+            return ItemCreator.ofWool(CompColor.fromChatColor(color)).name(color + ItemUtil.bountifyCapitalized(color.name()) + "trail color").build().make();
+        }
+
+        @Override
+        protected void onPageClick(final Player player, final ChatColor color, final ClickType clickType) {
+            final PlayerCache cache = PlayerCache.getCache(player);
+
+            //cache.setArrowoptions();
+            animateTitle(color + "Changed chat color to " + ItemUtil.bountifyCapitalized(color.name()));
+        }
+
+        @Override
+        protected String[] getInfo() {
+            return new String[]{
+                    "Click a color to use it",
+                    "in your chat messages."
+            };
         }
     }
 

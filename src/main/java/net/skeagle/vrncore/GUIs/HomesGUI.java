@@ -22,7 +22,7 @@ public class HomesGUI extends MenuPagged<RegisteredHome> {
 
     public HomesGUI(final Player p) {
         super(HomesResource.getInstance().getHome(p.getUniqueId()).getHomes());
-        setTitle("Viewing " + (p == getViewer() ? "your " : p.getDisplayName() + "&r's ") + "homes");
+        setTitle("Viewing " + p.getDisplayName() + "&r's " + "homes");
     }
 
     @Override

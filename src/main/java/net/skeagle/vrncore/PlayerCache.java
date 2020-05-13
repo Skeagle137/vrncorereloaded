@@ -1,6 +1,7 @@
 package net.skeagle.vrncore;
 
 import lombok.Getter;
+import net.skeagle.vrncore.utils.TrailOptions;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.remain.CompParticle;
 import org.mineacademy.fo.settings.YamlConfig;
@@ -18,6 +19,7 @@ public class PlayerCache extends YamlSectionConfig {
     private String nickname;
     private CompParticle arrowtrail;
     private CompParticle playertrail;
+    private TrailOptions options;
     private boolean vanished;
     private boolean muted;
     private boolean godmode;
