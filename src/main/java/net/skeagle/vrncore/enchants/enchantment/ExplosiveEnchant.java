@@ -17,12 +17,12 @@ public class ExplosiveEnchant extends SimpleEnchantment implements IVRNEnchant {
     private static final Enchantment instance = new ExplosiveEnchant();
 
     private ExplosiveEnchant() {
-        super("Explosive", 2);
+        super("Explosive", 1);
     }
 
     @Override
     protected void onHit(final int level, final LivingEntity shooter, final ProjectileHitEvent e) {
-        e.getEntity().getWorld().createExplosion(e.getEntity().getLocation(), (float) (level), false, false);
+        e.getEntity().getWorld().createExplosion(e.getEntity().getLocation(), 1, false, false);
     }
 
     @Override
