@@ -12,18 +12,18 @@ public class TrailOptions {
     private ChatColor color;
     private TrailStyle style;
 
-    protected TrailOptions(ChatColor color, TrailStyle style) {
+    protected TrailOptions(final ChatColor color, final TrailStyle style) {
         this.color = color;
         this.style = style;
     }
 
     public String serialize(final TrailOptions options, final Player p) {
-        return options.getColor().getChar() + " " + options.getStyle().name();
+        return options.getColor().getChar() + "\"" + options.getStyle().name();
     }
 
     public static TrailOptions deserialize(final String s) {
         final String[] split = s.replaceAll("\"", "").split(" ");
-        if (split.length != 6) {
+        if (split.length != 2) {
             return null;
         }
         return new TrailOptions(ChatColor.getByChar(split[0]), TrailStyle.valueOf(split[1]));

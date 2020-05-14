@@ -30,7 +30,7 @@ public class VenomEnchant extends SimpleEnchantment implements IVRNEnchant {
 
         final GenericEvent ge = new GenericEvent();
         if (ge.calcChance(15)) {
-            ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, level, 1, false, false, true));
+            ((LivingEntity) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, level, 1, false, true, true));
         }
     }
 

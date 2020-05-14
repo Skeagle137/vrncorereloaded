@@ -6,14 +6,14 @@
     <groupId>net.skeagle.vrncore</groupId>
     <artifactId>vrncore</artifactId>
     <name>VRNcore</name>
-    <version>4.3.5a</version>
+    <version>4.3.6</version>
 
     <description>The core plugin for VRN Network.</description>
 
     <properties>
         <main.class>net.skeagle.vrncore.VRNcore</main.class>
         <!-- https://github.com/kangarko/Foundation/releases -->
-        <foundation.version>5.3.6</foundation.version>
+        <foundation.version>5.3.8</foundation.version>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
