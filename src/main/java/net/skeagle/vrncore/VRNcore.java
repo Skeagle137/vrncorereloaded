@@ -54,7 +54,7 @@ public class VRNcore extends SimplePlugin {
                 ChatColor.GREEN + "----------------------------------------");
         //tasks
         afktask = new UpdatePlayerTask();
-        afktask.runTaskTimer(this, 0, Settings.Afk.SECONDS_DELAY * 20L);
+        afktask.runTaskTimer(this, 0, 20L);
         trailtask = new PlayerTrailTask();
         trailtask.runTaskTimer(this, 0, 3L);
         //commands
