@@ -9,7 +9,6 @@ Motd:
     - "Join now!"
     - "Now supporting the latest mc version!"
 Afk:
-  Seconds_Delay: 1
   Stop_Counting_Playtime: 60
   Kick_Time_In_Seconds: 3600
 Prefix: "&8[&9&lServer&8] &7"

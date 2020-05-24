@@ -29,17 +29,31 @@ public class Settings extends SimpleSettings {
 
     public static class Afk {
         public static Integer STOP_COUNTING;
-        public static Integer SECONDS_DELAY;
         public static Integer KICK_TIME_IN_SECONDS;
 
         private static void init() {
             pathPrefix("Afk");
 
-            SECONDS_DELAY = getInteger("Seconds_Delay");
             STOP_COUNTING = getInteger("Stop_Counting_Playtime");
             KICK_TIME_IN_SECONDS = getInteger("Kick_Time_In_Seconds");
         }
     }
+
+    /*
+    public static class Holograms {
+        public static Integer MAX_LINES;
+        public static Integer MAX_LINE_LENGTH;
+
+        private static void init() {
+            pathPrefix("Holograms");
+
+            MAX_LINES = getInteger("Max_Lines");
+            MAX_LINE_LENGTH = getInteger("Max_Line_Length");
+        }
+
+    }
+
+     */
 
     public static String PREFIX;
 

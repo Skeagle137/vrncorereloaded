@@ -28,7 +28,7 @@ public class UpdatePlayerTask extends BukkitRunnable {
                     if (reward.checkPerm(pl))
                         reward.doReward(pl);
 
-                time += Settings.Afk.SECONDS_DELAY;
+                time += 1;
                 cache.setTimeplayed(YamlConfig.TimeHelper.fromSeconds(time));
                 if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING) {
                     manager.setAfk(true);
@@ -44,7 +44,7 @@ public class UpdatePlayerTask extends BukkitRunnable {
         final AFKManager.MouseLocation NewMouseLocation = new AFKManager.MouseLocation(p);
         manager.setMouseLocation(NewMouseLocation);
         if (OldMouseLocation != null && manager.isLocEqual(OldMouseLocation)) {
-            manager.setTimeAfk(manager.getTimeAfk() + Settings.Afk.SECONDS_DELAY);
+            manager.setTimeAfk(manager.getTimeAfk() + 1);
             return true;
         }
         manager.setTimeAfk(0);
