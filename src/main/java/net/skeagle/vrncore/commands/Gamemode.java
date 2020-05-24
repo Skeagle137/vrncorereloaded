@@ -76,7 +76,7 @@ public class Gamemode extends SimpleCommand {
             case 1:
                 return completeLastWord("survival", "adventure", "creative", "spectator");
             case 2:
-                return completeLastWord(new ArrayList<>());
+                return completeLastWordPlayerNames();
         }
         return new ArrayList<>();
     }

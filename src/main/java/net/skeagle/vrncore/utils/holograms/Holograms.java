@@ -1,7 +1,5 @@
 package net.skeagle.vrncore.utils.holograms;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.skeagle.vrncore.utils.VRNUtil;
@@ -12,7 +10,6 @@ import org.bukkit.entity.Entity;
 import java.util.UUID;
 
 public class Holograms {
-    private final Gson gson;
     @Getter
     private final UUID id;
     @Getter
@@ -21,7 +18,6 @@ public class Holograms {
     private String hologram;
 
     public Holograms(final Location loc, final String hologram, final UUID id) {
-        gson = new GsonBuilder().create();
         this.id = id;
         this.loc = loc;
         this.hologram = hologram;
@@ -62,19 +58,18 @@ public class Holograms {
         return jsonObject;
     }
 
-    public static String serializeHoloLoc(final Location location) {
+    public String serializeHoloLoc(final Location location) {
         if (location == null) {
             return null;
         }
-        return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ();
+        return location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ();
     }
 
-    public static Location deserializeHoloLoc(String replaceAll) {
-        if (replaceAll == null) {
+    public static Location deserializeHoloLoc(final String s) {
+        if (s == null) {
             return null;
         }
-        replaceAll = replaceAll.replaceAll("\"", "");
-        final String[] split = replaceAll.split(";");
+        final String[] split = s.split(" ");
         if (split.length != 4) {
             return null;
         }

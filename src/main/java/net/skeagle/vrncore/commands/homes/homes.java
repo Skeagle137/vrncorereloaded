@@ -31,7 +31,7 @@ public class homes extends SimpleCommand {
             new HomesGUI(a != null ? a : getPlayer()).displayTo(getPlayer());
             return;
         }
-        say(getPlayer(), "&cYou do not have any homes available.");
+        say(getPlayer(), "&c" + (a != null ? a.getName() + " does" : "You do") + " not have any homes available.");
     }
 }
 
