@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.GUIs.ExpTradeGUI;
+import net.skeagle.vrncore.GUIs.exptrade.ExpTradeGUI;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 

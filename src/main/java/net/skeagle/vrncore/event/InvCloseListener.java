@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.event;
 
-import net.skeagle.vrncore.utils.menu.CustomInventory;
+import net.skeagle.vrncore.GUIs.CustomInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

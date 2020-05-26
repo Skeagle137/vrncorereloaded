@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.menu;
+package net.skeagle.vrncore.GUIs.exptrade;
 
 import org.bukkit.Material;
 

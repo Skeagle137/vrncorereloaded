@@ -48,6 +48,7 @@ public enum AllEnchants {
     AUTOSMELT("auto_smelt", AutoSmeltEnchant.getInstance(), true),
     GEMSTONE("gemstone", GemstoneEnchant.getInstance(), true),
     MINESIGHT("mine_sight", MineSight.getInstance(), true),
+    STUN("stun", StunEnchant.getInstance(), true),
     ;
 
     private final String name;

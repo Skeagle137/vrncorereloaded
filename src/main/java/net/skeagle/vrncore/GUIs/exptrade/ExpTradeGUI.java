@@ -1,7 +1,6 @@
-package net.skeagle.vrncore.GUIs;
+package net.skeagle.vrncore.GUIs.exptrade;
 
-import net.skeagle.vrncore.utils.menu.CustomInventory;
-import net.skeagle.vrncore.utils.menu.ExpMaterial;
+import net.skeagle.vrncore.GUIs.CustomInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
