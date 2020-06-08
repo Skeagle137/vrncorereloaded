@@ -31,10 +31,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>inventive-repo</id>
-            <url>https://repo.inventivetalent.org/content/groups/public/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -49,12 +45,6 @@
             <artifactId>Foundation</artifactId>
             <version>${foundation.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.inventivetalent</groupId>
-            <artifactId>glowapi</artifactId>
-            <version>1.4.10-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
