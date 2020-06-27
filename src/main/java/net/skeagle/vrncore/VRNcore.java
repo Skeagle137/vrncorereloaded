@@ -23,6 +23,7 @@ import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.tasks.PlayerTrailTask;
 import net.skeagle.vrncore.tasks.UpdatePlayerTask;
 import net.skeagle.vrncore.utils.storage.homes.HomesResource;
+import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
 import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -48,6 +49,7 @@ public class VRNcore extends SimplePlugin {
         HomesResource.getInstance().loadAllHomes();
         WarpsResource.getInstance().loadAllWarps();
         RewardManager.getInstance().loadRewards();
+        NPCResource.getInstance().loadAllNPCs();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
                 ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
@@ -101,13 +103,14 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Tpaccept()); //vrn.tpaccept
         registerCommand(new Tpdeny()); //vrn.tpdeny
         registerCommand(new Tpahere()); //vrn.tpahere
-        registerCommand(new Skin()); //vrn.skin
+        //registerCommand(new Skin()); //vrn.skin
         registerCommand(new Exptrade()); //vrn.exptrade
         registerCommand(new Trails()); //vrn.trails
         registerCommand(new Demotroll()); //vrn.demo
         registerCommand(new Spawnmob()); //vrn.spawnmob
         registerCommand(new TimePlayed()); //vrn.timeplayed.setself|getself|setothers|getothers
         registerCommand(new Hallucinate()); //vrn.hallucinate.self|others
+        registerCommand(new Npc()); //vrn.npc
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
@@ -116,6 +119,7 @@ public class VRNcore extends SimplePlugin {
         registerEvents(new BackListener());
         registerEvents(new ArrowListener());
         registerEvents(new RandomMOTD());
+        registerEvents(new UpdateNPCsListener());
     }
 
     @Override

@@ -8,7 +8,6 @@ import net.skeagle.vrncore.utils.storage.timerewards.TimeRewards;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.mineacademy.fo.settings.YamlConfig;
 
 import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.utils.VRNUtil.color;
@@ -21,7 +20,7 @@ public class UpdatePlayerTask extends BukkitRunnable {
             final AFKManager manager = AFKManager.getAfkManager(pl);
             final PlayerCache cache = PlayerCache.getCache(pl);
             final TimeRewards reward;
-            int time = cache.getTimeplayed().getTimeSeconds();
+            long time = cache.getTimeplayed();
             if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                 reward = RewardManager.getInstance().getReward(String.valueOf(time));
                 if (reward != null)
@@ -29,7 +28,7 @@ public class UpdatePlayerTask extends BukkitRunnable {
                         reward.doReward(pl);
 
                 time += 1;
-                cache.setTimeplayed(YamlConfig.TimeHelper.fromSeconds(time));
+                cache.setTimeplayed(time);
                 if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING) {
                     manager.setAfk(true);
                 }

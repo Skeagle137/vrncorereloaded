@@ -1,34 +1,17 @@
 package net.skeagle.vrncore.commands;
 
-
+/*
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
-import net.minecraft.server.v1_15_R1.EntityPlayer;
-import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_15_R1.PacketPlayOutUpdateHealth;
+ */
+
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
-import org.mineacademy.fo.Common;
 import org.mineacademy.fo.command.SimpleCommand;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-
-import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 
 public class Skin extends SimpleCommand {
@@ -45,47 +28,37 @@ public class Skin extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        setSkin(getPlayer(), args[0]);
+        //setSkin(getPlayer(), args[0]);
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             pl.hidePlayer(VRNcore.getInstance(), getPlayer());
             pl.showPlayer(VRNcore.getInstance(), getPlayer());
         }
     }
+    /*
 
     private void setSkin(final Player p, final String s) {
-        try {
-            final URL url_0 = new URL("https://api.mojang.com/users/profiles/minecraft/" + s);
-            final InputStreamReader reader_0 = new InputStreamReader(url_0.openStream());
-            final String uuid = new JsonParser().parse(reader_0).getAsJsonObject().get("id").getAsString();
-
-            final URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
-            final InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
-            final JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
-            final String texture = textureProperty.get("value").getAsString();
-            final String signature = textureProperty.get("signature").getAsString();
-
-            final EntityPlayer ep = ((CraftPlayer) p).getHandle();
-            final GameProfile gp = ep.getProfile();
-            final PropertyMap pm = gp.getProperties();
-            final Property property = pm.get("textures").iterator().next();
-            pm.remove("textures", property);
-            pm.put("textures", new Property("textures", texture, signature));
-            reloadSkin(p);
-            p.updateInventory();
-            final PlayerInventory inventory = p.getInventory();
-            inventory.setHeldItemSlot(inventory.getHeldItemSlot());
-            final float experience = p.getExp();
-            final int totalExperience = p.getTotalExperience();
-            p.setExp(experience);
-            p.setTotalExperience(totalExperience);
-            p.getInventory().setItemInMainHand(p.getInventory().getItemInMainHand());
-            p.getInventory().setItemInOffHand(p.getInventory().getItemInOffHand());
-            p.setWalkSpeed(p.getWalkSpeed());
-            say(p, "&aYour skin has been changed successfully.");
-        } catch (final IOException e) {
-            System.err.println("Could not get skin data from session servers!");
-            e.printStackTrace();
+        final String[] skin = VRNUtil.getSkin(s);
+        if (skin == null) {
+            say(getPlayer(), "&cThe skin could not be retrieved. Likely there is no player with this name.");
+            return;
         }
+        final EntityPlayer ep = ((CraftPlayer) p).getHandle();
+        final Property property = ep.getProfile().getProperties().get("textures").iterator().next();
+        ep.getProfile().getProperties().remove("textures", property);
+        ep.getProfile().getProperties().put("textures", new Property("textures", skin[0], skin[1]));
+        reloadSkin(p);
+
+        p.updateInventory();
+        final PlayerInventory inventory = p.getInventory();
+        inventory.setHeldItemSlot(inventory.getHeldItemSlot());
+        final float experience = p.getExp();
+        final int totalExperience = p.getTotalExperience();
+        p.setExp(experience);
+        p.setTotalExperience(totalExperience);
+        p.getInventory().setItemInMainHand(p.getInventory().getItemInMainHand());
+        p.getInventory().setItemInOffHand(p.getInventory().getItemInOffHand());
+        p.setWalkSpeed(p.getWalkSpeed());
+        say(p, "&aYour skin has been changed successfully.");
     }
 
     //this is necessary to see the changes applied to yourself
@@ -123,4 +96,6 @@ public class Skin extends SimpleCommand {
             Common.log("&cError sending skin change packet.");
         }
     }
+
+     */
 }

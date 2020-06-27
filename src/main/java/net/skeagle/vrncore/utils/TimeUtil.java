@@ -1,12 +1,8 @@
 package net.skeagle.vrncore.utils;
 
-import org.mineacademy.fo.settings.YamlConfig;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import static org.mineacademy.fo.settings.YamlConfig.TimeHelper.from;
 
 public class TimeUtil {
 
@@ -32,10 +28,6 @@ public class TimeUtil {
             return s + "s";
         }
         return s;
-    }
-
-    public static YamlConfig.TimeHelper fromSeconds(final long seconds) {
-        return from(seconds + " seconds");
     }
 
     private enum TimeUnits {

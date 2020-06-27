@@ -9,7 +9,6 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
 
-import static net.skeagle.vrncore.utils.TimeUtil.fromSeconds;
 import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -58,14 +57,14 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[index], VRNUtil.noton);
                     final PlayerCache cache = PlayerCache.getCache(a);
-                    cache.setTimeplayed(fromSeconds(totalsec));
+                    cache.setTimeplayed(totalsec);
                     say(getSender(), "Time played set to &a" + timeToMessage(totalsec) + "&7 for &a" + a.getName() + "&7.");
                     return;
                 }
                 checkConsole();
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache = PlayerCache.getCache(getPlayer());
-                cache.setTimeplayed(fromSeconds(totalsec));
+                cache.setTimeplayed(totalsec);
                 say(getPlayer(), "Time played set to &a" + timeToMessage(totalsec) + "&7.");
                 return;
             case "get":
@@ -73,13 +72,13 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.getothers");
                     final Player a = findPlayer(args[1], VRNUtil.noton);
                     final PlayerCache cache2 = PlayerCache.getCache(a);
-                    say(getSender(), "&a" + a.getName() + "&7's time played is &a" + timeToMessage(cache2.getTimeplayed().getTimeSeconds()) + "&7.");
+                    say(getSender(), "&a" + a.getName() + "&7's time played is &a" + timeToMessage(cache2.getTimeplayed()) + "&7.");
                     return;
                 }
                 checkConsole();
                 hasPerm("vrn.timeplayed.getself");
                 final PlayerCache cache2 = PlayerCache.getCache(getPlayer());
-                say(getPlayer(), "Your time played is &a" + timeToMessage(cache2.getTimeplayed().getTimeSeconds()) + "&7.");
+                say(getPlayer(), "Your time played is &a" + timeToMessage(cache2.getTimeplayed()) + "&7.");
                 return;
             case "add":
                 int index1 = 1;
@@ -109,16 +108,16 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[index1], VRNUtil.noton);
                     final PlayerCache cache3 = PlayerCache.getCache(a);
-                    final long l = cache3.getTimeplayed().getTimeSeconds();
-                    cache3.setTimeplayed(fromSeconds(l + totalsec1));
+                    final long l = cache3.getTimeplayed();
+                    cache3.setTimeplayed(l + totalsec1);
                     say(getSender(), "Time played set to &a" + timeToMessage(totalsec1) + "&7 for &a" + a.getName() + "&7.");
                     return;
                 }
                 checkConsole();
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache4 = PlayerCache.getCache(getPlayer());
-                final long l = cache4.getTimeplayed().getTimeSeconds();
-                cache4.setTimeplayed(fromSeconds(l + totalsec1));
+                final long l = cache4.getTimeplayed();
+                cache4.setTimeplayed(l + totalsec1);
                 say(getPlayer(), "Time played set to &a" + timeToMessage(totalsec1) + "&7.");
                 return;
             case "subtract":
@@ -149,12 +148,12 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[index2], VRNUtil.noton);
                     final PlayerCache cache5 = PlayerCache.getCache(a);
-                    final long l2 = cache5.getTimeplayed().getTimeSeconds();
+                    final long l2 = cache5.getTimeplayed();
                     if (l2 - totalsec2 < 0) {
-                        cache5.setTimeplayed(fromSeconds(0));
+                        cache5.setTimeplayed(0);
                         say(getPlayer(), "Time played set to &a0 seconds&7.");
                     } else {
-                        cache5.setTimeplayed(fromSeconds(l2 - totalsec2));
+                        cache5.setTimeplayed(l2 - totalsec2);
                         say(getPlayer(), "Time played set to &a" + timeToMessage(l2 - totalsec2) + "&7.");
                     }
                     return;
@@ -162,12 +161,12 @@ public class TimePlayed extends SimpleCommand {
                 checkConsole();
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache6 = PlayerCache.getCache(getPlayer());
-                final long l2 = cache6.getTimeplayed().getTimeSeconds();
+                final long l2 = cache6.getTimeplayed();
                 if (l2 - totalsec2 < 0) {
-                    cache6.setTimeplayed(fromSeconds(0));
+                    cache6.setTimeplayed(0);
                     say(getPlayer(), "Time played set to &a0 seconds&7.");
                 } else {
-                    cache6.setTimeplayed(fromSeconds(l2 - totalsec2));
+                    cache6.setTimeplayed(l2 - totalsec2);
                     say(getPlayer(), "Time played set to &a" + timeToMessage(l2 - totalsec2) + "&7.");
                 }
                 return;

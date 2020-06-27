@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.skeagle.vrncore.utils.TrailOptions;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.remain.CompParticle;
-import org.mineacademy.fo.settings.YamlConfig;
 import org.mineacademy.fo.settings.YamlSectionConfig;
 
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public class PlayerCache extends YamlSectionConfig {
     private boolean vanished;
     private boolean muted;
     private boolean godmode;
-    private YamlConfig.TimeHelper timeplayed;
+    private long timeplayed;
 
     protected PlayerCache(final String uuid) {
         super(uuid);
@@ -53,7 +52,7 @@ public class PlayerCache extends YamlSectionConfig {
             godmode = getBoolean("Godmode");
 
         if (isSet("Timeplayed"))
-            timeplayed = getTime("Timeplayed");
+            timeplayed = getLong("Timeplayed");
     }
 
     public void setNickname(final String nickname) {
@@ -92,7 +91,7 @@ public class PlayerCache extends YamlSectionConfig {
         save("Godmode", godmode);
     }
 
-    public void setTimeplayed(final YamlConfig.TimeHelper timeplayed) {
+    public void setTimeplayed(final long timeplayed) {
         this.timeplayed = timeplayed;
 
         save("Timeplayed", timeplayed);
