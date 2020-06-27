@@ -22,7 +22,7 @@ public class PlayerCache extends YamlSectionConfig {
     private boolean vanished;
     private boolean muted;
     private boolean godmode;
-    private long timeplayed;
+    private int timeplayed;
 
     protected PlayerCache(final String uuid) {
         super(uuid);
@@ -52,7 +52,7 @@ public class PlayerCache extends YamlSectionConfig {
             godmode = getBoolean("Godmode");
 
         if (isSet("Timeplayed"))
-            timeplayed = getLong("Timeplayed");
+            timeplayed = getInteger("Timeplayed");
     }
 
     public void setNickname(final String nickname) {
@@ -91,7 +91,7 @@ public class PlayerCache extends YamlSectionConfig {
         save("Godmode", godmode);
     }
 
-    public void setTimeplayed(final long timeplayed) {
+    public void setTimeplayed(final Integer timeplayed) {
         this.timeplayed = timeplayed;
 
         save("Timeplayed", timeplayed);

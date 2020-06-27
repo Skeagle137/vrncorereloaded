@@ -31,7 +31,7 @@ public class TimePlayed extends SimpleCommand {
         switch (args[0].toLowerCase()) {
             case "set":
                 int index = 1;
-                long totalsec = 0;
+                int totalsec = 0;
                 try {
                     for (int i = 1; i < args.length; i++) {
                         final boolean b = TimeUtil.TimeString.isTimeString(args, i);
@@ -82,7 +82,7 @@ public class TimePlayed extends SimpleCommand {
                 return;
             case "add":
                 int index1 = 1;
-                long totalsec1 = 0;
+                int totalsec1 = 0;
                 try {
                     for (int i = 1; i < args.length; i++) {
                         final boolean b = TimeUtil.TimeString.isTimeString(args, i);
@@ -108,7 +108,7 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[index1], VRNUtil.noton);
                     final PlayerCache cache3 = PlayerCache.getCache(a);
-                    final long l = cache3.getTimeplayed();
+                    final int l = cache3.getTimeplayed();
                     cache3.setTimeplayed(l + totalsec1);
                     say(getSender(), "Time played set to &a" + timeToMessage(totalsec1) + "&7 for &a" + a.getName() + "&7.");
                     return;
@@ -116,13 +116,13 @@ public class TimePlayed extends SimpleCommand {
                 checkConsole();
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache4 = PlayerCache.getCache(getPlayer());
-                final long l = cache4.getTimeplayed();
+                final int l = cache4.getTimeplayed();
                 cache4.setTimeplayed(l + totalsec1);
                 say(getPlayer(), "Time played set to &a" + timeToMessage(totalsec1) + "&7.");
                 return;
             case "subtract":
                 int index2 = 1;
-                long totalsec2 = 0;
+                int totalsec2 = 0;
                 try {
                     for (int i = 1; i < args.length; i++) {
                         final boolean b = TimeUtil.TimeString.isTimeString(args, i);
@@ -148,7 +148,7 @@ public class TimePlayed extends SimpleCommand {
                     hasPerm("vrn.timeplayed.setothers");
                     final Player a = findPlayer(args[index2], VRNUtil.noton);
                     final PlayerCache cache5 = PlayerCache.getCache(a);
-                    final long l2 = cache5.getTimeplayed();
+                    final int l2 = cache5.getTimeplayed();
                     if (l2 - totalsec2 < 0) {
                         cache5.setTimeplayed(0);
                         say(getPlayer(), "Time played set to &a0 seconds&7.");
@@ -161,7 +161,7 @@ public class TimePlayed extends SimpleCommand {
                 checkConsole();
                 hasPerm("vrn.timeplayed.setself");
                 final PlayerCache cache6 = PlayerCache.getCache(getPlayer());
-                final long l2 = cache6.getTimeplayed();
+                final int l2 = cache6.getTimeplayed();
                 if (l2 - totalsec2 < 0) {
                     cache6.setTimeplayed(0);
                     say(getPlayer(), "Time played set to &a0 seconds&7.");

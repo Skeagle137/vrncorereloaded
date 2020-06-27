@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.menu;
+package net.skeagle.vrncore.utils;
 
 import org.bukkit.entity.Player;
 

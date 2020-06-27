@@ -20,7 +20,7 @@ public class UpdatePlayerTask extends BukkitRunnable {
             final AFKManager manager = AFKManager.getAfkManager(pl);
             final PlayerCache cache = PlayerCache.getCache(pl);
             final TimeRewards reward;
-            long time = cache.getTimeplayed();
+            int time = cache.getTimeplayed();
             if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                 reward = RewardManager.getInstance().getReward(String.valueOf(time));
                 if (reward != null)
