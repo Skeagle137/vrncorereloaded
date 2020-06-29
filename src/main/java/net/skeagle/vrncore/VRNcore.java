@@ -103,7 +103,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Tpaccept()); //vrn.tpaccept
         registerCommand(new Tpdeny()); //vrn.tpdeny
         registerCommand(new Tpahere()); //vrn.tpahere
-        //registerCommand(new Skin()); //vrn.skin
+        registerCommand(new Skin()); //vrn.skin
         registerCommand(new Exptrade()); //vrn.exptrade
         registerCommand(new Trails()); //vrn.trails
         registerCommand(new Demotroll()); //vrn.demo

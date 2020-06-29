@@ -7,11 +7,20 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
  */
 
+import com.mojang.authlib.properties.Property;
+import net.minecraft.server.v1_16_R1.*;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 import org.mineacademy.fo.command.SimpleCommand;
+
+import java.util.Collections;
+
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 
 public class Skin extends SimpleCommand {
@@ -28,13 +37,12 @@ public class Skin extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        //setSkin(getPlayer(), args[0]);
+        setSkin(getPlayer(), args[0]);
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             pl.hidePlayer(VRNcore.getInstance(), getPlayer());
             pl.showPlayer(VRNcore.getInstance(), getPlayer());
         }
     }
-    /*
 
     private void setSkin(final Player p, final String s) {
         final String[] skin = VRNUtil.getSkin(s);
@@ -66,36 +74,16 @@ public class Skin extends SimpleCommand {
         final EntityPlayer ep = ((CraftPlayer) p).getHandle();
         final PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep);
         final PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep);
-        final Location location = p.getLocation().clone();
-        final EnumWrappers.NativeGameMode gamemode = EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode());
-        final PacketContainer respawn = new PacketContainer(PacketType.Play.Server.RESPAWN);
-        respawn.getDimensions().write(0, ep.dimension.getDimensionID());
-        respawn.getWorldTypeModifier().write(0, p.getWorld().getWorldType());
-        respawn.getGameModes().write(0, gamemode);
-        final PacketContainer teleport = new PacketContainer(PacketType.Play.Server.POSITION);
-        teleport.getModifier().writeDefaults();
-        teleport.getDoubles().write(0, location.getX());
-        teleport.getDoubles().write(1, location.getY());
-        teleport.getDoubles().write(2, location.getZ());
-        teleport.getFloat().write(0, location.getYaw());
-        teleport.getFloat().write(1, location.getPitch());
-        teleport.getIntegers().writeSafely(0, (-1337));
+        final Location loc = p.getLocation().clone();
+        final WorldServer ws = ep.getWorldServer();
+        final PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(ws.getTypeKey(), ws.getDimensionKey(), ws.getSeed(),
+                ep.playerInteractManager.getGameMode(), ep.playerInteractManager.getGameMode(), ws.isDebugWorld(), ws.isFlatWorld(), true);
+        final PacketPlayOutPosition teleport = new PacketPlayOutPosition(loc.getX(), loc.getY(), loc.getZ(),
+                p.getLocation().getYaw(), p.getLocation().getPitch(), Collections.emptySet(), -1337);
         ep.playerConnection.sendPacket(removeInfo);
         ep.playerConnection.sendPacket(addInfo);
-        sendPackets(p, respawn, teleport);
-        final PacketPlayOutUpdateHealth health = new PacketPlayOutUpdateHealth((float) p.getHealth(), p.getFoodLevel(), p.getSaturation());
-        ep.playerConnection.sendPacket(health);
+        ep.playerConnection.sendPacket(respawn);
+        ep.playerConnection.sendPacket(teleport);
+        ((CraftPlayer) p).updateScaledHealth(true);
     }
-
-    private void sendPackets(final Player p, final PacketContainer... packets) {
-        try {
-            for (final PacketContainer packet : packets) {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet);
-            }
-        } catch (final InvocationTargetException ex) {
-            Common.log("&cError sending skin change packet.");
-        }
-    }
-
-     */
 }
