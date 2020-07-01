@@ -26,6 +26,8 @@ public enum VRNParticle {
     SLIME("Slime", CompParticle.SLIME, CompMaterial.SLIME_BALL),
     HEART("Heart", CompParticle.HEART, CompMaterial.POPPY),
     END_ROD("End Rod Light", CompParticle.END_ROD, CompMaterial.END_ROD);
+    //SOUL("Soul", CompParticle.SOUL, CompMaterial.SOUL_SAND);
+
 
     private final String name;
     private final CompParticle particle;

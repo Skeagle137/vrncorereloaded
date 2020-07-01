@@ -1,5 +1,5 @@
 name: VRNcore
-version: 4.3.8a
+version: 4.3.8b
 main: net.skeagle.vrncore.VRNcore
 author: Skeagle
 description: The core plugin for VRN Network.

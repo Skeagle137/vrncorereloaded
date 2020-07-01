@@ -88,6 +88,11 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <finalName>${project.name} v${project.version}</finalName>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.mineacademy.server:paper</exclude>
+                                </excludes>
+                            </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>org.mineacademy</pattern>
@@ -95,6 +100,9 @@
                                     <includes>
                                         <include>org.mineacademy.libraries:foundation</include>
                                     </includes>
+                                    <excludes>
+                                        <exclude>org.mineacademy.server:paper</exclude>
+                                    </excludes>
                                 </relocation>
                             </relocations>
                         </configuration>
