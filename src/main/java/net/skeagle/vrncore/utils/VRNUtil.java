@@ -2,6 +2,7 @@ package net.skeagle.vrncore.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.skeagle.vrncore.settings.Settings;
@@ -9,12 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.mineacademy.fo.Common;
 
 import java.io.InputStreamReader;
 import java.net.URL;
-
-import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class VRNUtil {
 
@@ -35,18 +33,27 @@ public class VRNUtil {
         }
     }
 
-    public static void sayAndLog(final CommandSender cs, final String... message) {
-        sayNoPrefix(cs, message);
-        Common.logNoPrefix(color(message));
-    }
-
-    public static String color(final String i) {
-        return translateAlternateColorCodes('&', i);
+    public static String color(String s) {
+        for (int i = 0; i < s.length(); ++i) {
+            if (s.length() - i > 8) {
+                final String temp = s.substring(i, i + 8);
+                if (temp.startsWith("&#")) {
+                    final char[] chars = temp.replaceFirst("&#", "").toCharArray();
+                    final StringBuilder rgbColor = new StringBuilder();
+                    rgbColor.append("&x");
+                    for (final char c : chars) {
+                        rgbColor.append("&").append(c);
+                    }
+                    s = s.replaceAll(temp, rgbColor.toString());
+                }
+            }
+        }
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 
     public static String[] color(final String... i) {
         for (final String uncolored : i) {
-            translateAlternateColorCodes('&', uncolored);
+            color(uncolored);
         }
         return i;
     }
