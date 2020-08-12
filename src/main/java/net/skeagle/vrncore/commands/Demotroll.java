@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.commands;
 
-import net.minecraft.server.v1_16_R1.PacketPlayOutGameStateChange;
+import net.minecraft.server.v1_16_R2.PacketPlayOutGameStateChange;
 import net.skeagle.vrncore.utils.VRNUtil;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 

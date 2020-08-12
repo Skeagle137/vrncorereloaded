@@ -8,12 +8,12 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
  */
 
 import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_16_R1.*;
+import net.minecraft.server.v1_16_R2.*;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -76,7 +76,7 @@ public class Skin extends SimpleCommand {
         final PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep);
         final Location loc = p.getLocation().clone();
         final WorldServer ws = ep.getWorldServer();
-        final PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(ws.getTypeKey(), ws.getDimensionKey(), ws.getSeed(),
+        final PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(ws.getDimensionManager(), ws.getDimensionKey(), ws.getSeed(),
                 ep.playerInteractManager.getGameMode(), ep.playerInteractManager.getGameMode(), ws.isDebugWorld(), ws.isFlatWorld(), true);
         final PacketPlayOutPosition teleport = new PacketPlayOutPosition(loc.getX(), loc.getY(), loc.getZ(),
                 p.getLocation().getYaw(), p.getLocation().getPitch(), Collections.emptySet(), -1337);

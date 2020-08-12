@@ -13,14 +13,15 @@ import static net.skeagle.vrncore.utils.VRNUtil.color;
 public class RandomMOTD implements Listener {
 
     @EventHandler
-    public void onServerListPing(ServerListPingEvent e) {
-        if (Settings.Motd.ENABLED) {
-            String message = RandomUtil.nextItem(new ArrayList<>(Settings.Motd.MESSAGES));
-            if (Settings.Motd.FIRST_STATIC) {
-                e.setMotd(color(Settings.Motd.FIRST_STATIC_TEXT + "\n" + message));
-                return;
-            }
-            e.setMotd(color(message));
+    public void onServerListPing(final ServerListPingEvent e) {
+        if (!Settings.Motd.ENABLED) {
+            return;
         }
+        final String message = RandomUtil.nextItem(new ArrayList<>(Settings.Motd.MESSAGES));
+        if (Settings.Motd.FIRST_STATIC) {
+            e.setMotd(color(Settings.Motd.FIRST_STATIC_TEXT + "\n" + message));
+            return;
+        }
+        e.setMotd(color(message));
     }
 }
