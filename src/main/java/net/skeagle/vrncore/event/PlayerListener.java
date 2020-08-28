@@ -2,6 +2,8 @@ package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.hooks.VaultHook;
+import net.skeagle.vrncore.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -58,7 +60,7 @@ public class PlayerListener implements Listener {
     }
 
     /************************
-     * =====MUTE EVENT=====
+     * =====CHAT EVENT=====
      ************************/
 
     @EventHandler
@@ -69,6 +71,20 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
             say(p, "&cYou are muted. You cannot chat.");
         }
+        if (!Settings.Chat.ENABLED) return;
+        if (!p.hasPermission("vrn.chat.allow")) {
+            e.setCancelled(true);
+            say(p, "&cYou do not have permission to use the chat.");
+        }
+        if (p.hasPermission("vrn.chat.color")) {
+            e.setMessage(color(e.getMessage()));
+        }
+        final VaultHook hook = VaultHook.getInstance();
+        if (hook == null) return;
+        String msg = hook.format(p);
+        msg = msg.replaceAll("%", "%%");
+        msg = msg.replace("%%message", "%2$s");
+        e.setFormat(color(msg));
     }
 
     /**************************

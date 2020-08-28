@@ -39,6 +39,20 @@ public class Settings extends SimpleSettings {
         }
     }
 
+    public static class Chat {
+        public static Boolean ENABLED;
+        public static Boolean ALL_MAY_COLOR;
+        public static String FORMAT;
+
+        private static void init() {
+            pathPrefix("Chat");
+
+            ENABLED = getBoolean("Chat_Enabled");
+            ALL_MAY_COLOR = getBoolean("No_Permissions_Chat_Color");
+            FORMAT = getString("Message_Format");
+        }
+    }
+
     /*
     public static class Holograms {
         public static Integer MAX_LINES;

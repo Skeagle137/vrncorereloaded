@@ -19,6 +19,7 @@ import net.skeagle.vrncore.commands.warps.warp;
 import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
 import net.skeagle.vrncore.event.*;
+import net.skeagle.vrncore.hooks.VaultHook;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.tasks.PlayerTrailTask;
 import net.skeagle.vrncore.tasks.UpdatePlayerTask;
@@ -45,6 +46,8 @@ public class VRNcore extends SimplePlugin {
 
     @Override
     public void onPluginStart() {
+        //hooks
+        VaultHook.load();
         //config stuff
         HomesResource.getInstance().loadAllHomes();
         WarpsResource.getInstance().loadAllWarps();
