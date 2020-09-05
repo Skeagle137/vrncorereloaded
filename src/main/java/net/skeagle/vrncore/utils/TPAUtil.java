@@ -67,8 +67,10 @@ public class TPAUtil {
 
     public void DelRequest(final UUID u1, final UUID u2, final boolean showmsg) {
         if (showmsg) {
-            say(Bukkit.getPlayer(u2), "&cThe teleport request has expired.");
-            say(Bukkit.getPlayer(u1), "&cThe teleport request from " + Bukkit.getPlayer(u2).getName() + " has expired.");
+            if (Bukkit.getPlayer(u2) != null && Bukkit.getPlayer(u1) != null) {
+                say(Bukkit.getPlayer(u2), "&cThe teleport request has expired.");
+                say(Bukkit.getPlayer(u1), "&cThe teleport request from " + Bukkit.getPlayer(u2).getName() + " has expired.");
+            }
         }
         StoredPlayer.remove(u1, u2);
         DelTask(Bukkit.getPlayer(u2));

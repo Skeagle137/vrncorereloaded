@@ -1,9 +1,9 @@
 package net.skeagle.vrncore.GUIs;
 
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.storage.homes.HomesManager;
 import net.skeagle.vrncore.utils.storage.homes.HomesResource;
 import net.skeagle.vrncore.utils.storage.homes.RegisteredHome;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -115,54 +115,8 @@ public class HomesGUI extends MenuPagged<RegisteredHome> {
         }
     }
 
-    private boolean blockCheck(final Block b) {
-        return (!b.getType().isAir() && b.getType().isSolid());
-    }
-
     private CompMaterial getIcon(final RegisteredHome home) {
-        final Location l = home.getLoc().clone();
-        final Block standing = l.add(0, -1, 0).getBlock();
-        final double x = l.getX() - (double) l.getBlockX();
-        final double z = l.getZ() - (double) l.getBlockZ();
-        final Block b1 = standing.getLocation().clone().add(1, 0, 0).getBlock();
-        final Block b2 = standing.getLocation().clone().add(1, 0, 1).getBlock();
-        final Block b3 = standing.getLocation().clone().add(0, 0, 1).getBlock();
-        final Block b4 = standing.getLocation().clone().add(-1, 0, 1).getBlock();
-        final Block b5 = standing.getLocation().clone().add(-1, 0, 0).getBlock();
-        final Block b6 = standing.getLocation().clone().add(-1, 0, -1).getBlock();
-        final Block b7 = standing.getLocation().clone().add(0, 0, -1).getBlock();
-        final Block b8 = standing.getLocation().clone().add(1, 0, -1).getBlock();
-        //check direct block
-        if (blockCheck(standing)) {
-            return CompMaterial.fromBlock(standing);
-        }
-        //check adjacent
-        if (x > 0.7 && blockCheck(b1)) {
-            return CompMaterial.fromBlock(b1);
-        }
-        if (x < 0.3 && blockCheck(b5)) {
-            return CompMaterial.fromBlock(b5);
-        }
-        if (z > 0.7 && blockCheck(b3)) {
-            return CompMaterial.fromBlock(b3);
-        }
-        if (z < 0.3 && blockCheck(b7)) {
-            return CompMaterial.fromBlock(b7);
-        }
-        //corners
-        if (x > 0.7 && z > 0.7 && blockCheck(b2)) {
-            return CompMaterial.fromBlock(b2);
-        }
-        if (x < 0.3 && z > 0.7 && blockCheck(b4)) {
-            return CompMaterial.fromBlock(b4);
-        }
-        if (x > 0.7 && z < 0.3 && blockCheck(b8)) {
-            return CompMaterial.fromBlock(b8);
-        }
-        if (x < 0.3 && z < 0.3 && blockCheck(b6)) {
-            return CompMaterial.fromBlock(b6);
-        }
-        //no ground in 3x3 area
-        return CompMaterial.BARRIER;
+        final Block b = VRNUtil.getBlockExact(home.getLoc());
+        return b != null ? CompMaterial.fromBlock(b) : CompMaterial.BARRIER;
     }
 }

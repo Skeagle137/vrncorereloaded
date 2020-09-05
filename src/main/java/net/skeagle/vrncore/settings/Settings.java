@@ -8,7 +8,7 @@ public class Settings extends SimpleSettings {
 
     @Override
     protected int getConfigVersion() {
-        return 1;
+        return 2;
     }
 
     public static class Motd {
@@ -50,6 +50,21 @@ public class Settings extends SimpleSettings {
             ENABLED = getBoolean("Chat_Enabled");
             ALL_MAY_COLOR = getBoolean("No_Permissions_Chat_Color");
             FORMAT = getString("Message_Format");
+        }
+    }
+
+    public static class Rtp {
+        public static Integer min_x, max_x, min_z, max_z;
+        public static Double x, z;
+
+        private static void init() {
+            pathPrefix("Rtp");
+            min_x = getInteger("min_distance_x");
+            max_x = getInteger("max_distance_x");
+            min_z = getInteger("min_distance_z");
+            max_z = getInteger("max_distance_z");
+            x = getDouble("x_origin");
+            z = getDouble("z_origin");
         }
     }
 

@@ -3,10 +3,8 @@ Motd:
   First_Line_Static: true
   First_Line_Text: "My server"
   Messages:
-    - "Have a great time!"
     - "Check out our website! http://example.com"
     - "Join the discord! http://discord.gg/example"
-    - "Join now!"
     - "Now supporting the latest mc version!"
 Afk:
   Stop_Counting_Playtime: 60
@@ -15,5 +13,12 @@ Chat:
   Chat_Enabled: true
   No_Permissions_Chat_Color: false
   Message_Format: "%prefix%player%suffix: %message"
+Rtp:
+  min_distance_x: 100
+  max_distance_x: 10000
+  min_distance_z: 100
+  max_distance_z: 10000
+  x_origin: 0.0
+  z_origin: 0.0
 Prefix: "&8[&9&lServer&8] &7"
-Version: 1
+Version: 2

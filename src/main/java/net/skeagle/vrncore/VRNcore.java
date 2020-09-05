@@ -114,6 +114,8 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new TimePlayed()); //vrn.timeplayed.setself|getself|setothers|getothers
         registerCommand(new Hallucinate()); //vrn.hallucinate.self|others
         registerCommand(new Npc()); //vrn.npc
+        registerCommand(new Top()); //vrn.top
+        registerCommand(new Rtp()); //vrn.rtp
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());

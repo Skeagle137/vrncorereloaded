@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.skeagle.vrncore.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -61,6 +62,57 @@ public class VRNUtil {
     public static void sayActionBar(final Player p, final String msg) {
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                 TextComponent.fromLegacyText(color(msg)));
+    }
+
+    public static Block getBlockExact(final Location loc) {
+        final Location l = loc.clone();
+        final Block standing = l.add(0, -1, 0).getBlock();
+        final double x = l.getX() - (double) l.getBlockX();
+        final double z = l.getZ() - (double) l.getBlockZ();
+        final Block b1 = standing.getLocation().clone().add(1, 0, 0).getBlock();
+        final Block b2 = standing.getLocation().clone().add(1, 0, 1).getBlock();
+        final Block b3 = standing.getLocation().clone().add(0, 0, 1).getBlock();
+        final Block b4 = standing.getLocation().clone().add(-1, 0, 1).getBlock();
+        final Block b5 = standing.getLocation().clone().add(-1, 0, 0).getBlock();
+        final Block b6 = standing.getLocation().clone().add(-1, 0, -1).getBlock();
+        final Block b7 = standing.getLocation().clone().add(0, 0, -1).getBlock();
+        final Block b8 = standing.getLocation().clone().add(1, 0, -1).getBlock();
+        //check direct block
+        if (blockCheck(standing)) {
+            return standing;
+        }
+        //check adjacent
+        if (x > 0.7 && blockCheck(b1)) {
+            return b1;
+        }
+        if (x < 0.3 && blockCheck(b5)) {
+            return b5;
+        }
+        if (z > 0.7 && blockCheck(b3)) {
+            return b3;
+        }
+        if (z < 0.3 && blockCheck(b7)) {
+            return b7;
+        }
+        //corners
+        if (x > 0.7 && z > 0.7 && blockCheck(b2)) {
+            return b2;
+        }
+        if (x < 0.3 && z > 0.7 && blockCheck(b4)) {
+            return b4;
+        }
+        if (x > 0.7 && z < 0.3 && blockCheck(b8)) {
+            return b8;
+        }
+        if (x < 0.3 && z < 0.3 && blockCheck(b6)) {
+            return b6;
+        }
+        //no ground in 3x3 area
+        return null;
+    }
+
+    private static boolean blockCheck(final Block b) {
+        return (!b.getType().isAir() && b.getType().isSolid());
     }
 
     public static String[] getSkin(final String name) {
