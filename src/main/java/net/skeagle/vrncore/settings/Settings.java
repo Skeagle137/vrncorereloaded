@@ -12,8 +12,7 @@ public class Settings extends SimpleSettings {
     }
 
     public static class Motd {
-        public static Boolean ENABLED;
-        public static Boolean FIRST_STATIC;
+        public static Boolean ENABLED, FIRST_STATIC;
         public static String FIRST_STATIC_TEXT;
         public static List<String> MESSAGES;
 
@@ -28,8 +27,7 @@ public class Settings extends SimpleSettings {
     }
 
     public static class Afk {
-        public static Integer STOP_COUNTING;
-        public static Integer KICK_TIME_IN_SECONDS;
+        public static Integer STOP_COUNTING, KICK_TIME_IN_SECONDS;
 
         private static void init() {
             pathPrefix("Afk");
@@ -40,11 +38,8 @@ public class Settings extends SimpleSettings {
     }
 
     public static class Chat {
-        public static Boolean ENABLED;
-        public static Boolean ALL_MAY_COLOR;
+        public static Boolean ENABLED, ALL_MAY_COLOR, MULTIPLE_PREFIX, MULTIPLE_SUFFIX;
         public static String FORMAT;
-        public static Boolean MULTIPLE_PREFIX;
-        public static Boolean MULTIPLE_SUFFIX;
 
         private static void init() {
             pathPrefix("Chat");
@@ -69,6 +64,19 @@ public class Settings extends SimpleSettings {
             max_z = getInteger("max_distance_z");
             x = getDouble("x_origin");
             z = getDouble("z_origin");
+        }
+    }
+
+    public static class Joining {
+        public static Boolean ENABLED;
+        public static String WELCOME, JOIN, QUIT;
+
+        private static void init() {
+            pathPrefix("Joining");
+            ENABLED = getBoolean("custom_join_leave_enabled");
+            WELCOME = getString("welcome_message");
+            JOIN = getString("join_message");
+            QUIT = getString("leave_message");
         }
     }
 

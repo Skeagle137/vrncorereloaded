@@ -27,7 +27,6 @@ import net.skeagle.vrncore.utils.storage.homes.HomesResource;
 import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
 import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
@@ -37,9 +36,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class VRNcore extends SimplePlugin {
-
-    private final PluginDescriptionFile pdf = this.getDescription();
-    private final String pv = pdf.getVersion();
 
     private UpdatePlayerTask afktask;
     private PlayerTrailTask trailtask;
@@ -55,7 +51,7 @@ public class VRNcore extends SimplePlugin {
         NPCResource.getInstance().loadAllNPCs();
         //server
         Common.log(ChatColor.GREEN + "----------------------------------------",
-                ChatColor.GREEN + "VRNcore " + pv + " is now enabled.",
+                ChatColor.GREEN + "VRNcore " + getVersion() + " is now enabled.",
                 ChatColor.GREEN + "----------------------------------------");
         //tasks
         afktask = new UpdatePlayerTask();
@@ -116,6 +112,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Npc()); //vrn.npc
         registerCommand(new Top()); //vrn.top
         registerCommand(new Rtp()); //vrn.rtp
+        registerCommand(new Vrn()); //vrn.reload
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
@@ -125,6 +122,7 @@ public class VRNcore extends SimplePlugin {
         registerEvents(new ArrowListener());
         registerEvents(new RandomMOTD());
         registerEvents(new UpdateNPCsListener());
+
     }
 
     @Override
@@ -155,7 +153,7 @@ public class VRNcore extends SimplePlugin {
     public void onPluginStop() {
         cleanBeforeReload();
         Common.log(ChatColor.RED + "----------------------------------------",
-                ChatColor.RED + "VRNcore " + pv + " is now disabled.",
+                ChatColor.RED + "VRNcore " + getVersion() + " is now disabled.",
                 ChatColor.RED + "----------------------------------------");
 
     }
