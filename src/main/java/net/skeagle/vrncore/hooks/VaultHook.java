@@ -31,6 +31,8 @@ public class VaultHook {
     }
 
     private String getPrefix(final Player p) {
+        if (!Settings.Chat.MULTIPLE_PREFIX)
+            return chat.getPlayerPrefix(p.getWorld().getName(), p);
         final List<String> prefixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
             final String prefix = chat.getGroupPrefix(p.getWorld(), group);
@@ -41,6 +43,8 @@ public class VaultHook {
     }
 
     private String getSuffix(final Player p) {
+        if (!Settings.Chat.MULTIPLE_SUFFIX)
+            return chat.getPlayerSuffix(p.getWorld().getName(), p);
         final List<String> suffixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
             final String suffix = chat.getGroupSuffix(p.getWorld(), group);
@@ -61,6 +65,16 @@ public class VaultHook {
     public String format(final Player p) {
         final PlayerCache cache = PlayerCache.getCache(p);
         String s = Settings.Chat.FORMAT;
+        s = s.replaceAll("%prefix", getPrefix(p));
+        s = s.replaceAll("%player", cache.getNickname() != null ? cache.getNickname() + "&r" : p.getName());
+        s = s.replaceAll("%suffix", getSuffix(p));
+        s = s.replaceAll("%world", p.getWorld().getName());
+        s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
+        return s;
+    }
+
+    public String format(String s, final Player p) {
+        final PlayerCache cache = PlayerCache.getCache(p);
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", cache.getNickname() != null ? cache.getNickname() + "&r" : p.getName());
         s = s.replaceAll("%suffix", getSuffix(p));

@@ -8,7 +8,7 @@ public class Settings extends SimpleSettings {
 
     @Override
     protected int getConfigVersion() {
-        return 2;
+        return 3;
     }
 
     public static class Motd {
@@ -43,6 +43,8 @@ public class Settings extends SimpleSettings {
         public static Boolean ENABLED;
         public static Boolean ALL_MAY_COLOR;
         public static String FORMAT;
+        public static Boolean MULTIPLE_PREFIX;
+        public static Boolean MULTIPLE_SUFFIX;
 
         private static void init() {
             pathPrefix("Chat");
@@ -50,6 +52,8 @@ public class Settings extends SimpleSettings {
             ENABLED = getBoolean("Chat_Enabled");
             ALL_MAY_COLOR = getBoolean("No_Permissions_Chat_Color");
             FORMAT = getString("Message_Format");
+            MULTIPLE_PREFIX = getBoolean("Multiple_Prefixes");
+            MULTIPLE_SUFFIX = getBoolean("Multiple_Suffixes");
         }
     }
 

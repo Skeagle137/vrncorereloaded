@@ -13,6 +13,8 @@ Chat:
   Chat_Enabled: true
   No_Permissions_Chat_Color: false
   Message_Format: "%prefix%player%suffix: %message"
+  Multiple_Prefixes: false
+  Multiple_Suffixes: false
 Rtp:
   min_distance_x: 100
   max_distance_x: 10000

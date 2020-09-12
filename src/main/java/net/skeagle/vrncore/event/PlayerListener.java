@@ -27,21 +27,27 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent e) {
         e.setJoinMessage(null);
         final PlayerCache cache = PlayerCache.getCache(e.getPlayer());
+        final String name = cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName();
         if (!e.getPlayer().hasPlayedBefore()) {
-            e.setJoinMessage(color("&e" + e.getPlayer().getName() + " &6has joined for the first time. Welcome, &e" + e.getPlayer().getName() + "&6!"));
+            e.setJoinMessage(color("&e" + name + " &6has joined for the first time. Welcome, &e" + name + "&6!"));
             return;
         }
-        if (cache.getNickname() != null) {
-            e.getPlayer().setDisplayName(color(cache.getNickname() + "&r"));
-            e.getPlayer().setPlayerListName(color(cache.getNickname() + "&r"));
+        if (cache.getNickname() != null) e.getPlayer().setDisplayName(color(cache.getNickname() + "&r"));
+        final VaultHook hook = VaultHook.getInstance();
+        if (hook == null) return;
+        else {
+            String listname = "%prefix" + name + "%suffix";
+            listname = hook.format(listname, e.getPlayer());
+            e.getPlayer().setPlayerListName(color(listname));
         }
-        Common.logNoPrefix(color("&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName())) + " &dhas joined.");
+        final String join = "&7[&b+&7] &5" + name + " &dhas joined.";
+        Common.logNoPrefix(color(join));
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             if (pl.getUniqueId() != e.getPlayer().getUniqueId()) {
-                sayNoPrefix(pl, "&7[&b+&7] &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName() + " &dhas joined."));
+                sayNoPrefix(pl, name);
             }
         }
-        say(e.getPlayer(), "&dWelcome back, &5" + (cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName()) + "&d!");
+        say(e.getPlayer(), "&dWelcome back, &5" + name + "&d!");
     }
 
     /************************
@@ -50,13 +56,10 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent e) {
-        e.setQuitMessage(color("&7[&c-&7] &5" + e.getPlayer().getName() + " &dhas left."));
         final PlayerCache cache = PlayerCache.getCache(e.getPlayer());
-        if (cache.getNickname() != null) {
-            if (e.getQuitMessage() != null && !e.getQuitMessage().equals("")) {
-                e.setQuitMessage(e.getQuitMessage().replaceAll(e.getPlayer().getName(), color(cache.getNickname() + "&r")));
-            }
-        }
+        final String quit = "&7[&c-&7] &5" + (cache.getNickname() != null ? cache.getNickname() : e.getPlayer().getName()) + "&r &dhas left.";
+        e.setQuitMessage(color(quit));
+        Common.logNoPrefix(color(quit));
     }
 
     /************************
@@ -124,5 +127,4 @@ public class PlayerListener implements Listener {
     public void WorldChange(final PlayerChangedWorldEvent e) {
         sayActionBar(e.getPlayer(), "&a&lCurrently in world: \"" + e.getPlayer().getWorld().getName() + ".\"");
     }
-
 }
