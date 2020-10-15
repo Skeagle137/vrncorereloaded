@@ -22,7 +22,7 @@ Rtp:
   max_distance_z: 10000
   x_origin: 0.0
   z_origin: 0.0
-General:
+Joining:
   custom_join_leave_enabled: true
   welcome_message: "&e%player% &6has joined for the first time. Welcome, &e%player%&6!"
   join_message: "&7[&b+&7] &5%player%&dhas joined."
