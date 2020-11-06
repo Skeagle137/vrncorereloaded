@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.tab;
 
-import net.minecraft.server.v1_16_R2.ChatComponentText;
-import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
+import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerListHeaderFooter;
 import org.mineacademy.fo.Common;
 
 import java.util.ArrayList;
