@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="vrncorereloaded" default="Build">
-    <condition property="serverPath" value="C:\Users\Skeagle\Documents\VRN Network\Dev 1.16.2">
+    <condition property="serverPath" value="C:\Users\Skeagle\Documents\VRN Network\Dev 1.16.4">
         <os family="windows" />
     </condition>
 

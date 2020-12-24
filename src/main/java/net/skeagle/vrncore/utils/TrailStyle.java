@@ -7,5 +7,5 @@ public enum TrailStyle {
     ORBIT,
     DOUBLEHELIX,
     TRIORBIT,
-    TRICIRCLE
+    TRICIRCLE;
 }
