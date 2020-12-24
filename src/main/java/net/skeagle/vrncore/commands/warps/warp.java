@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.commands.warps;
 
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.warps.WarpsManager;
-import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
+import net.skeagle.vrncore.utils.storage.warps.Warp;
+import net.skeagle.vrncore.utils.storage.warps.WarpManager;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
@@ -21,23 +21,17 @@ public class warp extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        final WarpsManager man = WarpsResource.getInstance().getWarp(args[0]);
-        if (man != null) {
-            if (!man.teleWarp(getPlayer())) {
-                WarpsResource.getInstance().delWarp(args[0]);
-                returnTell("&cLocation not found, deleted warp.");
-            }
-            returnTell("&7Teleporting...");
-        }
-        returnTell("&cThat warp does not exist.");
+        Warp w = WarpManager.getInstance().getWarp(args[0]);
+        if (w == null) returnTell("&cThat warp does not exist.");
+        getPlayer().teleport(w.getLocation());
+        returnTell("&7Teleporting...");
     }
 
     @Override
     protected List<String> tabComplete() {
-        final List<String> names = WarpsResource.getInstance().getWarpNames();
-        if (!names.isEmpty()) {
+        final List<String> names = WarpManager.getInstance().getWarpNames();
+        if (!names.isEmpty())
             if (args.length == 1) return completeLastWord(names);
-        }
         return completeLastWord("");
     }
 }

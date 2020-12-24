@@ -1,8 +1,7 @@
 package net.skeagle.vrncore.commands.homes;
 
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.homes.HomesManager;
-import net.skeagle.vrncore.utils.storage.homes.HomesResource;
+import net.skeagle.vrncore.utils.storage.homes.HomeManager;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
@@ -23,25 +22,17 @@ public class delhome extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (!man.delHome(args[0])) {
+        if (!HomeManager.getInstance().delHome(args[0], getPlayer())) {
             say(getPlayer(), "&cThat home does not exist.");
             return;
         }
         say(getPlayer(), "&7Home &a" + args[0] + "&7 successfully deleted.");
     }
 
-
-    /*
-    tab complete, because who is going to remember
-    each of those 100 homes they set?
-    */
     @Override
     protected List<String> tabComplete() {
-        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (man.homeNames().size() != 0) {
-            if (args.length == 1) return completeLastWord(man.homeNames());
-        }
+        if (HomeManager.getInstance().getHomes(getPlayer()).size() != 0)
+            if (args.length == 1) return completeLastWord(HomeManager.getInstance().getHomeNames(getPlayer()));
         return completeLastWord("");
     }
 }

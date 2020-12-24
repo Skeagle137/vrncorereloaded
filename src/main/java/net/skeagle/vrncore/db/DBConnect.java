@@ -30,6 +30,8 @@ public class DBConnect {
         } catch (Exception e) {
             throw new RuntimeException("Error initializing database: " + e.getMessage());
         }
+        registerTable(new WarpManager());
+        registerTable(new HomeManager());
     }
 
     private <T extends DBObject<?>> void registerTable(T table) {

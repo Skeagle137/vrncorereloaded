@@ -1,13 +1,11 @@
 package net.skeagle.vrncore.commands.homes;
 
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.homes.HomesManager;
-import net.skeagle.vrncore.utils.storage.homes.HomesResource;
+import net.skeagle.vrncore.utils.storage.homes.Home;
+import net.skeagle.vrncore.utils.storage.homes.HomeManager;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
-
-import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class home extends SimpleCommand {
 
@@ -23,24 +21,16 @@ public class home extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (!man.teleHome(getPlayer(), args[0])) {
-            say(getPlayer(), "&cThat home does not exist.");
-            return;
-        }
-        say(getPlayer(), "&7Teleporting...");
+        Home h = HomeManager.getInstance().getHome(args[0], getPlayer());
+        if (h == null) returnTell("&cThat home does not exist.");
+        getPlayer().teleport(h.getLocation());
+        returnTell("&7Teleporting...");
     }
 
-    /*
-    tab complete, because who is going to remember
-    each of those 100 homes they set?
-    */
     @Override
     protected List<String> tabComplete() {
-        final HomesManager man = HomesResource.getInstance().getHome(getPlayer().getUniqueId());
-        if (man.homeNames().size() != 0) {
-            if (args.length == 1) return completeLastWord(man.homeNames());
-        }
+        if (HomeManager.getInstance().getHomes(getPlayer()).size() != 0)
+            if (args.length == 1) return completeLastWord(HomeManager.getInstance().getHomeNames(getPlayer()));
         return completeLastWord("");
     }
 }

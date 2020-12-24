@@ -2,10 +2,8 @@ package net.skeagle.vrncore.commands.warps;
 
 import net.skeagle.vrncore.GUIs.WarpsGUI;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
+import net.skeagle.vrncore.utils.storage.warps.WarpManager;
 import org.mineacademy.fo.command.SimpleCommand;
-
-import java.util.List;
 
 public class warps extends SimpleCommand {
 
@@ -19,8 +17,7 @@ public class warps extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        final List<String> names = WarpsResource.getInstance().getWarpNames();
-        if (!names.isEmpty()) {
+        if (!WarpManager.getInstance().getWarpNames().isEmpty()) {
             new WarpsGUI().displayTo(getPlayer());
             return;
         }
