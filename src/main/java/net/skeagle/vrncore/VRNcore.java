@@ -1,11 +1,9 @@
 package net.skeagle.vrncore;
 
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.skeagle.vrncore.commands.*;
-import net.skeagle.vrncore.commands.homes.delhome;
-import net.skeagle.vrncore.commands.homes.home;
-import net.skeagle.vrncore.commands.homes.homes;
-import net.skeagle.vrncore.commands.homes.sethome;
+import net.skeagle.vrncore.commands.homes.*;
 import net.skeagle.vrncore.commands.nicknames.Nick;
 import net.skeagle.vrncore.commands.nicknames.Realname;
 import net.skeagle.vrncore.commands.nicknames.RemoveNick;
@@ -13,11 +11,9 @@ import net.skeagle.vrncore.commands.tpa.Tpa;
 import net.skeagle.vrncore.commands.tpa.Tpaccept;
 import net.skeagle.vrncore.commands.tpa.Tpahere;
 import net.skeagle.vrncore.commands.tpa.Tpdeny;
-import net.skeagle.vrncore.commands.warps.delwarp;
-import net.skeagle.vrncore.commands.warps.setwarp;
-import net.skeagle.vrncore.commands.warps.warp;
-import net.skeagle.vrncore.commands.warps.warps;
+import net.skeagle.vrncore.commands.warps.*;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
+import net.skeagle.vrncore.db.DBConnect;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.hooks.VaultHook;
 import net.skeagle.vrncore.settings.Settings;
@@ -42,6 +38,8 @@ public class VRNcore extends SimplePlugin {
 
     @Override
     public void onPluginStart() {
+        //database
+        DBConnect.getInstance().load();
         //hooks
         VaultHook.load();
         //config stuff
@@ -113,6 +111,8 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Top()); //vrn.top
         registerCommand(new Rtp()); //vrn.rtp
         registerCommand(new Vrn()); //vrn.reload
+        registerCommand(new ConvertHomes());
+        registerCommand(new ConvertWarps());
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
