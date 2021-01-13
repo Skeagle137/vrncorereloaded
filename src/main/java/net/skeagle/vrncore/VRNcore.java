@@ -1,6 +1,5 @@
 package net.skeagle.vrncore;
 
-import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.commands.homes.*;
@@ -17,12 +16,9 @@ import net.skeagle.vrncore.db.DBConnect;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.hooks.VaultHook;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.tasks.PlayerTrailTask;
-import net.skeagle.vrncore.tasks.UpdatePlayerTask;
-import net.skeagle.vrncore.utils.storage.homes.HomesResource;
+import net.skeagle.vrncore.tasks.*;
 import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
-import net.skeagle.vrncore.utils.storage.warps.WarpsResource;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
@@ -31,10 +27,11 @@ import org.mineacademy.fo.settings.YamlStaticConfig;
 import java.util.Collections;
 import java.util.List;
 
-public class VRNcore extends SimplePlugin {
+public final class VRNcore extends SimplePlugin {
 
-    private UpdatePlayerTask afktask;
+    private UpdateAFKPlayerTask afktask;
     private PlayerTrailTask trailtask;
+    private PlayerSitTask sittask;
 
     @Override
     public void onPluginStart() {
@@ -43,19 +40,21 @@ public class VRNcore extends SimplePlugin {
         //hooks
         VaultHook.load();
         //config stuff
-        HomesResource.getInstance().loadAllHomes();
-        WarpsResource.getInstance().loadAllWarps();
         RewardManager.getInstance().loadRewards();
         NPCResource.getInstance().loadAllNPCs();
         //server
-        Common.log(ChatColor.GREEN + "----------------------------------------",
-                ChatColor.GREEN + "VRNcore " + getVersion() + " is now enabled.",
-                ChatColor.GREEN + "----------------------------------------");
+        Common.log(ChatColor.GREEN +
+                "----------------------------------------\n" +
+                "\t\t\t-***************-\n" +
+                "\t\t\t| VRNcore " + getVersion() + " |\n" +
+                "\t\t\t|***************|\n" +
+                "\t\t\t|   by Skeagle  |\n" +
+                "\t\t\t-***************-\n" +
+                "----------------------------------------");
         //tasks
-        afktask = new UpdatePlayerTask();
-        afktask.runTaskTimer(this, 0, 20L);
-        trailtask = new PlayerTrailTask();
-        trailtask.runTaskTimer(this, 0, 3L);
+        afktask = new UpdateAFKPlayerTask(this);
+        trailtask = new PlayerTrailTask(this);
+        sittask = new PlayerSitTask(this);
         //commands
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
@@ -111,8 +110,7 @@ public class VRNcore extends SimplePlugin {
         registerCommand(new Top()); //vrn.top
         registerCommand(new Rtp()); //vrn.rtp
         registerCommand(new Vrn()); //vrn.reload
-        registerCommand(new ConvertHomes());
-        registerCommand(new ConvertWarps());
+        registerCommand(new Sit()); //vrn.sit
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
@@ -120,8 +118,9 @@ public class VRNcore extends SimplePlugin {
         registerEvents(new AFKListener());
         registerEvents(new BackListener());
         registerEvents(new ArrowListener());
-        registerEvents(new RandomMOTD());
+        registerEvents(new ServerListListener());
         registerEvents(new UpdateNPCsListener());
+        registerEvents(new PlayerSitListener());
 
     }
 
@@ -138,6 +137,7 @@ public class VRNcore extends SimplePlugin {
     private void cleanBeforeReload() {
         stopTasks(afktask);
         stopTasks(trailtask);
+        stopTasks(sittask);
     }
 
     private void stopTasks(final BukkitRunnable task) {
@@ -152,10 +152,6 @@ public class VRNcore extends SimplePlugin {
     @Override
     public void onPluginStop() {
         cleanBeforeReload();
-        Common.log(ChatColor.RED + "----------------------------------------",
-                ChatColor.RED + "VRNcore " + getVersion() + " is now disabled.",
-                ChatColor.RED + "----------------------------------------");
-
     }
 }
 

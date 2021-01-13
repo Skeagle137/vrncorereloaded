@@ -1,8 +1,10 @@
 package net.skeagle.vrncore.tasks;
 
-import net.skeagle.vrncore.PlayerCache;
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.AFKManager;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
 import net.skeagle.vrncore.utils.storage.timerewards.TimeRewards;
 import org.bukkit.Bukkit;
@@ -12,26 +14,28 @@ import org.bukkit.scheduler.BukkitRunnable;
 import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.utils.VRNUtil.color;
 
-public class UpdatePlayerTask extends BukkitRunnable {
+public class UpdateAFKPlayerTask extends BukkitRunnable {
+
+    public UpdateAFKPlayerTask(VRNcore vrn) {
+        runTaskTimer(vrn, 0, 20);
+    }
 
     @Override
     public void run() {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             final AFKManager manager = AFKManager.getAfkManager(pl);
-            final PlayerCache cache = PlayerCache.getCache(pl);
+            final PlayerData data = PlayerManager.getData(pl);
             final TimeRewards reward;
-            int time = cache.getTimeplayed();
+            Long time = data.getTimeplayed();
             if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                 reward = RewardManager.getInstance().getReward(String.valueOf(time));
                 if (reward != null)
                     if (reward.checkPerm(pl))
                         reward.doReward(pl);
-
                 time += 1;
-                cache.setTimeplayed(time);
-                if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING) {
+                data.setTimeplayed(time);
+                if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING)
                     manager.setAfk(true);
-                }
             } else if (manager.getTimeAfk() >= Settings.Afk.KICK_TIME_IN_SECONDS)
                 pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.Afk.KICK_TIME_IN_SECONDS)));
         }
@@ -47,9 +51,8 @@ public class UpdatePlayerTask extends BukkitRunnable {
             return true;
         }
         manager.setTimeAfk(0);
-        if (manager.isAfk()) {
+        if (manager.isAfk())
             manager.setAfk(false);
-        }
         return false;
     }
 }
