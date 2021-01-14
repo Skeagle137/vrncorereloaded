@@ -95,9 +95,9 @@ public class PlayerData extends StoreableObject<PlayerData> {
                 ps.setNull(1, Types.NULL);
             else {
                 if (o instanceof Boolean)
-                    ps.setBoolean(1, (Boolean) o);
+                    ps.setBoolean(1, (boolean) o);
                 else if (o instanceof Long)
-                    ps.setLong(1, (Long) o);
+                    ps.setLong(1, (long) o);
                 else if (o instanceof Particle)
                     ps.setString(1, ((Particle) o).name());
                 else

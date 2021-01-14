@@ -17,7 +17,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.color;
 public class UpdateAFKPlayerTask extends BukkitRunnable {
 
     public UpdateAFKPlayerTask(VRNcore vrn) {
-        runTaskTimer(vrn, 0, 20);
+        runTaskTimerAsynchronously(vrn, 0, 20);
     }
 
     @Override
