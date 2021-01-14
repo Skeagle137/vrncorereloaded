@@ -44,14 +44,14 @@ public final class VRNcore extends SimplePlugin {
         NPCResource.getInstance().loadAllNPCs();
         //server
         Common.log(ChatColor.GREEN +
-                "-----------------------------------\n" +
+                "-------------------------------\n" +
                 ChatColor.GREEN + "\t\t  -***************-\n" +
                 ChatColor.GREEN + "\t\t  | VRNcore " + getVersion() + " |\n" +
                 ChatColor.GREEN + "\t\t  |***************|\n" +
                 ChatColor.GREEN + "\t\t  |   by Skeagle  |\n" +
                 ChatColor.GREEN + "\t\t  -***************-\n" +
                 ChatColor.GREEN +
-                "-----------------------------------");
+                "-------------------------------");
         //tasks
         afktask = new UpdateAFKPlayerTask(this);
         trailtask = new PlayerTrailTask(this);

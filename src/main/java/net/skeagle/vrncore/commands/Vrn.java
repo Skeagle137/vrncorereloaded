@@ -20,13 +20,13 @@ public class Vrn extends SimpleCommand {
 
     @Override
     public void onCommand() {
-        if (args.length > 1) {
+        if (args.length != 0) {
             if ("reload".equals(args[0].toLowerCase())) {
                 checkPerm("vrn.reload");
                 VRNcore.getInstance().reload();
                 say(getSender(), "&aPlugin reloaded.");
+                return;
             }
-            return;
         }
         sayNoPrefix(getSender(), "&9-----------------------------------------------");
         sayNoPrefix(getSender(), "&aVRNcore &7is developed and maintained by &dSkeagle&7.");

@@ -10,6 +10,7 @@ import net.skeagle.vrncore.utils.storage.timerewards.TimeRewards;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.mineacademy.fo.Common;
 
 import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.utils.VRNUtil.color;
@@ -37,7 +38,7 @@ public class UpdateAFKPlayerTask extends BukkitRunnable {
                 if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING)
                     manager.setAfk(true);
             } else if (manager.getTimeAfk() >= Settings.Afk.KICK_TIME_IN_SECONDS)
-                pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.Afk.KICK_TIME_IN_SECONDS)));
+                Common.runLater(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.Afk.KICK_TIME_IN_SECONDS))));
         }
     }
 
