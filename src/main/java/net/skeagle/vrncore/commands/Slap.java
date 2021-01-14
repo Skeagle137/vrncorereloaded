@@ -10,7 +10,7 @@ public class Slap extends SimpleCommand {
 
     public Slap() {
         super("slap");
-        setDescription("Slap a player. (This is a christian minecraft server, we dont kill)");
+        setDescription("Slap a player.");
         setPermissionMessage(VRNUtil.noperm);
     }
 

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class VRNUtil {
+public final class VRNUtil {
 
     public static String noperm = color(Settings.PREFIX + "&cYou do not have permission to do this.");
     public static String noton = color(Settings.PREFIX + "&cThat player is not online.");
@@ -145,6 +145,7 @@ public class VRNUtil {
         }
 
         public static Location deserialize(final String s) {
+            if (s == null) return null;
             final String[] split = s.split(" ");
             if (split.length != 6) {
                 return null;

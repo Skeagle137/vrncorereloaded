@@ -2,7 +2,7 @@ package net.skeagle.vrncore.utils;
 
 import lombok.Getter;
 
-public class SkinUtil {
+public final class SkinUtil {
 
     @Getter
     private final String texture;

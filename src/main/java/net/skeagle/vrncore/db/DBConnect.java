@@ -3,9 +3,13 @@ package net.skeagle.vrncore.db;
 import lombok.Getter;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.storage.api.DBObject;
+import net.skeagle.vrncore.utils.storage.api.SkipPrimaryID;
 import net.skeagle.vrncore.utils.storage.homes.HomeManager;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import net.skeagle.vrncore.utils.storage.warps.WarpManager;
+import org.mineacademy.fo.plugin.SimplePlugin;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
@@ -19,19 +23,23 @@ public class DBConnect {
 
     private final List<DBObject<?>> tablesList = new ArrayList<>();
     @Getter
-    private Connection conn;
+    private static Connection conn;
     @Getter
     private final static DBConnect instance = new DBConnect();
 
     public void load() {
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:" + VRNcore.getInstance().getDataFolder().getPath() + "\\vrn_data.db");
+            File datafolder = SimplePlugin.getInstance().getDataFolder();
+            if (!datafolder.exists()) datafolder.mkdirs();
+            File f = new File(datafolder, "vrn_data.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + f);
         } catch (Exception e) {
             throw new RuntimeException("Error initializing database: " + e.getMessage());
         }
         registerTable(new WarpManager());
         registerTable(new HomeManager());
+        registerTable(new PlayerManager());
     }
 
     private <T extends DBObject<?>> void registerTable(T table) {
@@ -53,12 +61,22 @@ public class DBConnect {
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
             if (Modifier.isPrivate(fields[i].getModifiers())) {
-                if (!fields[i].getType().isPrimitive())
-                    columns.append(i != 0 ? "" : "id INTEGER PRIMARY KEY AUTOINCREMENT,")
-                            .append(fields[i].getName().toLowerCase())
-                            .append(" ")
-                            .append(Conversions.getTypeStringFromClass(fields[i].getType()))
-                            .append(i != fields.length - 1 ? "," : "");
+                if (!fields[i].getType().isPrimitive()) {
+                    if (!clazz.isAnnotationPresent(SkipPrimaryID.class)) {
+                        columns.append(i != 0 ? "" : "id INTEGER PRIMARY KEY AUTOINCREMENT,")
+                                .append(fields[i].getName().toLowerCase())
+                                .append(" ")
+                                .append(Conversions.getTypeStringFromClass(fields[i].getType()))
+                                .append(i != fields.length - 1 ? "," : "");
+                    }
+                    else {
+                        columns.append(fields[i].getName().toLowerCase())
+                                .append(" ")
+                                .append(Conversions.getTypeStringFromClass(fields[i].getType()))
+                                .append(i != 0 ? "" : " PRIMARY KEY")
+                                .append(i != fields.length - 1 ? "," : "");
+                    }
+                }
                 else
                     throw new RuntimeException("The field " + fields[i].getName() + " in " + clazz.getName() + " cannot be primitive.");
             }

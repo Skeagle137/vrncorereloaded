@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
      *
      * @author Jikoo
      */
-public class ExpUtil {
+public final class ExpUtil {
 
         /**
          * Calculates a player's total exp based on level and progress to next.

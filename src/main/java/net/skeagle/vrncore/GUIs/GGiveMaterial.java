@@ -1,26 +1,26 @@
 package net.skeagle.vrncore.GUIs;
 
-import org.mineacademy.fo.remain.CompMaterial;
+import org.bukkit.Material;
 
 public enum GGiveMaterial {
-    BARRIER(CompMaterial.BARRIER, "Barrier"),
-    CMDBLOCK(CompMaterial.COMMAND_BLOCK, "Command Block (Normal)"),
-    CMD_CHAIN(CompMaterial.CHAIN_COMMAND_BLOCK, "Command Block (Chain)"),
-    CMD_REPEAT(CompMaterial.REPEATING_COMMAND_BLOCK, "Command Block (Repeat)"),
-    SPAWNER(CompMaterial.SPAWNER, "Spawner"),
-    STRUCT_VOID(CompMaterial.STRUCTURE_VOID, "Structure Void"),
-    STRUCT_BLOCK(CompMaterial.STRUCTURE_BLOCK, "Structure Block"),
-    DEBUG_STICK(CompMaterial.DEBUG_STICK, "Debug Stick");
+    BARRIER(Material.BARRIER, "Barrier"),
+    CMDBLOCK(Material.COMMAND_BLOCK, "Command Block (Normal)"),
+    CMD_CHAIN(Material.CHAIN_COMMAND_BLOCK, "Command Block (Chain)"),
+    CMD_REPEAT(Material.REPEATING_COMMAND_BLOCK, "Command Block (Repeat)"),
+    SPAWNER(Material.SPAWNER, "Spawner"),
+    STRUCT_VOID(Material.STRUCTURE_VOID, "Structure Void"),
+    STRUCT_BLOCK(Material.STRUCTURE_BLOCK, "Structure Block"),
+    DEBUG_STICK(Material.DEBUG_STICK, "Debug Stick");
 
-    private final CompMaterial mat;
+    private final Material mat;
     private final String name;
 
-    GGiveMaterial(final CompMaterial mat, final String name) {
+    GGiveMaterial(final Material mat, final String name) {
         this.mat = mat;
         this.name = name;
     }
 
-    public CompMaterial getMaterial() {
+    public Material getMaterial() {
         return mat;
     }
 

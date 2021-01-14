@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class TimeUtil {
+public final class TimeUtil {
 
 
     public static String timeToMessage(final long time) {

@@ -1,8 +1,10 @@
 package net.skeagle.vrncore.commands.nicknames;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -22,9 +24,9 @@ public class Realname extends SimpleCommand {
     @Override
     public void onCommand() {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
-            final PlayerCache cache = PlayerCache.getCache(pl);
-            if (cache.getNickname().equalsIgnoreCase(args[0])) {
-                say(getSender(), "&7The player with the nickname " + args[0] + "&r&7 is called &a" + pl.getName() + "&7.");
+            final PlayerData data = PlayerManager.getData(pl);
+            if (data.getNickname().equalsIgnoreCase(args[0]) || ChatColor.stripColor(data.getNickname()).equalsIgnoreCase(args[0])) {
+                say(getSender(), "&7The player with the nickname " + args[0] + "&r&7 has the real name of &a" + pl.getName() + "&7.");
                 return;
             }
         }

@@ -18,14 +18,14 @@ public class Top extends SimpleCommand {
 
     @Override
     public void onCommand() {
-        final int Y;
+        final int y;
         final Block b = VRNUtil.getBlockExact(getPlayer().getLocation());
         if (b != null)
-            Y = getPlayer().getWorld().getHighestBlockYAt(b.getLocation());
+            y = getPlayer().getWorld().getHighestBlockYAt(b.getLocation());
         else
-            Y = getPlayer().getWorld().getHighestBlockYAt(getPlayer().getLocation());
+            y = getPlayer().getWorld().getHighestBlockYAt(getPlayer().getLocation());
         say(getPlayer(), "Teleporting...");
-        getPlayer().teleport(new Location(getPlayer().getWorld(), getPlayer().getLocation().getX(), Y + 1, getPlayer().getLocation().getZ(),
+        getPlayer().teleport(new Location(getPlayer().getWorld(), getPlayer().getLocation().getX(), y + 1, getPlayer().getLocation().getZ(),
                 getPlayer().getLocation().getYaw(), getPlayer().getLocation().getPitch()));
     }
 }

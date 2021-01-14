@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.utils;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -8,21 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class BackUtil {
-
-    private static BackUtil back;
+public final class BackUtil {
     private final Map<UUID, Location> backLoc = new HashMap<>();
 
-    private BackUtil() {
-
-    }
-
-    public static BackUtil getBack() {
-        if (back == null) {
-            back = new BackUtil();
-        }
-        return back;
-    }
+    @Getter
+    public static BackUtil instance = new BackUtil();
 
     public void setBackLoc(final UUID id, final Location loc) {
         this.backLoc.remove(id);

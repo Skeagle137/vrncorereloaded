@@ -1,8 +1,9 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -25,31 +26,29 @@ public class Vanish extends SimpleCommand implements Listener {
             checkConsole();
             final Player p = getPlayer();
             hasPerm("vrn.vanish.self");
-            final PlayerCache cache = PlayerCache.getCache(p);
+            final PlayerData data = PlayerManager.getData(p);
             for (final Player pl : Bukkit.getOnlinePlayers()) {
-                if (!cache.isVanished()) {
+                if (!data.getVanished())
                     pl.hidePlayer(VRNcore.getInstance(), p);
-                } else {
+                else
                     pl.showPlayer(VRNcore.getInstance(), p);
-                }
             }
-            cache.setVanished(!cache.isVanished());
-            say(p, "Vanish " + (cache.isVanished() ? "enabled." : "disabled."));
+            data.setVanished(!data.getVanished());
+            say(p, "Vanish " + (data.getVanished() ? "enabled." : "disabled."));
             return;
         }
         hasPerm("vrn.vanish.others");
         final Player a = findPlayer(args[0], VRNUtil.noton);
-        final PlayerCache cache = PlayerCache.getCache(a);
+        final PlayerData data = PlayerManager.getData(a);
         for (final Player pl : Bukkit.getOnlinePlayers()) {
-            if (!cache.isVanished()) {
+            if (!data.getVanished())
                 pl.hidePlayer(VRNcore.getInstance(), a);
-            } else {
+            else
                 pl.showPlayer(VRNcore.getInstance(), a);
-            }
         }
-        cache.setVanished(!cache.isVanished());
-        say(a, "Vanish " + (cache.isVanished() ? "enabled." : "disabled."));
-        say(getSender(), "Vanish " + (cache.isVanished() ? "enabled" : "disabled") + " for &a" + a.getName() + "&7.");
+        data.setVanished(!data.getVanished());
+        say(a, "Vanish " + (data.getVanished() ? "enabled." : "disabled."));
+        say(getSender(), "Vanish " + (data.getVanished() ? "enabled" : "disabled") + " for &a" + a.getName() + "&7.");
     }
 }
 

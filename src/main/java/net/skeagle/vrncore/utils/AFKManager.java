@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public class AFKManager {
+public final class AFKManager {
 
     private static final Map<Player, AFKManager> afkPlayers = new HashMap<>();
 

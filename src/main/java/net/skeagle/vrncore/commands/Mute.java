@@ -1,7 +1,8 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.mineacademy.fo.command.SimpleCommand;
@@ -22,9 +23,9 @@ public class Mute extends SimpleCommand implements Listener {
     @Override
     public void onCommand() {
         final Player a = findPlayer(args[0], VRNUtil.noton);
-        final PlayerCache cache = PlayerCache.getCache(a);
-        cache.setMuted(!cache.isMuted());
-        say(a, "You are " + (cache.isMuted() ? "now" : "no longer") + " muted.");
-        say(getSender(), "&a" + a.getName() + " &7is " + (cache.isMuted() ? "now" : "no longer") + " muted.");
+        final PlayerData data = PlayerManager.getData(a);
+        data.setMuted(!data.getMuted());
+        say(a, "You are " + (data.getMuted() ? "now" : "no longer") + " muted.");
+        say(getSender(), "&a" + a.getName() + " &7is " + (data.getMuted() ? "now" : "no longer") + " muted.");
     }
 }

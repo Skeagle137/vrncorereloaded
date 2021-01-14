@@ -1,23 +1,19 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.PlayerCache;
+import net.skeagle.vrncore.utils.ItemUtil;
 import net.skeagle.vrncore.utils.VRNParticle;
-import org.bukkit.ChatColor;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.mineacademy.fo.ItemUtil;
 import org.mineacademy.fo.menu.Menu;
 import org.mineacademy.fo.menu.MenuPagged;
 import org.mineacademy.fo.menu.button.Button;
 import org.mineacademy.fo.menu.button.ButtonMenu;
-import org.mineacademy.fo.menu.model.ItemCreator;
-import org.mineacademy.fo.remain.CompColor;
 import org.mineacademy.fo.remain.CompMaterial;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class TrailsGUI extends Menu {
@@ -35,54 +31,53 @@ public class TrailsGUI extends Menu {
         ResetButton = new Button() {
             @Override
             public void onClickedInMenu(final Player p, final Menu menu, final ClickType click) {
-                final PlayerCache cache = PlayerCache.getCache(p);
+                final PlayerData data = PlayerManager.getData(p);
                 if (click.isLeftClick()) {
-                    if (cache.getPlayertrail() == null) {
+                    if (data.getPlayertrail() == null) {
                         animateTitle("&cNo trail to reset");
                         return;
                     }
                     animateTitle("&5Player trail reset");
-                    cache.setPlayertrail(null);
+                    data.setPlayertrail(null);
                 }
                 if (click.isRightClick()) {
-                    if (cache.getArrowtrail() == null) {
+                    if (data.getArrowtrail() == null) {
                         animateTitle("&cNo trail to reset");
                         return;
                     }
                     animateTitle("&5Arrow trail reset");
-                    cache.setArrowtrail(null);
+                    data.setArrowtrail(null);
                 }
                 if (click.isShiftClick() && click.isLeftClick()) {
-                    if (cache.getPlayertrail() == null) {
+                    if (data.getPlayertrail() == null) {
                         animateTitle("&cNo player trail active to configure");
                         return;
                     }
-                    new TrailsGUI.OptionsMenu(false).displayTo(p);
+                    //new TrailsGUI.OptionsMenu(false).displayTo(p);
                 }
                 if (click.isShiftClick() && click.isRightClick()) {
-                    if (cache.getArrowtrail() == null) {
+                    if (data.getArrowtrail() == null) {
                         animateTitle("&cNo arrow trail active to configure");
                         return;
                     }
-                    new TrailsGUI.OptionsMenu(true).displayTo(p);
+                    //new TrailsGUI.OptionsMenu(true).displayTo(p);
                 }
                 restartMenu();
             }
 
             @Override
             public ItemStack getItem() {
-                final PlayerCache cache = PlayerCache.getCache(getViewer());
-                return ItemCreator.of(CompMaterial.REDSTONE,
+                final PlayerData data = PlayerManager.getData(getViewer());
+                return ItemUtil.genItem(Material.REDSTONE,
                         "&6&lReset trails",
                         "",
-                        "&7Player trail: " + (cache.getPlayertrail() != null ? "&a" + cache.getPlayertrail() : "&cnone"),
-                        "&7Arrow trail: " + (cache.getArrowtrail() != null ? "&a" + cache.getArrowtrail() : "&cnone"),
+                        "&7Player trail: " + (data.getPlayertrail() != null ? "&a" + data.getPlayertrail() : "&cnone"),
+                        "&7Arrow trail: " + (data.getArrowtrail() != null ? "&a" + data.getArrowtrail() : "&cnone"),
                         "&bLeft click &7to reset player trail.",
                         "&aShift left click &7to edit player trail.",
                         "&dRight click &7to reset arrow trail.",
                         "&9Shift right click &7to edit arrow trail.")
-                        .glow(cache.getArrowtrail() != null || cache.getPlayertrail() != null)
-                        .build().make();
+                        .glint(data.getArrowtrail() != null || data.getPlayertrail() != null).build();
             }
         };
         ArrowButton = new ButtonMenu(new ArrowTrailSelection(), CompMaterial.ARROW,
@@ -131,8 +126,8 @@ public class TrailsGUI extends Menu {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.ARROW,
-                            "&e&lBack to main menu").build().make();
+                    return ItemUtil.genItem(Material.ARROW,
+                            "&e&lBack to main menu").build();
                 }
             };
 
@@ -143,12 +138,12 @@ public class TrailsGUI extends Menu {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.MAP,
+                    return ItemUtil.genItem(Material.MAP,
                             "&3&lInstructions",
                             "",
                             "&bClick to apply an available trail.",
                             "&bMiddle click to see the trail",
-                            "&boptions customization menu.").build().make();
+                            "&boptions customization menu.").build();
                 }
             };
 
@@ -156,33 +151,30 @@ public class TrailsGUI extends Menu {
 
         @Override
         protected ItemStack convertToItemStack(final VRNParticle particle) {
-            final PlayerCache cache = PlayerCache.getCache(getViewer());
+            final PlayerData data = PlayerManager.getData(getViewer());
 
             if (getViewer().hasPermission("vrn.arrowtrails." + particle.name().toLowerCase())) {
-                return ItemCreator.of(particle.getMaterial(),
+                return ItemUtil.genItem(particle.getMaterial(),
                         "&6" + particle.getParticleName(),
                         "", "&7Click to select",
                         "this arrow trail.")
-                        .glow(cache.getArrowtrail() != null && cache.getArrowtrail() == particle.getParticle())
-                        .build().make();
+                        .glint(data.getArrowtrail() != null && data.getArrowtrail() == particle.getParticle()).build();
             }
-            return ItemCreator.of(CompMaterial.GRAY_DYE,
+            return ItemUtil.genItem(Material.GRAY_DYE,
                     "&4???",
                     "", "&cYou cannot use",
-                    "&cthis arrow trail.").build().make();
+                    "&cthis arrow trail.").build();
         }
 
         @Override
         protected void onPageClick(final Player p, final VRNParticle particle, final ClickType click) {
             if (getViewer().hasPermission("vrn.arrowtrails." + particle.name().toLowerCase())) {
                 animateTitle("&2Arrow trail successfully set.");
-                final PlayerCache cache = PlayerCache.getCache(p);
-                cache.setArrowtrail(particle.getParticle());
-                restartMenu();
-            } else {
+                final PlayerData data = PlayerManager.getData(p);
+                data.setArrowtrail(particle.getParticle());
+            } else
                 animateTitle("&4You cannot use this trail.");
-                restartMenu();
-            }
+            restartMenu();
         }
 
 
@@ -223,8 +215,8 @@ public class TrailsGUI extends Menu {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.ARROW,
-                            "&e&lBack to main menu").build().make();
+                    return ItemUtil.genItem(Material.ARROW,
+                            "&e&lBack to main menu").build();
                 }
             };
 
@@ -235,45 +227,42 @@ public class TrailsGUI extends Menu {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.MAP,
+                    return ItemUtil.genItem(Material.MAP,
                             "&3&lInstructions",
                             "",
                             "&bClick to apply an available trail.",
                             "&bMiddle click to see the trail",
-                            "&boptions customization menu.").build().make();
+                            "&boptions customization menu.").build();
                 }
             };
         }
 
         @Override
         protected ItemStack convertToItemStack(final VRNParticle particle) {
-            final PlayerCache cache = PlayerCache.getCache(getViewer());
+            final PlayerData data = PlayerManager.getData(getViewer());
 
             if (getViewer().hasPermission("vrn.playertrails." + particle.name().toLowerCase())) {
-                return ItemCreator.of(particle.getMaterial(),
+                return ItemUtil.genItem(particle.getMaterial(),
                         "&6" + particle.getParticleName(),
                         "", "&7Click to select",
                         "this player trail.")
-                        .glow(cache.getPlayertrail() != null && cache.getPlayertrail() == particle.getParticle())
-                        .build().make();
+                        .glint(data.getPlayertrail() != null && data.getPlayertrail() == particle.getParticle()).build();
             }
-            return ItemCreator.of(CompMaterial.GRAY_DYE,
+            return ItemUtil.genItem(Material.GRAY_DYE,
                     "&4???",
                     "", "&cYou cannot use",
-                    "&cthis player trail.").build().make();
+                    "&cthis player trail.").build();
         }
 
         @Override
         protected void onPageClick(final Player p, final VRNParticle particle, final ClickType click) {
             if (getViewer().hasPermission("vrn.playertrails." + particle.name().toLowerCase())) {
                 animateTitle("&2Player trail successfully set.");
-                final PlayerCache cache = PlayerCache.getCache(p);
-                cache.setPlayertrail(particle.getParticle());
-                restartMenu();
-            } else {
+                final PlayerData data = PlayerManager.getData(p);
+                data.setPlayertrail(particle.getParticle());
+            } else
                 animateTitle("&4You cannot use this trail.");
-                restartMenu();
-            }
+            restartMenu();
         }
 
         @Override
@@ -294,6 +283,8 @@ public class TrailsGUI extends Menu {
         }
     }
 
+    /*
+
     private final class OptionsMenu extends Menu {
 
         private final Button color;
@@ -309,14 +300,13 @@ public class TrailsGUI extends Menu {
 
                 @Override
                 public ItemStack getItem() {
-                    final PlayerCache cache = PlayerCache.getCache(getViewer());
-                    return ItemCreator.of(CompMaterial.RED_DYE,
+                    final PlayerData data = PlayerManager.getData(getViewer());
+                    return ItemUtil.genItem(Material.RED_DYE,
                             "&6&lReset trails",
                             "",
                             "&bLeft click &7to reset player trail.",
                             "&dRight click &7to reset arrow trail.")
-                            .glow(cache.getArrowtrail() != null || cache.getPlayertrail() != null)
-                            .build().make();
+                            .glint(data.getArrowtrail() != null || data.getPlayertrail() != null).build();
                 }
             };
             style = new ButtonMenu(new OptionsColorMenu(), CompMaterial.FEATHER,
@@ -331,14 +321,14 @@ public class TrailsGUI extends Menu {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.MAP,
+                    return ItemUtil.genItem(Material.MAP,
                             "&3&lInstructions",
                             "",
                             "&bClick the color button to change",
                             "&bthe color of the trail. Click the style",
                             "&bbutton to change how the trail",
                             "&bmoves around the " + (arrow ? "arrow" : "player") + "in game.")
-                            .build().make();
+                            .build();
                 }
             };
             back = new ButtonMenu(new TrailsGUI(), CompMaterial.ARROW,
@@ -383,10 +373,10 @@ public class TrailsGUI extends Menu {
 
         @Override
         protected void onPageClick(final Player player, final ChatColor color, final ClickType clickType) {
-            final PlayerCache cache = PlayerCache.getCache(player);
+            final PlayerData data = PlayerManager.getData(p);
 
-            //cache.setArrowoptions();
-            animateTitle(color + "Changed chat color to " + ItemUtil.bountifyCapitalized(color.name()));
+            //data.setArrowoptions();
+            animateTitle(color + "Changed color to " + ItemUtil.bountifyCapitalized(color.name()));
         }
 
         @Override
@@ -397,7 +387,9 @@ public class TrailsGUI extends Menu {
             };
         }
     }
+    */
 
+    /*
     private List<VRNParticle> getColorableTrails() {
         return new ArrayList<>(Arrays.asList(
                 VRNParticle.POTION,
@@ -406,4 +398,6 @@ public class TrailsGUI extends Menu {
                 VRNParticle.REDSTONE
         ));
     }
+
+     */
 }

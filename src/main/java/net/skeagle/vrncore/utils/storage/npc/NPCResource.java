@@ -66,7 +66,7 @@ public class NPCResource {
     public void updateNPCsForPlayer(final Player p) {
         for (final NPCManager man : manData) {
             final MinecraftServer ms = ((CraftServer) Bukkit.getServer()).getServer();
-            final WorldServer ws = ((CraftWorld) Bukkit.getWorld(p.getWorld().getName())).getHandle();
+            final WorldServer ws = ((CraftWorld) p.getWorld()).getHandle();
             final GameProfile gp = new GameProfile(UUID.randomUUID(), (man.getDisplay() == null ? man.getName() : man.getDisplay()));
             final EntityPlayer npc = new EntityPlayer(ms, ws, gp, new PlayerInteractManager(ws));
             final Location loc = man.getLoc();

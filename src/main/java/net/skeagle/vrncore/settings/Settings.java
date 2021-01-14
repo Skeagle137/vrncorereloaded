@@ -69,7 +69,7 @@ public class Settings extends SimpleSettings {
 
     public static class Joining {
         public static Boolean ENABLED;
-        public static String WELCOME, JOIN, QUIT;
+        public static String WELCOME, JOIN, QUIT, RETURN;
 
         private static void init() {
             pathPrefix("Joining");
@@ -77,6 +77,7 @@ public class Settings extends SimpleSettings {
             WELCOME = getString("welcome_message");
             JOIN = getString("join_message");
             QUIT = getString("leave_message");
+            RETURN = getString("return_message");
         }
     }
 

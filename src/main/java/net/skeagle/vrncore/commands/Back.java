@@ -16,7 +16,7 @@ public class Back extends SimpleCommand {
         setPermissionMessage(VRNUtil.noperm);
     }
 
-    private final BackUtil back = BackUtil.getBack();
+    private final BackUtil back = BackUtil.getInstance();
 
     @Override
     public void onCommand() {

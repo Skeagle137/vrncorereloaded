@@ -12,6 +12,4 @@ public class AFKListener implements Listener {
         final AFKManager manager = AFKManager.getAfkManager(e.getPlayer());
         if (manager.isAfk()) manager.setAfk(false);
     }
-
-
 }

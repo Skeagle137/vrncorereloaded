@@ -3,7 +3,9 @@ package net.skeagle.vrncore.utils.storage.homes;
 import lombok.Getter;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.storage.api.DBObject;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.mineacademy.fo.Common;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,13 +33,6 @@ public class HomeManager extends DBObject<Home> {
         loadedhomes.add(h);
         save(h);
         return true;
-    }
-
-    public void importOld(RegisteredHome home, HomesManager man) {
-        Home h = new Home(home.getName(), man.getUUID(), home.getLoc());
-        getLoadedhomes().add(h);
-        save(h);
-        loadAllHomes();
     }
 
     public boolean delHome(final String name, Player p) {
@@ -108,10 +103,16 @@ public class HomeManager extends DBObject<Home> {
         try {
             PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName());
             try (final ResultSet rs = ps.executeQuery()) {
-                while (rs.next())
+                Location loc;
+                while (rs.next()) {
+                    loc = VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
+                    if (loc == null) {
+                        Common.log("Warning, location is null for home id " + rs.getInt("id"));
+                        continue;
+                    }
                     loadedhomes.add(new Home(rs.getString("name"),
-                            UUID.fromString(rs.getString("owner")),
-                            VRNUtil.LocationSerialization.deserialize(rs.getString("location"))));
+                            UUID.fromString(rs.getString("owner")), loc));
+                }
             }
         }
         catch (Exception e) {

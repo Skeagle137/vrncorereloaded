@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 @Getter
 @Setter
-public class TrailOptions {
+public final class TrailOptions {
 
     private ChatColor color;
     private TrailStyle style;

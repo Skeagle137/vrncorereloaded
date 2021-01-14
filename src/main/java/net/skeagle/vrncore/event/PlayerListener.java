@@ -1,9 +1,10 @@
 package net.skeagle.vrncore.event;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hooks.VaultHook;
 import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,8 +26,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        final PlayerCache cache = PlayerCache.getCache(e.getPlayer());
-        final String name = cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName();
+        final PlayerData data = PlayerManager.getData(e.getPlayer());
+        final String name = data.getNickname() != null ? data.getNickname() + "&r" : e.getPlayer().getName();
         e.getPlayer().setDisplayName(color(name));
         if (!e.getPlayer().hasPlayedBefore() && Settings.Joining.ENABLED) {
             e.setJoinMessage(color(Settings.Joining.WELCOME.replaceAll("%player%", name)));
@@ -41,7 +42,7 @@ public class PlayerListener implements Listener {
         e.getPlayer().setPlayerListName(color(listname != null ? listname : name));
         if (Settings.Joining.ENABLED) {
             e.setJoinMessage(color(Settings.Joining.JOIN.replaceAll("%player%", name)));
-            Common.runLater(() -> say(e.getPlayer(), "&dWelcome back, &5" + name + "&d!"));
+            Common.runLater(() -> say(e.getPlayer(), Settings.Joining.RETURN.replaceAll("%player%", name)));
         }
     }
 
@@ -51,8 +52,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent e) {
-        final PlayerCache cache = PlayerCache.getCache(e.getPlayer());
-        final String name = cache.getNickname() != null ? cache.getNickname() + "&r" : e.getPlayer().getName();
+        final PlayerData data = PlayerManager.getData(e.getPlayer());
+        final String name = data.getNickname() != null ? data.getNickname() + "&r" : e.getPlayer().getName();
         if (Settings.Joining.ENABLED)
             e.setQuitMessage(color(Settings.Joining.QUIT.replaceAll("%player%", name)));
     }
@@ -64,21 +65,22 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent e) {
         final Player p = e.getPlayer();
-        final PlayerCache cache = PlayerCache.getCache(p);
-        if (cache.isMuted()) {
+        final PlayerData data = PlayerManager.getData(p);
+        if (data.getMuted()) {
             e.setCancelled(true);
             say(p, "&cYou are muted. You cannot chat.");
         }
-        if (!Settings.Chat.ENABLED) return;
+        if (!Settings.Chat.ENABLED)
+            return;
         if (!p.hasPermission("vrn.chat.allow")) {
             e.setCancelled(true);
             say(p, "&cYou do not have permission to use the chat.");
         }
-        if (p.hasPermission("vrn.chat.color")) {
+        if (p.hasPermission("vrn.chat.color"))
             e.setMessage(color(e.getMessage()));
-        }
         final VaultHook hook = VaultHook.getInstance();
-        if (hook == null) return;
+        if (hook == null)
+            return;
         String msg = hook.format(p);
         msg = msg.replaceAll("%", "%%");
         msg = msg.replace("%%message", "%2$s");
@@ -91,11 +93,10 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoinVanished(final PlayerJoinEvent e) {
-        final PlayerCache cache = PlayerCache.getCache(e.getPlayer());
-        if (cache.isVanished()) {
-            for (final Player pl : Bukkit.getOnlinePlayers()) {
+        final PlayerData data = PlayerManager.getData(e.getPlayer());
+        if (data.getVanished()) {
+            for (final Player pl : Bukkit.getOnlinePlayers())
                 pl.hidePlayer(VRNcore.getInstance(), e.getPlayer());
-            }
         }
     }
 
@@ -107,10 +108,9 @@ public class PlayerListener implements Listener {
     public void onGodDamage(final EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
             final Player p = (Player) e.getEntity();
-            final PlayerCache cache = PlayerCache.getCache(p);
-            if (cache.isGodmode()) {
+            final PlayerData data = PlayerManager.getData(p);
+            if (data.getGodmode())
                 e.setCancelled(true);
-            }
         }
     }
 
@@ -120,6 +120,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void WorldChange(final PlayerChangedWorldEvent e) {
+        e.getPlayer().hasPermission("vrn.worldchange");
         sayActionBar(e.getPlayer(), "&a&lCurrently in world: \"" + e.getPlayer().getWorld().getName() + ".\"");
     }
 }

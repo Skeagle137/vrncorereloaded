@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.GUIs;
 
+import net.skeagle.vrncore.utils.ItemUtil;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.storage.homes.*;
 import org.bukkit.Material;
@@ -12,11 +13,8 @@ import org.mineacademy.fo.menu.Menu;
 import org.mineacademy.fo.menu.MenuPagged;
 import org.mineacademy.fo.menu.button.Button;
 import org.mineacademy.fo.menu.button.ButtonMenu;
-import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.remain.CompMaterial;
 import org.mineacademy.fo.remain.CompSound;
-
-import java.util.List;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -76,8 +74,8 @@ public class HomesGUI extends MenuPagged<Home> {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.LIME_WOOL,
-                            "&aConfirm").build().make();
+                    return ItemUtil.genItem(Material.LIME_WOOL,
+                            "&aConfirm").build();
                 }
             };
             info = new Button() {
@@ -88,11 +86,11 @@ public class HomesGUI extends MenuPagged<Home> {
 
                 @Override
                 public ItemStack getItem() {
-                    return ItemCreator.of(CompMaterial.MAP,
+                    return ItemUtil.genItem(Material.MAP,
                             "&6Are you sure?",
                             "",
                             "&eAre you sure you want to",
-                            "&edelete this home?").build().make();
+                            "&edelete this home?").build();
                 }
 
 

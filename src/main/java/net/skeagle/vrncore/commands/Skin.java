@@ -1,12 +1,5 @@
 package net.skeagle.vrncore.commands;
 
-/*
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers;
- */
-
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_16_R3.*;
 import net.skeagle.vrncore.VRNcore;

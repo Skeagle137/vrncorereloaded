@@ -1,7 +1,8 @@
 package net.skeagle.vrncore.commands.nicknames;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -22,8 +23,8 @@ public class RemoveNick extends SimpleCommand {
             checkConsole();
             final Player p = getPlayer();
             hasPerm("vrn.nick.self");
-            final PlayerCache cache = PlayerCache.getCache(p);
-            cache.setNickname(null);
+            final PlayerData data = PlayerManager.getData(p);
+            data.setNickname(null);
             p.setDisplayName(p.getName());
             p.setPlayerListName(p.getName());
             say(p, "&aNickname successfully removed.");
@@ -31,8 +32,8 @@ public class RemoveNick extends SimpleCommand {
         }
         hasPerm("vrn.nick.other");
         final Player a = findPlayer(args[0], VRNUtil.noton);
-        final PlayerCache cache = PlayerCache.getCache(a);
-        cache.setNickname(null);
+        final PlayerData data = PlayerManager.getData(a);
+        data.setNickname(null);
         a.setDisplayName(a.getName());
         a.setPlayerListName(a.getName());
         say(getSender(), "&7Removed nickname for &a" + a.getName() + ".");

@@ -2,7 +2,11 @@ package net.skeagle.vrncore.utils.storage.api;
 
 public abstract class StoreableObject<T> {
 
-    public abstract T deserialize();
+    protected T deserialize() {
+        return null;
+    }
 
-    public abstract Object serialize();
+    protected Object serialize() {
+        return null;
+    }
 }

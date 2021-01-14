@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.utils;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -10,23 +11,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
-
-public class TPAUtil {
-    private static TPAUtil util;
+public final class TPAUtil {
     private final Map<Player, BukkitTask> tasks = new HashMap<>();
     private final HashMap<UUID, UUID> StoredPlayer = new HashMap<>();
     private boolean tpahere;
 
-    private TPAUtil() {
-
-    }
-
-    public static TPAUtil getUtil() {
-        if (util == null) {
-            util = new TPAUtil();
-        }
-        return util;
-    }
+    @Getter
+    public static final TPAUtil instance = new TPAUtil();
 
     public void setTpahere(final boolean tpahere) {
         this.tpahere = tpahere;

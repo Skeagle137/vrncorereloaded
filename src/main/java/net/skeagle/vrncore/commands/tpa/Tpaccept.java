@@ -9,7 +9,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class Tpaccept extends SimpleCommand {
 
-    private final TPAUtil util = TPAUtil.getUtil();
+    private final TPAUtil util = TPAUtil.getInstance();
 
     public Tpaccept() {
         super("tpaccept");

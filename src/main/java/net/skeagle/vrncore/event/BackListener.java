@@ -8,13 +8,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class BackListener implements Listener {
 
-    private BackUtil back = BackUtil.getBack();
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTeleport(PlayerTeleportEvent e) {
-        if (e.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND || e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN) {
-            back.setBackLoc(e.getPlayer().getUniqueId(), e.getFrom());
-        }
+        if (e.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND || e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN)
+            BackUtil.getInstance().setBackLoc(e.getPlayer().getUniqueId(), e.getFrom());
 
     }
 }

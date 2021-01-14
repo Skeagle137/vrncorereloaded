@@ -1,7 +1,8 @@
 package net.skeagle.vrncore.commands.nicknames;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -24,8 +25,8 @@ public class Nick extends SimpleCommand {
             final Player p = getPlayer();
             hasPerm("vrn.nick.self");
             final String nick = color(args[0] + "&r");
-            final PlayerCache cache = PlayerCache.getCache(p);
-            cache.setNickname(nick);
+            final PlayerData data = PlayerManager.getData(p);
+            data.setNickname(nick);
             p.setDisplayName(nick);
             p.setPlayerListName(nick);
             say(p, "&aNickname successfully changed.");
@@ -34,8 +35,8 @@ public class Nick extends SimpleCommand {
         hasPerm("nicknames.nick.other");
         final Player a = findPlayer(args[0], VRNUtil.noton);
         final String nick = color(args[1] + "&r");
-        final PlayerCache cache = PlayerCache.getCache(a);
-        cache.setNickname(nick);
+        final PlayerData data = PlayerManager.getData(a);
+        data.setNickname(nick);
         a.setDisplayName(nick);
         a.setPlayerListName(nick);
         say(getSender(), "&7Successfully set &a" + a.getName() + "&7's nick to " + nick + "&r&7.");

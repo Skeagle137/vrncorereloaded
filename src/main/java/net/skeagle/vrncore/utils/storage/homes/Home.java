@@ -1,7 +1,6 @@
 package net.skeagle.vrncore.utils.storage.homes;
 
 import lombok.Getter;
-import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.utils.storage.api.StoreableObject;
 import org.bukkit.Location;
 
@@ -18,14 +17,5 @@ public class Home extends StoreableObject<Home> {
         this.name = name;
         this.owner = owner;
         this.location = location;
-    }
-
-    public Home deserialize() {
-        return null;
-    }
-
-    @Override
-    public String serialize() {
-        return name + "<>" + owner.toString() + "<>" + VRNUtil.LocationSerialization.serialize(location);
     }
 }

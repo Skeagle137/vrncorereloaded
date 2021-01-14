@@ -27,5 +27,6 @@ Joining:
   welcome_message: "&e%player% &6has joined for the first time. Welcome, &e%player%&6!"
   join_message: "&7[&b+&7] &5%player% &dhas joined."
   leave_message: "&7[&c-&7] &5%player% &dhas left."
+  return_message: "&dWelcome back, &5%player%&d!"
 Prefix: "&8[&9&lServer&8] &7"
-Version: 3
+Version: 4

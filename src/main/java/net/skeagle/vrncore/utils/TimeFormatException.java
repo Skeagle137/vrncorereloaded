@@ -2,7 +2,7 @@ package net.skeagle.vrncore.utils;
 
 import lombok.Getter;
 
-public class TimeFormatException extends Exception {
+public final class TimeFormatException extends Exception {
 
     private static final long serialVersionUID = -8147740739527052671L;
     @Getter

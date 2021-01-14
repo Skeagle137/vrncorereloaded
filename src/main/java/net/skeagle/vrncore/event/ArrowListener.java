@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.event;
 
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNParticle;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -12,14 +12,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.mineacademy.fo.remain.CompParticle;
 
 public class ArrowListener implements Listener {
 
     @EventHandler
     public void onArrowShot(final ProjectileLaunchEvent e) {
         if (e.getEntity().getShooter() instanceof Player && e.getEntity() instanceof Arrow) {
-            final CompParticle particle = PlayerCache.getCache((Player) e.getEntity().getShooter()).getArrowtrail();
+            final Particle particle = PlayerManager.getData((Player) e.getEntity().getShooter()).getArrowtrail();
             if (particle != null) {
                 final String perm = VRNParticle.getNameFromParticle(particle);
                 if (perm != null) {
@@ -29,19 +28,16 @@ public class ArrowListener implements Listener {
                             public void run() {
                                 if (!e.getEntity().isValid() || e.getEntity().isOnGround()) {
                                     cancel();
-
                                     return;
                                 }
-                                if (particle != CompParticle.REDSTONE) {
-                                    particle.spawn(e.getEntity().getLocation());
-                                } else {
+                                if (particle != Particle.REDSTONE)
+                                    ((Player) e.getEntity().getShooter()).getWorld().spawnParticle(Particle.REDSTONE, e.getEntity().getLocation(),1);
+                                else
                                     spawnRedstone(e.getEntity().getLocation());
-                                }
                             }
                         }.runTaskTimer(VRNcore.getInstance(), 0, 1);
-                    } else {
-                        PlayerCache.getCache((Player) e.getEntity().getShooter()).setArrowtrail(null);
-                    }
+                    } else
+                        PlayerManager.getData((Player) e.getEntity().getShooter()).setArrowtrail(null);
                 }
             }
         }

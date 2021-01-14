@@ -4,10 +4,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.milkbowl.vault.chat.Chat;
-import net.skeagle.vrncore.PlayerCache;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.HookUtil;
+import net.skeagle.vrncore.utils.storage.player.PlayerData;
+import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -63,10 +64,10 @@ public class VaultHook {
     }
 
     public String format(final Player p) {
-        final PlayerCache cache = PlayerCache.getCache(p);
+        final PlayerData data = PlayerManager.getData(p);
         String s = Settings.Chat.FORMAT;
         s = s.replaceAll("%prefix", getPrefix(p));
-        s = s.replaceAll("%player", cache.getNickname() != null ? cache.getNickname() + "&r" : p.getName());
+        s = s.replaceAll("%player", data.getNickname() != null ? data.getNickname() + "&r" : p.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
         s = s.replaceAll("%world", p.getWorld().getName());
         s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
@@ -74,9 +75,9 @@ public class VaultHook {
     }
 
     public String format(String s, final Player p) {
-        final PlayerCache cache = PlayerCache.getCache(p);
+        final PlayerData data = PlayerManager.getData(p);
         s = s.replaceAll("%prefix", getPrefix(p));
-        s = s.replaceAll("%player", cache.getNickname() != null ? cache.getNickname() + "&r" : p.getName());
+        s = s.replaceAll("%player", data.getNickname() != null ? data.getNickname() + "&r" : p.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
         s = s.replaceAll("%world", p.getWorld().getName());
         s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
