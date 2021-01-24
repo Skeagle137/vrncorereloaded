@@ -1,32 +1,38 @@
 package net.skeagle.vrncore.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.Getter;
+
+import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 public final class TimeUtil {
 
 
+    private static final Pattern ALLOWED_VALUES = Pattern.compile("[smhdy]");
+
     public static String timeToMessage(final long time) {
-        final long days = time / 86400L;
-        final long hours = (time % 86400L) / 3600L;
-        final long minutes = (time % 86400L % 3600L) / 60L;
-        final long seconds = time % 86400L % 3600L % 60L;
-        final TimeUtil util = new TimeUtil();
-        return ((days != 0) ? days + " " + util.timeGrammarCheck("day", days) + (hours != 0 || minutes != 0 || seconds != 0 ? ", " : "") : "") +
-                ((hours != 0) ? hours + " " + util.timeGrammarCheck("hour", hours) + (minutes != 0 || seconds != 0 ? ", " : "") : "") +
-                ((minutes != 0) ? minutes + " " + util.timeGrammarCheck("minute", minutes) + (seconds != 0 ? ", " : "") : "") +
-                ((seconds != 0) ? seconds + " " + util.timeGrammarCheck("second", seconds) : "");
+        final long years = time / 31536000;
+        final long days = (time % 31536000) / 86400;
+        final long hours = ((time % 31536000) % 86400) / 3600;
+        final long minutes = (((time % 31536000) % 86400) % 3600) / 60;
+        final long seconds = (((time % 31536000) % 86400) % 3600) % 60;
+        String s = ((years != 0) ? years + " " + timeGrammarCheck("year", years) + (days != 0 || hours != 0 || minutes != 0 || seconds != 0 ? ", " : "") : "") +
+                ((days != 0) ? days + " " + timeGrammarCheck("day", days) + (hours != 0 || minutes != 0 || seconds != 0 ? ", " : "") : "") +
+                ((hours != 0) ? hours + " " + timeGrammarCheck("hour", hours) + (minutes != 0 || seconds != 0 ? ", " : "") : "") +
+                ((minutes != 0) ? minutes + " " + timeGrammarCheck("minute", minutes) + (seconds != 0 ? ", " : "") : "") +
+                ((seconds != 0) ? seconds + " " + timeGrammarCheck("second", seconds) : "");
+        if (s.equals(""))
+            return "less than a second";
+        return s;
     }
 
     public static String timeToMessage(final int time) {
         return timeToMessage((long) time);
     }
 
-    private String timeGrammarCheck(final String s, final long i) {
-        if (i != 1) {
+    private static String timeGrammarCheck(final String s, final long i) {
+        if (i != 1)
             return s + "s";
-        }
         return s;
     }
 
@@ -45,91 +51,59 @@ public final class TimeUtil {
         }
     }
 
-    public static class TimeString {
-        private static final Pattern ALLOWED_INPUT = Pattern.compile("[smhdwy]");
-        long time;
-        char unit;
-
-        public TimeString(final long time, final char unit) {
-            this.time = time;
-            this.unit = unit;
+    public static long parseTimeString(String s) throws TimeFormatException {
+        s = s.replaceAll("[^a-zA-Z0-9]","");
+        s = s.toLowerCase();
+        long num = 0;
+        BigInteger big;
+        String nums = "";
+        String tempunit = "";
+        int matches = 0;
+        char[] c = s.toCharArray();
+        for (int i = 0; i < c.length; i++) {
+            if (ALLOWED_VALUES.matcher(Character.toString(c[i])).matches()) {
+                if (nums.equals(""))
+                    throw new TimeFormatException("Error in position " + (i + 1) + " of the time, you must provide a number before a time unit.");
+                matches += 1;
+                big = new BigInteger(nums);
+                num += big.longValue() * convertUnitToTime(c[i]);
+                tempunit = Character.toString(c[i]);
+                nums = "";
+            }
+            else if (Character.getNumericValue(c[i]) > -1) {
+                nums += c[i];
+                tempunit = "";
+            }
+            else {
+                if (!ALLOWED_VALUES.matcher(Character.toString(c[i])).matches() && Character.getNumericValue(c[i]) >= 10)
+                    throw new TimeFormatException("Error in position " + (i + 1) + " of the time, unknown time unit. The accepted values are seconds (s), minutes (m), hours (h), days (d), or years (y).");
+                throw new TimeFormatException("Error in parsing the time, please check if you formatted the time correctly.");
+            }
         }
-
-        public static long toSeconds(final TimeString ts) {
-            long inseconds = 0;
-            for (final TimeUnits unit : TimeUnits.values()) {
-                if (ts.unit == unit.name().charAt(0)) {
-                    inseconds = unit.time_seconds;
-                }
-            }
-            return ts.time * inseconds;
+        if (!nums.equals("") && matches == 0 || tempunit.equals("")) {
+            if (!ALLOWED_VALUES.matcher(s.substring(c.length - 1)).matches() && Character.getNumericValue(s.charAt(c.length - 1)) >= 10)
+                throw new TimeFormatException("Error in position " + c.length + " of the time, unknown time unit. The accepted values are seconds (s), minutes (m), hours (h), days (d), or years (y).");
+            throw new TimeFormatException("Error in position " + c.length + " of the time, you must specify the time unit.");
         }
+        return num;
+    }
 
-        public static TimeString toTimeString(final String s) throws TimeFormatException {
-            switch (checkValid(s)) {
-                case 0:
-                    throw new TimeFormatException("&cThat is not a valid number.");
-                case 1:
-                    throw new TimeFormatException("&cUnknown time unit. Use s, m, h, d, w, or y to specify time.");
-                case 2:
-                    return new TimeString(Long.parseLong(s.substring(0, s.length() - 1)),
-                            s.toLowerCase().charAt(s.length() - 1));
-            }
-            return null;
-        }
+    private static long convertUnitToTime(char c) {
+        for (TimeUnits t : TimeUnits.values())
+            if (Character.toString(c).equalsIgnoreCase(t.name()))
+                return t.time_seconds;
+        return 1;
+    }
 
-        private static boolean isTimeValid(final String s) {
-            try {
-                Long.parseLong(s);
-            } catch (final NumberFormatException e) {
-                return false;
-            }
-            return true;
-        }
+    public static final class TimeFormatException extends Exception {
 
-        private static int checkValid(final String s) {
-            if (!isTimeValid(s.substring(0, s.length() - 1))) {
-                return 0;
-            }
-            if (!isUnitValid(s.substring(s.length() - 1))) {
-                return 1;
-            }
-            return 2;
-        }
+        private static final long serialVersionUID = -8147740739527052671L;
+        @Getter
+        private final String message;
 
-        private static boolean isUnitValid(final String s) {
-            return ALLOWED_INPUT.matcher(String.valueOf(s)).matches();
-        }
-
-        public static boolean isTimeString(final String[] args, final int index) throws TimeFormatException {
-            if (index > args.length) {
-                return false;
-            }
-            if (checkValid(args[index]) != 2) {
-                return false;
-            }
-            toTimeString(args[index]);
-            return true;
-        }
-
-        public static boolean checkDuplicates(final String s) {
-            final Map<Character, Integer> chars = new HashMap<>();
-            final char[] letters = s.toCharArray();
-            int letter_count;
-            for (final char c : letters) {
-                if (chars.containsKey(c)) {
-                    letter_count = chars.get(c);
-                    chars.put(c, (letter_count + 1));
-                } else {
-                    chars.put(c, 1);
-                }
-            }
-            for (final char c : chars.keySet()) {
-                if (chars.get(c) > 1) {
-                    return false;
-                }
-            }
-            return true;
+        public TimeFormatException(final String message) {
+            super("");
+            this.message = message;
         }
     }
 }
