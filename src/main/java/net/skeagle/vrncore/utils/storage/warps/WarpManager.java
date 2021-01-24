@@ -116,7 +116,7 @@ public class WarpManager extends DBObject<Warp> {
                 while (rs.next()) {
                     loc = VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
                     if (loc == null) {
-                        Common.log("Location is null for warp name " + rs.getString("name"));
+                        Common.log("Skipping warp \"" + rs.getString("name") + "\", location is null");
                         continue;
                     }
                     loadedwarps.add(new Warp(rs.getString("name"), loc, UUID.fromString(rs.getString("owner"))));

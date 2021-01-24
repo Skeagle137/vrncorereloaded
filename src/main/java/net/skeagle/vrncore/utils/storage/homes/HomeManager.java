@@ -107,7 +107,7 @@ public class HomeManager extends DBObject<Home> {
                 while (rs.next()) {
                     loc = VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
                     if (loc == null) {
-                        Common.log("Location is null for home name " + rs.getString("name") + " (owner uuid: " + rs.getString("owner"));
+                        Common.log("Skipping home \"" + rs.getString("name") + "\" (owner uuid: " + rs.getString("owner") + "), location is null");
                         continue;
                     }
                     loadedhomes.add(new Home(rs.getString("name"),

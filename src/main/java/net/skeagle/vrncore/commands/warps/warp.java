@@ -25,11 +25,6 @@ public class warp extends SimpleCommand {
         checkConsole();
         Warp w = WarpManager.getInstance().getWarp(args[0]);
         if (w == null) returnTell("&cThat warp does not exist.");
-        if (w.getOwner() == null) {
-            w.setOwner(getPlayer().getUniqueId());
-            WarpManager.getInstance().updateWarpOwner(w, getPlayer().getUniqueId());
-            say(getPlayer(), "No one owns this warp. You own it now.");
-        }
         getPlayer().teleport(w.getLocation());
         returnTell("&7Teleporting...");
     }
