@@ -32,7 +32,7 @@ public class UpdateAFKPlayerTask extends BukkitRunnable {
                 reward = RewardManager.getInstance().getReward(String.valueOf(time));
                 if (reward != null)
                     if (reward.checkPerm(pl))
-                        reward.doReward(pl);
+                        Common.runAsync(() -> reward.doReward(pl));
                 time += 1;
                 data.setTimeplayed(time);
                 if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING)

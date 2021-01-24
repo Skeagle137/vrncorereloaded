@@ -7,15 +7,13 @@ import net.skeagle.vrncore.utils.storage.api.SkipPrimaryID;
 import net.skeagle.vrncore.utils.storage.homes.HomeManager;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import net.skeagle.vrncore.utils.storage.warps.WarpManager;
+import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,15 +79,28 @@ public class DBConnect {
                     throw new RuntimeException("The field " + fields[i].getName() + " in " + clazz.getName() + " cannot be primitive.");
             }
         }
-        //language=SQLite
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (" + columns.toString() + ");";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.executeUpdate();
-            ps.close();
-            System.out.println(name + " database loaded.");
+            PreparedStatement ps2 = conn.prepareStatement("SELECT * FROM " + name);
+            ResultSet rs = ps2.executeQuery();
+            if (fields.length > rs.getMetaData().getColumnCount() - (clazz.isAnnotationPresent(SkipPrimaryID.class) ? 0 : 1)) {
+                DatabaseMetaData meta = conn.getMetaData();
+                ResultSet rs2;
+                for (Field f : fields) {
+                    rs2 = meta.getColumns(null, null, name, f.getName().toLowerCase());
+                    if (rs2.next())
+                        continue;
+                    PreparedStatement ps3 = conn.prepareStatement("ALTER TABLE " + name + " ADD COLUMN " + f.getName().toLowerCase());
+                    ps3.executeUpdate();
+                    Common.log(name + " database updated new column " + f.getName().toLowerCase());
+                }
+            }
+            Common.log(name + " database loaded.");
 
         } catch (SQLException e) {
+            Common.log("Could not load " + name + " database.");
             e.printStackTrace();
         }
     }

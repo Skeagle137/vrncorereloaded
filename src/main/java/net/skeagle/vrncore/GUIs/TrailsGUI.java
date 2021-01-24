@@ -114,7 +114,7 @@ public class TrailsGUI extends Menu {
 
         private ArrowTrailSelection() {
             super(null, Arrays.stream(VRNParticle.values()).collect(Collectors.toList()));
-            setSize(9 * 3);
+            setSize(9 * 4);
             setTitle("&9Arrow Trails");
 
 
@@ -157,7 +157,7 @@ public class TrailsGUI extends Menu {
                 return ItemUtil.genItem(particle.getMaterial(),
                         "&6" + particle.getParticleName(),
                         "", "&7Click to select",
-                        "this arrow trail.")
+                        "&r&7this arrow trail.")
                         .glint(data.getArrowtrail() != null && data.getArrowtrail() == particle.getParticle()).build();
             }
             return ItemUtil.genItem(Material.GRAY_DYE,
@@ -204,7 +204,7 @@ public class TrailsGUI extends Menu {
 
         private PlayerTrailSelection() {
             super(null, Arrays.stream(VRNParticle.values()).collect(Collectors.toList()));
-            setSize(9 * 3);
+            setSize(9 * 4);
             setTitle("&dPlayer Trails");
 
             back = new Button() {
@@ -245,7 +245,7 @@ public class TrailsGUI extends Menu {
                 return ItemUtil.genItem(particle.getMaterial(),
                         "&6" + particle.getParticleName(),
                         "", "&7Click to select",
-                        "this player trail.")
+                        "&r&7this player trail.")
                         .glint(data.getPlayertrail() != null && data.getPlayertrail() == particle.getParticle()).build();
             }
             return ItemUtil.genItem(Material.GRAY_DYE,

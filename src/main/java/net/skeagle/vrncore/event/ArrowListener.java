@@ -31,7 +31,7 @@ public class ArrowListener implements Listener {
                                     return;
                                 }
                                 if (particle != Particle.REDSTONE)
-                                    ((Player) e.getEntity().getShooter()).getWorld().spawnParticle(Particle.REDSTONE, e.getEntity().getLocation(),1);
+                                    ((Player) e.getEntity().getShooter()).getWorld().spawnParticle(particle, e.getEntity().getLocation(),1);
                                 else
                                     spawnRedstone(e.getEntity().getLocation());
                             }

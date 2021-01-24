@@ -53,15 +53,14 @@ public class TimeRewards extends YamlConfig {
     }
 
     public void doReward(final Player p) {
-        for (final String msg : messages) {
-            sayNoPrefix(p, msg);
+        if (!messages.isEmpty()) {
+            for (final String msg : messages)
+                sayNoPrefix(p, msg);
         }
-        if (use_actionbar) {
+        if (use_actionbar)
             sayActionBar(p, actionmessage);
-        }
-        if (enable_title) {
+        if (enable_title)
             Remain.sendTitle(p, 0, 6 * 20, 2 * 20, title, subtitle);
-        }
         for (String command : commands) {
             command = command.replaceAll("%player%", p.getName());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);

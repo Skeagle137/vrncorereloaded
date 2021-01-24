@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class WarpManager extends DBObject<Warp> {
 
@@ -30,7 +31,7 @@ public class WarpManager extends DBObject<Warp> {
             if (w.getName().equalsIgnoreCase(name))
                 return false;
 
-        Warp w = new Warp(name, p.getLocation());
+        Warp w = new Warp(name, p.getLocation(), p.getUniqueId());
         save(w);
         loadedwarps.add(w);
         return true;
@@ -60,12 +61,30 @@ public class WarpManager extends DBObject<Warp> {
         return names;
     }
 
+    public void updateWarpOwner(Warp w, UUID uuid) {
+        try {
+            PreparedStatement ps = getConn().prepareStatement("UPDATE " + getName() + "SET uuid = " + uuid.toString() + " WHERE name = " + w.getName());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Warp> getWarpsOwnedByPlayer(Player p) {
+        final List<Warp> owned_warps = new ArrayList<>();
+        for (Warp w : loadedwarps)
+            if (w.getOwner().equals(p.getUniqueId()))
+                owned_warps.add(w);
+        return owned_warps;
+    }
+
     @Override
     public void save(Warp w) {
         try {
-            PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() + "(name, location) VALUES (?, ?)");
+            PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() + "(name, location, owner) VALUES (?, ?, ?)");
             ps.setString(1, w.getName());
             ps.setString(2, VRNUtil.LocationSerialization.serialize(w.getLocation()));
+            ps.setString(3, w.getOwner().toString());
             ps.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,10 +116,10 @@ public class WarpManager extends DBObject<Warp> {
                 while (rs.next()) {
                     loc = VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
                     if (loc == null) {
-                        Common.log("Warning, location is null for warp id " + rs.getInt("id"));
+                        Common.log("Location is null for warp name " + rs.getString("name"));
                         continue;
                     }
-                    loadedwarps.add(new Warp(rs.getString("name"), loc));
+                    loadedwarps.add(new Warp(rs.getString("name"), loc, UUID.fromString(rs.getString("owner"))));
                 }
             }
         }
