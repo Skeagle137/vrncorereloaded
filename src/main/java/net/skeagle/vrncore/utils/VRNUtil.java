@@ -5,12 +5,15 @@ import com.google.gson.JsonParser;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -152,6 +155,41 @@ public final class VRNUtil {
             }
             return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]),
                     Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+        }
+    }
+
+    public static class Tasks {
+        int id;
+
+        private BukkitTask setupId(int id) {
+            this.id = id;
+
+            BukkitTask task;
+            do {
+                if (!Bukkit.getScheduler().getPendingTasks().iterator().hasNext())
+                    return null;
+                task = Bukkit.getScheduler().getPendingTasks().iterator().next();
+            } while (task.getTaskId() != id);
+
+            return task;
+        }
+
+        public static Runnable run(Runnable r) {
+            return run(0, r);
+        }
+
+        public static Runnable run(int delay, Runnable r) {
+            BukkitScheduler scheduler = Bukkit.getScheduler();
+            return (Runnable) (delay != 0 ? scheduler.runTask(VRNcore.getInstance(), r) : scheduler.runTaskLater(VRNcore.getInstance(), r, 0));
+        }
+
+        public static Runnable runAsync(Runnable r) {
+            return runAsync(0, r);
+        }
+
+        public static Runnable runAsync(int delay, Runnable r) {
+            BukkitScheduler scheduler = Bukkit.getScheduler();
+            return (Runnable) (delay != 0 ? scheduler.runTaskAsynchronously(VRNcore.getInstance(), r) : scheduler.runTaskLaterAsynchronously(VRNcore.getInstance(), r, 0));
         }
     }
 }

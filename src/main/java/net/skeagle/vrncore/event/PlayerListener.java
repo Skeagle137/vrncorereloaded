@@ -27,7 +27,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
         final PlayerData data = PlayerManager.getData(e.getPlayer());
-        final String name = data.getNickname() != null ? data.getNickname() + "&r" : e.getPlayer().getName();
+        final String name = (data.getNickname() != null ? data.getNickname() + "&r" : e.getPlayer().getName());
         e.getPlayer().setDisplayName(color(name));
         if (!e.getPlayer().hasPlayedBefore() && Settings.Joining.ENABLED) {
             e.setJoinMessage(color(Settings.Joining.WELCOME.replaceAll("%player%", name)));

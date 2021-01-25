@@ -53,22 +53,24 @@ public class TimeRewards extends YamlConfig {
     }
 
     public void doReward(final Player p) {
-        if (!messages.isEmpty()) {
-            for (final String msg : messages)
+        for (final String msg : messages)
+            if (!msg.isEmpty())
                 sayNoPrefix(p, msg);
-        }
         if (use_actionbar)
             sayActionBar(p, actionmessage);
         if (enable_title)
             Remain.sendTitle(p, 0, 6 * 20, 2 * 20, title, subtitle);
         for (String command : commands) {
             command = command.replaceAll("%player%", p.getName());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            final String finalCommand = command;
+            Common.runLater(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand));
         }
         if (fireworks) {
-            p.setInvulnerable(true);
-            sendFirework(p.getLocation().add(0, 1, 0), buildFireworkEffect());
-            Common.runLater(1, () -> p.setInvulnerable(false));
+            Common.runLater(() -> {
+                p.setInvulnerable(true);
+                sendFirework(p.getLocation().add(0, 1, 0), buildFireworkEffect());
+                Common.runLater(1, () -> p.setInvulnerable(false));
+            });
         }
     }
 

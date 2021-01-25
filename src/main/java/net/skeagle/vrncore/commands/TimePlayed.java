@@ -57,17 +57,15 @@ public class TimePlayed extends SimpleCommand {
             say(getSender(), "Time played set to &a" + timeToMessage(totalsec) + (isPlayer(p) ? "&7." : "&7 for &a" + p.getName() + "&7."));
         } else if (args[0].equalsIgnoreCase("get")) {
             Player p;
-            if (args.length > 2) {
+            if (args.length > 1) {
                 hasPerm("vrn.timeplayed.getothers");
-                p = findPlayer(args[2], VRNUtil.noton);
+                p = findPlayer(args[1], VRNUtil.noton);
             } else {
                 checkConsole();
-                hasPerm("vrn.timeplayed.setself");
+                hasPerm("vrn.timeplayed.getself");
                 p = getPlayer();
             }
-            checkConsole();
-            hasPerm("vrn.timeplayed.getself");
-            final PlayerData data = PlayerManager.getData(getPlayer());
+            final PlayerData data = PlayerManager.getData(p);
             say(getPlayer(), (isPlayer(p) ? "Your" : "&a" + p.getName() + "&7's") + " time played is &a" + timeToMessage(data.getTimeplayed()) + "&7.");
         } else if (args[0].equalsIgnoreCase("add")) {
             long totalsec;
@@ -139,6 +137,9 @@ public class TimePlayed extends SimpleCommand {
         switch (args.length) {
             case 1:
                 return completeLastWord("set", "get", "add", "subtract");
+            case 2:
+                if (args[0].equalsIgnoreCase("get"))
+                    return completeLastWordPlayerNames();
             case 3:
                 return completeLastWordPlayerNames();
         }
