@@ -11,6 +11,7 @@ import org.mineacademy.fo.Common;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 
 @Getter
@@ -58,9 +59,9 @@ public class PlayerManager extends DBObject<PlayerData> {
                         " (uuid, nickname, arrowtrail, playertrail, vanished, muted, godmode, last_online, last_location, timeplayed) " +
                         "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 ps.setString(1, p.getUniqueId().toString());
-                ps.setString(2, null);
-                ps.setString(3, null);
-                ps.setString(4, null);
+                ps.setNull(2, Types.NULL);
+                ps.setNull(3, Types.NULL);
+                ps.setNull(4, Types.NULL);
                 ps.setBoolean(5, false);
                 ps.setBoolean(6, false);
                 ps.setBoolean(7, false);

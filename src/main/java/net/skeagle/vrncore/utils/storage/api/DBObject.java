@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.skeagle.vrncore.db.DBConnect;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public abstract class DBObject<T extends StoreableObject<T>> {
 
@@ -24,12 +25,6 @@ public abstract class DBObject<T extends StoreableObject<T>> {
 
     protected T load() {
         return null;
-    }
-
-    protected void delete(T object) {
-    }
-
-    protected void update(T object) {
     }
 
     public void onFinishLoad() {

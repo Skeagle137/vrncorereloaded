@@ -31,8 +31,7 @@ public class delhome extends SimpleCommand {
 
     @Override
     protected List<String> tabComplete() {
-        if (HomeManager.getInstance().getHomes(getPlayer()).size() != 0)
-            if (args.length == 1) return completeLastWord(HomeManager.getInstance().getHomeNames(getPlayer()));
-        return completeLastWord("");
+        if (args.length == 1) return completeLastWord(HomeManager.getInstance().getHomeNames(getPlayer()));
+        return completeLastWord();
     }
 }

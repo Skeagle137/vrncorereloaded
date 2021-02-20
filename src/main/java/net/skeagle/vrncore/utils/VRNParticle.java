@@ -55,11 +55,9 @@ public enum VRNParticle {
     }
 
     public static String getNameFromParticle(final Particle particle) {
-        for (final VRNParticle vrn : VRNParticle.values()) {
-            if (vrn.getParticle() == particle) {
+        for (final VRNParticle vrn : VRNParticle.values())
+            if (vrn.getParticle() == particle)
                 return vrn.name().toLowerCase();
-            }
-        }
         return null;
     }
 }

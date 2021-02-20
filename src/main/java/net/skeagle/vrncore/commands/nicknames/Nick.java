@@ -12,7 +12,6 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 public class Nick extends SimpleCommand {
     public Nick() {
         super("nick|nickname");
-        setMinArguments(1);
         setUsage("<nickname> or <playername> <nickname>");
         setDescription("Sets nickname for yourself or another player.");
         setPermissionMessage(VRNUtil.noperm);
@@ -20,7 +19,9 @@ public class Nick extends SimpleCommand {
 
     @Override
     public void onCommand() {
-        if (args.length == 1) {
+        if (args.length < 1)
+            say(getSender(), "You need to provide a nickname.");
+        else if (args.length == 1) {
             checkConsole();
             final Player p = getPlayer();
             hasPerm("vrn.nick.self");
@@ -30,15 +31,16 @@ public class Nick extends SimpleCommand {
             p.setDisplayName(nick);
             p.setPlayerListName(nick);
             say(p, "&aNickname successfully changed.");
-            return;
         }
-        hasPerm("nicknames.nick.other");
-        final Player a = findPlayer(args[0], VRNUtil.noton);
-        final String nick = color(args[1] + "&r");
-        final PlayerData data = PlayerManager.getData(a);
-        data.setNickname(nick);
-        a.setDisplayName(nick);
-        a.setPlayerListName(nick);
-        say(getSender(), "&7Successfully set &a" + a.getName() + "&7's nick to " + nick + "&r&7.");
+        else {
+            hasPerm("vrn.nick.other");
+            final Player a = findPlayer(args[0], VRNUtil.noton);
+            final String nick = color(args[1] + "&r");
+            final PlayerData data = PlayerManager.getData(a);
+            data.setNickname(nick);
+            a.setDisplayName(nick);
+            a.setPlayerListName(nick);
+            say(getSender(), "&7Successfully set &a" + a.getName() + "&7's nick to " + nick + "&r&7.");
+        }
     }
 }

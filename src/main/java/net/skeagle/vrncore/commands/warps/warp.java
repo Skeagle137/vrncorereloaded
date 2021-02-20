@@ -31,9 +31,7 @@ public class warp extends SimpleCommand {
 
     @Override
     protected List<String> tabComplete() {
-        final List<String> names = WarpManager.getInstance().getWarpNames();
-        if (!names.isEmpty())
-            if (args.length == 1) return completeLastWord(names);
-        return completeLastWord("");
+        if (args.length == 1) return completeLastWord(WarpManager.getInstance().getWarpNames());
+        return completeLastWord();
     }
 }

@@ -63,7 +63,7 @@ public final class TimeUtil {
         for (int i = 0; i < c.length; i++) {
             if (ALLOWED_VALUES.matcher(Character.toString(c[i])).matches()) {
                 if (nums.equals(""))
-                    throw new TimeFormatException("Error in position " + (i + 1) + " of the time, you must provide a number before a time unit.");
+                    throw new TimeFormatException("&cError in position " + (i + 1) + " of the time, you must provide a number before a time unit.");
                 matches += 1;
                 big = new BigInteger(nums);
                 num += big.longValue() * convertUnitToTime(c[i]);
@@ -76,14 +76,14 @@ public final class TimeUtil {
             }
             else {
                 if (!ALLOWED_VALUES.matcher(Character.toString(c[i])).matches() && Character.getNumericValue(c[i]) >= 10)
-                    throw new TimeFormatException("Error in position " + (i + 1) + " of the time, unknown time unit. The accepted values are seconds (s), minutes (m), hours (h), days (d), or years (y).");
-                throw new TimeFormatException("Error in parsing the time, please check if you formatted the time correctly.");
+                    throw new TimeFormatException("&cError in position " + (i + 1) + " of the time, unknown time unit. The accepted values are seconds (s), minutes (m), hours (h), days (d), or years (y).");
+                throw new TimeFormatException("&cError in parsing the time, please check if you formatted the time correctly.");
             }
         }
         if (!nums.equals("") && matches == 0 || tempunit.equals("")) {
             if (!ALLOWED_VALUES.matcher(s.substring(c.length - 1)).matches() && Character.getNumericValue(s.charAt(c.length - 1)) >= 10)
-                throw new TimeFormatException("Error in position " + c.length + " of the time, unknown time unit. The accepted values are seconds (s), minutes (m), hours (h), days (d), or years (y).");
-            throw new TimeFormatException("Error in position " + c.length + " of the time, you must specify the time unit.");
+                throw new TimeFormatException("&cError in position " + c.length + " of the time, unknown time unit. The accepted values are seconds (s), minutes (m), hours (h), days (d), or years (y).");
+            throw new TimeFormatException("&cError in position " + c.length + " of the time, you must specify the time unit.");
         }
         return num;
     }

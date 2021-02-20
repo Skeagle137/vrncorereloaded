@@ -29,8 +29,8 @@ public class home extends SimpleCommand {
 
     @Override
     protected List<String> tabComplete() {
-        if (HomeManager.getInstance().getHomes(getPlayer()).size() != 0)
+        if (HomeManager.getInstance().getHomeNames(getPlayer()).size() != 0)
             if (args.length == 1) return completeLastWord(HomeManager.getInstance().getHomeNames(getPlayer()));
-        return completeLastWord("");
+        return completeLastWord();
     }
 }

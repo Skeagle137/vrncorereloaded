@@ -94,10 +94,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoinVanished(final PlayerJoinEvent e) {
         final PlayerData data = PlayerManager.getData(e.getPlayer());
-        if (data.getVanished()) {
+        if (data.getVanished())
             for (final Player pl : Bukkit.getOnlinePlayers())
                 pl.hidePlayer(VRNcore.getInstance(), e.getPlayer());
-        }
     }
 
     /***********************

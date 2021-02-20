@@ -187,7 +187,6 @@ public final class ItemUtil {
             if (unbreakable) {
                 flags.add(ItemFlag.HIDE_ATTRIBUTES);
                 flags.add(ItemFlag.HIDE_UNBREAKABLE);
-                CompProperty.UNBREAKABLE.apply(im, true);
             }
 
             i.setItemMeta(im);

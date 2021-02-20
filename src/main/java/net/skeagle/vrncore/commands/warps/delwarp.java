@@ -13,24 +13,27 @@ public class delwarp extends SimpleCommand {
         setMinArguments(1);
         setUsage("<name>");
         setDescription("Remove a warp.");
-        setPermission("vrn.delwarp");
         setPermissionMessage(VRNUtil.noperm);
     }
 
     @Override
     public void onCommand() {
         checkConsole();
-        if (WarpManager.getInstance().delWarp(args[0]))
+        if (WarpManager.getInstance().delWarp(args[0])) {
+            if (!WarpManager.getInstance().getWarp(args[0]).getOwner().equals(getPlayer().getUniqueId()))
+                checkPerm("vrn.delwarp.others");
+            else
+                checkPerm("vrn.delwarp.self");
             returnTell("&7Warp &a" + args[0] + "&7 successfully deleted.");
+        }
         returnTell("&cThat warp does not exist.");
     }
 
     @Override
     protected List<String> tabComplete() {
-        final List<String> names = WarpManager.getInstance().getWarpNames();
-        if (!names.isEmpty()) {
-            if (args.length == 1) return completeLastWord(names);
-        }
-        return completeLastWord("");
+        if (args.length == 1)
+            return completeLastWord(hasPerm("vrn.delwarp.others") ?
+                    WarpManager.getInstance().getWarpNames() : WarpManager.getInstance().getWarpsOwnedByPlayer(getPlayer()));
+        return completeLastWord();
     }
 }

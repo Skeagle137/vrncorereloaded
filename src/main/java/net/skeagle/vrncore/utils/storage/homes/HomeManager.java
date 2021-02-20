@@ -20,50 +20,70 @@ public class HomeManager extends DBObject<Home> {
     }
 
     @Getter
-    private static final List<Home> loadedhomes = new ArrayList<>();
-
-    @Getter
     private static final HomeManager instance = new HomeManager();
 
     public boolean setHome(final String name, Player p) {
-        for (Home h : getHomes(p))
-            if (name.equalsIgnoreCase(h.getName()))
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT location FROM " + getName() + " WHERE name = '" + name + "' AND owner = '" + p.getUniqueId() + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
                 return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Home h = new Home(name, p.getUniqueId(), p.getLocation());
-        loadedhomes.add(h);
         save(h);
         return true;
     }
 
     public boolean delHome(final String name, Player p) {
-        for (Home h : getHomes(p))
-            if (name.equalsIgnoreCase(h.getName())) {
-                delete(h);
-                loadedhomes.remove(h);
-                return true;
-            }
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT location FROM " + getName() + " WHERE name = '" + name + "' AND owner = '" + p.getUniqueId() + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                delete(p, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     public Home getHome(final String name, final Player p) {
-        for (Home h : getHomes(p))
-            if (h.getName().equalsIgnoreCase(name))
-                return h;
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE name = '" + name + "' AND owner = '" + p.getUniqueId() + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return new Home(rs.getString("name"),
+                        UUID.fromString(rs.getString("owner")),
+                        VRNUtil.LocationSerialization.deserialize(rs.getString("location")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
-    public static List<Home> getHomes(Player p) {
-        final List<Home> homes = new ArrayList<>();
-        for (Home h : loadedhomes)
-            if (h.getOwner().equals(p.getUniqueId()))
-                homes.add(h);
-        return homes;
+    public Location getLocationFromName(final Player p, final String name) {
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT location FROM " + getName() + " WHERE name = '" + name + "' AND owner = '" + p.getUniqueId() + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<String> getHomeNames(Player p) {
         final List<String> names = new ArrayList<>();
-        for (Home h : getHomes(p))
-            names.add(h.getName());
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT name FROM " + getName() + " WHERE owner = '" + p.getUniqueId() + "'");
+            final ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                names.add(rs.getString("name"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return names;
     }
 
@@ -77,45 +97,16 @@ public class HomeManager extends DBObject<Home> {
             ps.execute();
         } catch (Exception e) {
             e.printStackTrace();
-
         }
     }
 
-    @Override
-    public void delete(Home h) {
+    public void delete(Player p, String name) {
         try {
-            PreparedStatement ps = getConn().prepareStatement("DELETE FROM " + getName() + " WHERE name = ? AND owner = ?");
-            ps.setString(1, h.getName());
-            ps.setString(2, h.getOwner().toString());
+            PreparedStatement ps = getConn().prepareStatement("DELETE FROM " + getName() + " WHERE name = '" + name + "', owner = '" + p.getUniqueId() + "'");
+            ps.setString(1, name);
+            ps.setString(2, p.getUniqueId().toString());
             ps.execute();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onFinishLoad() {
-        loadAllHomes();
-    }
-
-    public void loadAllHomes() {
-        loadedhomes.clear();
-        try {
-            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName());
-            try (final ResultSet rs = ps.executeQuery()) {
-                Location loc;
-                while (rs.next()) {
-                    loc = VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
-                    if (loc == null) {
-                        Common.log("Skipping home \"" + rs.getString("name") + "\" (owner uuid: " + rs.getString("owner") + "), location is null");
-                        continue;
-                    }
-                    loadedhomes.add(new Home(rs.getString("name"),
-                            UUID.fromString(rs.getString("owner")), loc));
-                }
-            }
-        }
-        catch (Exception e) {
             e.printStackTrace();
         }
     }

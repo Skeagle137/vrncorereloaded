@@ -43,7 +43,7 @@ public class sethome extends SimpleCommand {
         for (int i : list)
             if (i >= maxsize)
                 maxsize = i;
-        if (HomeManager.getHomes(getPlayer()).size() >= maxsize && !hasPerm("vrn.homelimit.*"))
+        if (HomeManager.getInstance().getHomeNames(getPlayer()).size() >= maxsize && !hasPerm("vrn.homelimit.*"))
             returnTell("&cYou can only set a maximum of " + maxsize + " homes. Delete some of your homes if you want to set more.");
         if (HomeManager.getInstance().setHome(args[0], getPlayer()))
             returnTell("&7Home set, teleport to it with &a/home " + args[0] + "&7.");

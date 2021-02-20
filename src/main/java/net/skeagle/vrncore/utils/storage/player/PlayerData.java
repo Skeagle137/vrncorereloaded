@@ -95,15 +95,15 @@ public class PlayerData extends StoreableObject<PlayerData> {
                 ps.setNull(1, Types.NULL);
             else {
                 if (o instanceof Boolean)
-                    ps.setBoolean(1, (boolean) o);
+                    ps.setBoolean(1, (Boolean) o);
                 else if (o instanceof Long)
-                    ps.setLong(1, (long) o);
+                    ps.setLong(1, (Long) o);
                 else if (o instanceof Particle)
                     ps.setString(1, ((Particle) o).name());
                 else
                     ps.setString(1, (String) o);
-                ps.setString(2, uuid.toString());
             }
+            ps.setString(2, uuid.toString());
             ps.executeUpdate();
         }
         catch (SQLException e) {

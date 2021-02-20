@@ -21,60 +21,85 @@ public class WarpManager extends DBObject<Warp> {
     }
 
     @Getter
-    private static final List<Warp> loadedwarps = new ArrayList<>();
-
-    @Getter
     private static final WarpManager instance = new WarpManager();
 
     public boolean setWarp(final Player p, final String name) {
-        for (Warp w : loadedwarps)
-            if (w.getName().equalsIgnoreCase(name))
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE name = '" + name + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
                 return false;
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Warp w = new Warp(name, p.getLocation(), p.getUniqueId());
         save(w);
-        loadedwarps.add(w);
         return true;
     }
 
     public boolean delWarp(final String name) {
-        for (Warp w : loadedwarps)
-            if (w.getName().equalsIgnoreCase(name)) {
-                delete(w);
-                loadedwarps.remove(w);
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE name = '" + name + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                delete(name);
                 return true;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     public Warp getWarp(final String name) {
-        for (Warp w : loadedwarps)
-            if (w.getName().equalsIgnoreCase(name))
-                return w;
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE name = '" + name + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return new Warp(rs.getString("name"),
+                    VRNUtil.LocationSerialization.deserialize(rs.getString("location")),
+                    UUID.fromString(rs.getString("owner")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Location getLocationFromName(final String name) {
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT location FROM " + getName() + " WHERE name = '" + name + "'");
+            final ResultSet rs = ps.executeQuery();
+            if (rs.next())
+                return VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     public List<String> getWarpNames() {
         final List<String> names = new ArrayList<>();
-        for (Warp w : loadedwarps)
-            names.add(w.getName());
-        return names;
-    }
-
-    public void updateWarpOwner(Warp w, UUID uuid) {
         try {
-            PreparedStatement ps = getConn().prepareStatement("UPDATE " + getName() + "SET uuid = " + uuid.toString() + " WHERE name = " + w.getName());
-            ps.executeUpdate();
+            PreparedStatement ps = getConn().prepareStatement("SELECT name FROM " + getName());
+            final ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                names.add(rs.getString("name"));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return names;
     }
 
-    public List<Warp> getWarpsOwnedByPlayer(Player p) {
-        final List<Warp> owned_warps = new ArrayList<>();
-        for (Warp w : loadedwarps)
-            if (w.getOwner().equals(p.getUniqueId()))
-                owned_warps.add(w);
+    public List<String> getWarpsOwnedByPlayer(Player p) {
+        final List<String> owned_warps = new ArrayList<>();
+        try {
+            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE owner = '" + p.getUniqueId() + "'");
+            final ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                owned_warps.add(rs.getString("name"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return owned_warps;
     }
 
@@ -91,39 +116,11 @@ public class WarpManager extends DBObject<Warp> {
         }
     }
 
-    @Override
-    public void delete(Warp w) {
+    public void delete(String name) {
         try {
-            PreparedStatement ps = getConn().prepareStatement("DELETE FROM " + getName() + " WHERE name = ?");
-            ps.setString(1, w.getName());
+            PreparedStatement ps = getConn().prepareStatement("DELETE FROM " + getName() + " WHERE name = '" + name + "'");
             ps.execute();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onFinishLoad() {
-        loadAllWarps();
-    }
-
-    public void loadAllWarps() {
-        loadedwarps.clear();
-        try {
-            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName());
-            try (final ResultSet rs = ps.executeQuery()) {
-                Location loc;
-                while (rs.next()) {
-                    loc = VRNUtil.LocationSerialization.deserialize(rs.getString("location"));
-                    if (loc == null) {
-                        Common.log("Skipping warp \"" + rs.getString("name") + "\", location is null");
-                        continue;
-                    }
-                    loadedwarps.add(new Warp(rs.getString("name"), loc, UUID.fromString(rs.getString("owner"))));
-                }
-            }
-        }
-        catch (Exception e) {
             e.printStackTrace();
         }
     }
