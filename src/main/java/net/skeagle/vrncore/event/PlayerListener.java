@@ -65,6 +65,7 @@ public class PlayerListener implements Listener {
         final VRNPlayer p = new VRNPlayer(e.getPlayer());
         if (Settings.Joining.ENABLED)
             e.setQuitMessage(color(Settings.Joining.QUIT.replaceAll("%player%", p.getName())));
+        p.save();
     }
 
     /************************
