@@ -3,7 +3,7 @@ package net.skeagle.vrncore.tasks;
 import net.minecraft.server.v1_16_R3.EntityArmorStand;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.PlayerSitUtil;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;

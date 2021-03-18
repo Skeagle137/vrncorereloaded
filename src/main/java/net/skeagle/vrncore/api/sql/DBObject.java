@@ -1,10 +1,8 @@
-package net.skeagle.vrncore.utils.storage.api;
+package net.skeagle.vrncore.api.sql;
 
 import lombok.Getter;
-import net.skeagle.vrncore.db.DBConnect;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public abstract class DBObject<T extends StoreableObject<T>> {
 
@@ -13,18 +11,11 @@ public abstract class DBObject<T extends StoreableObject<T>> {
     @Getter
     private final Class<T> objectClass;
     @Getter
-    private final Connection conn = DBConnect.getConn();
+    private final Connection conn = SQLConnection.getConnection();
 
     public DBObject(String name, Class<T> object) {
         this.name = name;
         this.objectClass = object;
-    }
-
-    protected void save(T object) {
-    }
-
-    protected T load() {
-        return null;
     }
 
     public void onFinishLoad() {

@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.utils.storage.player;
 
 import lombok.Getter;
-import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.api.DBObject;
+import net.skeagle.vrncore.api.util.VRNUtil;
+import net.skeagle.vrncore.api.sql.DBObject;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -25,27 +25,22 @@ public class PlayerManager extends DBObject<PlayerData> {
 
     private static final PlayerManager instance = new PlayerManager();
 
-    public static PlayerData getData(final Player p) {
-
-        PlayerData data = playerMap.get(p.getUniqueId());
-
+    public static PlayerData getData(final UUID uuid) {
+        PlayerData data = playerMap.get(uuid);
         if (data == null) {
-            data = instance.loadData(p);
-
-            playerMap.put(p.getUniqueId(), data);
+            data = instance.loadData(uuid);
+            playerMap.put(uuid, data);
         }
-
         return data;
     }
 
-    private PlayerData loadData(Player p) {
+    private PlayerData loadData(UUID uuid) {
         try {
             PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE uuid = ?");
-            ps.setString(1, p.getUniqueId().toString());
+            ps.setString(1, uuid.toString());
             try (final ResultSet rs = ps.executeQuery()) {
                 Location loc = VRNUtil.LocationSerialization.deserialize(rs.getString("last_location"));
-                if (loc == null) loc = p.getLocation();
-                return new PlayerData(p.getUniqueId(), rs.getString("nickname"),
+                return new PlayerData(uuid, rs.getString("nickname"),
                         rs.getString("arrowtrail") != null ? Particle.valueOf(rs.getString("arrowtrail")) : null,
                         rs.getString("playertrail") != null ? Particle.valueOf(rs.getString("playertrail")) : null,
                         rs.getBoolean("vanished"),
@@ -58,7 +53,7 @@ public class PlayerManager extends DBObject<PlayerData> {
                 PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() +
                         " (uuid, nickname, arrowtrail, playertrail, vanished, muted, godmode, last_online, last_location, timeplayed) " +
                         "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                ps.setString(1, p.getUniqueId().toString());
+                ps.setString(1, uuid.toString());
                 ps.setNull(2, Types.NULL);
                 ps.setNull(3, Types.NULL);
                 ps.setNull(4, Types.NULL);
@@ -66,10 +61,10 @@ public class PlayerManager extends DBObject<PlayerData> {
                 ps.setBoolean(6, false);
                 ps.setBoolean(7, false);
                 ps.setLong(8, 0);
-                ps.setString(9, VRNUtil.LocationSerialization.serialize(p.getLocation()));
+                ps.setNull(9, Types.NULL);
                 ps.setLong(10, 0);
                 ps.execute();
-                loadData(p);
+                loadData(uuid);
             }
             catch (Exception e2) {
                 Common.log("Could not create player data");

@@ -3,5 +3,5 @@ version: ${project.version}
 main: ${main.class}
 author: Skeagle
 description: ${project.description}
-softdepend: [Vault]
-api-version: 1.13
+softdepend: [Vault, VRNEnchants]
+api-version: 1.16

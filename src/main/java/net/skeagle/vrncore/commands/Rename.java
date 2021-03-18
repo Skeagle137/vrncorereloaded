@@ -1,12 +1,12 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.color;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Rename extends SimpleCommand {
 

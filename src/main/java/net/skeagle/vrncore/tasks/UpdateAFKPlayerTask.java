@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
 
-import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
-import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncore.api.util.TimeUtil.timeToMessage;
+import static net.skeagle.vrncore.api.util.VRNUtil.color;
 
 public class UpdateAFKPlayerTask extends BukkitRunnable {
 
@@ -25,7 +25,7 @@ public class UpdateAFKPlayerTask extends BukkitRunnable {
     public void run() {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             final AFKManager manager = AFKManager.getAfkManager(pl);
-            final PlayerData data = PlayerManager.getData(pl);
+            final PlayerData data = PlayerManager.getData(pl.getUniqueId());
             final TimeRewards reward;
             Long time = data.getTimeplayed();
             if (!updateAFKPlayer(pl) || !manager.isAfk()) {

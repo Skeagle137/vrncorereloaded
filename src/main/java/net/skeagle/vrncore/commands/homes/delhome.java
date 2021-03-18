@@ -1,12 +1,12 @@
 package net.skeagle.vrncore.commands.homes;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.homes.HomeManager;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class delhome extends SimpleCommand {
 

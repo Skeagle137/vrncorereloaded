@@ -2,8 +2,8 @@ package net.skeagle.vrncore.utils.storage.warps;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.api.StoreableObject;
+import net.skeagle.vrncore.api.util.VRNUtil;
+import net.skeagle.vrncore.api.sql.StoreableObject;
 import org.bukkit.Location;
 
 import java.util.UUID;

@@ -1,16 +1,16 @@
 package net.skeagle.vrncore.commands;
 
 import net.minecraft.server.v1_16_R3.PacketPlayOutGameStateChange;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
-public class Demotroll extends SimpleCommand {
+public class Demo extends SimpleCommand {
 
-    public Demotroll() {
+    public Demo() {
         super("demo");
         setMinArguments(1);
         setUsage("<player>");

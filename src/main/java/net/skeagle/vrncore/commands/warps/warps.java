@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands.warps;
 
 import net.skeagle.vrncore.GUIs.WarpsGUI;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.warps.WarpManager;
 import org.mineacademy.fo.command.SimpleCommand;
 

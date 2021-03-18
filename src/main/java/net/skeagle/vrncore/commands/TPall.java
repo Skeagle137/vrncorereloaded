@@ -1,11 +1,11 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class TPall extends SimpleCommand {
 

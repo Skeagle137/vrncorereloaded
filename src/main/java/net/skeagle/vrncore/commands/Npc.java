@@ -3,8 +3,8 @@ package net.skeagle.vrncore.commands;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_16_R3.*;
-import net.skeagle.vrncore.utils.SkinUtil;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.SkinUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
@@ -15,7 +15,7 @@ import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.UUID;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Npc extends SimpleCommand {
 

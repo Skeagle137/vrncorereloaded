@@ -1,12 +1,12 @@
 package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
-import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.sayNoPrefix;
 
 public class Vrn extends SimpleCommand {
 

@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.utils.storage.homes;
 
-import lombok.Getter;
-import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrncore.utils.storage.api.DBObject;
+import net.skeagle.vrncore.api.sql.SQLConnection;
+import net.skeagle.vrncore.api.util.VRNUtil;
+import net.skeagle.vrncore.api.sql.DBObject;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.Common;
@@ -19,8 +19,9 @@ public class HomeManager extends DBObject<Home> {
         super("homes", Home.class);
     }
 
-    @Getter
     private static final HomeManager instance = new HomeManager();
+
+    private static final List<String> homes_map = new ArrayList<>();
 
     public boolean setHome(final String name, Player p) {
         try {
@@ -31,8 +32,7 @@ public class HomeManager extends DBObject<Home> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Home h = new Home(name, p.getUniqueId(), p.getLocation());
-        save(h);
+        save(name, p);
         return true;
     }
 
@@ -40,8 +40,10 @@ public class HomeManager extends DBObject<Home> {
         try {
             PreparedStatement ps = getConn().prepareStatement("SELECT location FROM " + getName() + " WHERE name = '" + name + "' AND owner = '" + p.getUniqueId() + "'");
             final ResultSet rs = ps.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 delete(p, name);
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,27 +89,30 @@ public class HomeManager extends DBObject<Home> {
         return names;
     }
 
-    @Override
-    public void save(Home h) {
+    public void save(String name, Player p) {
+        Common.runAsync(() -> {
+            try {
+                PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() + "(name, owner, location) VALUES (?, ?, ?)");
+                ps.setString(1, name);
+                ps.setString(2, p.getUniqueId().toString());
+                ps.setString(3, VRNUtil.LocationSerialization.serialize(p.getLocation()));
+                ps.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void delete(Player p, String name) {
         try {
-            PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() + "(name, owner, location) VALUES (?, ?, ?)");
-            ps.setString(1, h.getName());
-            ps.setString(2, h.getOwner().toString());
-            ps.setString(3, VRNUtil.LocationSerialization.serialize(h.getLocation()));
+            PreparedStatement ps = getConn().prepareStatement("DELETE FROM " + getName() + " WHERE name = '" + name + "' AND owner = '" + p.getUniqueId() + "'");
             ps.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void delete(Player p, String name) {
-        try {
-            PreparedStatement ps = getConn().prepareStatement("DELETE FROM " + getName() + " WHERE name = '" + name + "', owner = '" + p.getUniqueId() + "'");
-            ps.setString(1, name);
-            ps.setString(2, p.getUniqueId().toString());
-            ps.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static HomeManager getInstance() {
+        return instance;
     }
 }

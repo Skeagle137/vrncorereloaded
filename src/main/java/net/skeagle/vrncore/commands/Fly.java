@@ -1,16 +1,17 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
-public class Flymode extends SimpleCommand {
+public class Fly extends SimpleCommand {
 
-    public Flymode() {
+    public Fly() {
         super("fly");
         setDescription("Toggle fly mode for yourself or another player.");
+        setPermission(null);
         setPermissionMessage(VRNUtil.noperm);
     }
 
@@ -19,12 +20,12 @@ public class Flymode extends SimpleCommand {
         checkConsole();
         final Player p = getPlayer();
         if (args.length < 1) {
-            hasPerm("vrn.fly.self");
+            checkPerm("vrn.fly.self");
             p.setAllowFlight(!p.getAllowFlight());
             say(p, "Fly mode has been " + (p.getAllowFlight() ? "enabled" : "disabled") + ".");
             return;
         }
-        hasPerm("vrn.fly.others");
+        checkPerm("vrn.fly.others");
         final Player a = findPlayer(args[0], VRNUtil.noton);
         a.setAllowFlight(!a.getAllowFlight());
         say(a, "Fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");

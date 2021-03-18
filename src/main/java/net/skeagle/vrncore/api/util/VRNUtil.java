@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.api.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.logging.Level;
 
 public final class VRNUtil {
 
@@ -25,16 +27,47 @@ public final class VRNUtil {
 
     public static void say(final CommandSender cs, final String... message) {
         if (cs == null) return;
-        for (final String msg : message) {
+        for (final String msg : message)
             cs.sendMessage(color(Settings.PREFIX + msg));
-        }
+    }
+
+    public static void say(final VRNPlayer p, final String... message) {
+        for (final String msg : message)
+            p.getPlayer().sendMessage(color(Settings.PREFIX + msg));
     }
 
     public static void sayNoPrefix(final CommandSender cs, final String... message) {
         if (cs == null) return;
-        for (final String msg : message) {
+        for (final String msg : message)
             cs.sendMessage(color(msg));
-        }
+    }
+
+    public static void sayNoPrefix(final VRNPlayer p, final String... message) {
+        for (final String msg : message)
+            p.getPlayer().sendMessage(color(msg));
+    }
+
+    public static boolean hasPerm(final Player p, String perm) {
+        return p.hasPermission(perm);
+    }
+
+    public static boolean hasPerm(final VRNPlayer p, String perm) {
+        return p.getPlayer().hasPermission(perm);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Exception> void sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
+
+    public static void log(String... messages) {
+        log(Level.INFO, messages);
+    }
+
+    public static void log(Level level, String... messages) {
+        if (messages == null) return;
+        for (String s : messages)
+            Bukkit.getLogger().log(level, color(s));
     }
 
     public static String color(String s) {
@@ -45,9 +78,8 @@ public final class VRNUtil {
                     final char[] chars = temp.replaceFirst("&#", "").toCharArray();
                     final StringBuilder rgbColor = new StringBuilder();
                     rgbColor.append("&x");
-                    for (final char c : chars) {
+                    for (final char c : chars)
                         rgbColor.append("&").append(c);
-                    }
                     s = s.replaceAll(temp, rgbColor.toString());
                 }
             }
@@ -56,9 +88,8 @@ public final class VRNUtil {
     }
 
     public static String[] color(final String... i) {
-        for (final String uncolored : i) {
+        for (final String uncolored : i)
             color(uncolored);
-        }
         return i;
     }
 
@@ -141,55 +172,18 @@ public final class VRNUtil {
 
     public static class LocationSerialization {
         public static String serialize(final Location loc) {
-            if (loc == null || loc.getWorld() == null) {
+            if (loc == null || loc.getWorld() == null)
                 return null;
-            }
             return loc.getWorld().getName() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ() + " " + loc.getYaw() + " " + loc.getPitch();
         }
 
         public static Location deserialize(final String s) {
             if (s == null) return null;
             final String[] split = s.split(" ");
-            if (split.length != 6) {
+            if (split.length != 6)
                 return null;
-            }
             return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]),
                     Float.parseFloat(split[4]), Float.parseFloat(split[5]));
-        }
-    }
-
-    public static class Tasks {
-        int id;
-
-        private BukkitTask setupId(int id) {
-            this.id = id;
-
-            BukkitTask task;
-            do {
-                if (!Bukkit.getScheduler().getPendingTasks().iterator().hasNext())
-                    return null;
-                task = Bukkit.getScheduler().getPendingTasks().iterator().next();
-            } while (task.getTaskId() != id);
-
-            return task;
-        }
-
-        public static Runnable run(Runnable r) {
-            return run(0, r);
-        }
-
-        public static Runnable run(int delay, Runnable r) {
-            BukkitScheduler scheduler = Bukkit.getScheduler();
-            return (Runnable) (delay != 0 ? scheduler.runTask(VRNcore.getInstance(), r) : scheduler.runTaskLater(VRNcore.getInstance(), r, 0));
-        }
-
-        public static Runnable runAsync(Runnable r) {
-            return runAsync(0, r);
-        }
-
-        public static Runnable runAsync(int delay, Runnable r) {
-            BukkitScheduler scheduler = Bukkit.getScheduler();
-            return (Runnable) (delay != 0 ? scheduler.runTaskAsynchronously(VRNcore.getInstance(), r) : scheduler.runTaskLaterAsynchronously(VRNcore.getInstance(), r, 0));
         }
     }
 }

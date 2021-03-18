@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minecraft.server.v1_16_R3.*;
-import net.skeagle.vrncore.utils.SkinUtil;
+import net.skeagle.vrncore.api.util.SkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;

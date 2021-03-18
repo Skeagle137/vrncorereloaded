@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.trail;
 
 import lombok.Getter;
 import lombok.Setter;

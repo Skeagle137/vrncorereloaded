@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.TimeUtil;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.TimeUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.player.PlayerData;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.entity.Player;
@@ -10,9 +10,9 @@ import org.mineacademy.fo.command.SimpleCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.skeagle.vrncore.utils.TimeUtil.parseTimeString;
-import static net.skeagle.vrncore.utils.TimeUtil.timeToMessage;
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.TimeUtil.parseTimeString;
+import static net.skeagle.vrncore.api.util.TimeUtil.timeToMessage;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class TimePlayed extends SimpleCommand {
 
@@ -20,7 +20,7 @@ public class TimePlayed extends SimpleCommand {
         super("timeplayed|played");
         setUsage("<set|get|add|subtract> [time|player] [player]");
         setDescription("Check or modify a player's time played.");
-        setPermission("vrn.timeplayed");
+        setPermission(null);
         setPermissionMessage(VRNUtil.noperm);
     }
 
@@ -45,27 +45,27 @@ public class TimePlayed extends SimpleCommand {
             }
             Player p;
             if (args.length > 2) {
-                hasPerm("vrn.timeplayed.setothers");
+                checkPerm("vrn.timeplayed.setothers");
                 p = findPlayer(args[2], VRNUtil.noton);
             } else {
                 checkConsole();
-                hasPerm("vrn.timeplayed.setself");
+                checkPerm("vrn.timeplayed.setself");
                 p = getPlayer();
             }
-            final PlayerData data = PlayerManager.getData(p);
+            final PlayerData data = PlayerManager.getData(p.getUniqueId());
             data.setTimeplayed(totalsec);
             say(getSender(), "Time played set to &a" + timeToMessage(totalsec) + (isPlayer(p) ? "&7." : "&7 for &a" + p.getName() + "&7."));
         } else if (args[0].equalsIgnoreCase("get")) {
             Player p;
             if (args.length > 1) {
-                hasPerm("vrn.timeplayed.getothers");
+                checkPerm("vrn.timeplayed.getothers");
                 p = findPlayer(args[1], VRNUtil.noton);
             } else {
                 checkConsole();
-                hasPerm("vrn.timeplayed.getself");
+                checkPerm("vrn.timeplayed.getself");
                 p = getPlayer();
             }
-            final PlayerData data = PlayerManager.getData(p);
+            final PlayerData data = PlayerManager.getData(p.getUniqueId());
             say(getPlayer(), (isPlayer(p) ? "Your" : "&a" + p.getName() + "&7's") + " time played is &a" + timeToMessage(data.getTimeplayed()) + "&7.");
         } else if (args[0].equalsIgnoreCase("add")) {
             long totalsec;
@@ -81,14 +81,14 @@ public class TimePlayed extends SimpleCommand {
             }
             Player p;
             if (args.length > 2) {
-                hasPerm("vrn.timeplayed.setothers");
+                checkPerm("vrn.timeplayed.setothers");
                 p = findPlayer(args[2], VRNUtil.noton);
             } else {
                 checkConsole();
-                hasPerm("vrn.timeplayed.setself");
+                checkPerm("vrn.timeplayed.setself");
                 p = getPlayer();
             }
-            final PlayerData data = PlayerManager.getData(p);
+            final PlayerData data = PlayerManager.getData(p.getUniqueId());
             final long l = data.getTimeplayed() + totalsec;
             data.setTimeplayed(l);
             say(getSender(), "Added &a" + timeToMessage(totalsec) + "&7 to " + (isPlayer(p) ? "your" : "&a" + p.getName() + "&7's") + " time. " +
@@ -107,14 +107,14 @@ public class TimePlayed extends SimpleCommand {
             }
             Player p;
             if (args.length > 2) {
-                hasPerm("vrn.timeplayed.setothers");
+                checkPerm("vrn.timeplayed.setothers");
                 p = findPlayer(args[2], VRNUtil.noton);
             } else {
                 checkConsole();
-                hasPerm("vrn.timeplayed.setself");
+                checkPerm("vrn.timeplayed.setself");
                 p = getPlayer();
             }
-            final PlayerData data = PlayerManager.getData(p);
+            final PlayerData data = PlayerManager.getData(p.getUniqueId());
             final long l = data.getTimeplayed() - totalsec;
             if (l < 0) {
                 data.setTimeplayed(0L);

@@ -1,9 +1,9 @@
 package net.skeagle.vrncore.utils.storage.player;
 
-import lombok.Getter;
-import net.skeagle.vrncore.db.DBConnect;
-import net.skeagle.vrncore.utils.storage.api.SkipPrimaryID;
-import net.skeagle.vrncore.utils.storage.api.StoreableObject;
+import net.skeagle.vrncore.api.sql.SQLConnection;
+import net.skeagle.vrncore.api.sql.SkipPrimaryID;
+import net.skeagle.vrncore.api.sql.StoreableObject;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.mineacademy.fo.Common;
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.UUID;
 
-@SkipPrimaryID @Getter
+@SkipPrimaryID
 public class PlayerData extends StoreableObject<PlayerData> {
 
     private final UUID uuid;
@@ -43,54 +43,81 @@ public class PlayerData extends StoreableObject<PlayerData> {
         this.timeplayed = timeplayed;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
-        update("nickname", nickname);
+    }
+
+    public Particle getArrowtrail() {
+        return arrowtrail;
     }
 
     public void setArrowtrail(@Nullable Particle arrowtrail) {
         this.arrowtrail = arrowtrail;
-        update("arrowtrail", arrowtrail);
+    }
+
+    public Particle getPlayertrail() {
+        return playertrail;
     }
 
     public void setPlayertrail(@Nullable Particle playertrail) {
         this.playertrail = playertrail;
-        update("playertrail", playertrail);
+    }
+
+    public boolean isVanished() {
+        return vanished;
     }
 
     public void setVanished(boolean vanished) {
         this.vanished = vanished;
-        update("vanished", vanished);
+    }
+
+    public boolean isMuted() {
+        return muted;
     }
 
     public void setMuted(boolean muted) {
         this.muted = muted;
-        update("muted", muted);
+    }
+
+    public boolean isGodmode() {
+        return godmode;
     }
 
     public void setGodmode(boolean godmode) {
         this.godmode = godmode;
-        update("godmode", godmode);
     }
 
-    public void setLastOnline(long last_online) {
+    public long getLastOnline() {
+        return last_online;
+    }
+
+    public void setLastOnline(Long last_online) {
         this.last_online = last_online;
-        update("last_online", last_online);
+    }
+
+    public Location getLastLocation() {
+        return last_location;
     }
 
     public void setLastLocation(Location last_location) {
         this.last_location = last_location;
-        update("last_location", last_location);
+    }
+
+    public long getTimeplayed() {
+        return timeplayed;
     }
 
     public void setTimeplayed(Long timeplayed) {
         this.timeplayed = timeplayed;
-        update("timeplayed", timeplayed);
     }
 
     private void update(String s, Object o) {
         try {
-            PreparedStatement ps = DBConnect.getConn().prepareStatement("UPDATE playerdata SET " + s + " = ? WHERE uuid = ?");
+            PreparedStatement ps = SQLConnection.getConnection().prepareStatement("UPDATE playerdata SET " + s + " = ? WHERE uuid = ?");
             if (o == null)
                 ps.setNull(1, Types.NULL);
             else {
@@ -100,15 +127,28 @@ public class PlayerData extends StoreableObject<PlayerData> {
                     ps.setLong(1, (Long) o);
                 else if (o instanceof Particle)
                     ps.setString(1, ((Particle) o).name());
+                else if (o instanceof Location)
+                    ps.setString(1, VRNUtil.LocationSerialization.serialize((Location) o));
                 else
                     ps.setString(1, (String) o);
             }
             ps.setString(2, uuid.toString());
             ps.executeUpdate();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             Common.log("Could not save player data.");
             e.printStackTrace();
         }
+    }
+
+    public void save() {
+        update("nickname", nickname);
+        update("arrowtrail", arrowtrail);
+        update("playertrail", playertrail);
+        update("vanished", vanished);
+        update("muted", muted);
+        update("godmode", godmode);
+        update("last_online", last_online);
+        update("last_location", last_location);
+        update("timeplayed", timeplayed);
     }
 }

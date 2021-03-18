@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.api.util;
 
 import lombok.NonNull;
 import org.bukkit.Material;
@@ -6,11 +6,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
-import org.mineacademy.fo.remain.*;
 
 import java.util.*;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncore.api.util.VRNUtil.color;
 
 public final class ItemUtil {
 

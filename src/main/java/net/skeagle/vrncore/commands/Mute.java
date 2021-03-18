@@ -1,13 +1,14 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.player.VRNPlayer;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.player.PlayerData;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Mute extends SimpleCommand implements Listener {
 
@@ -22,10 +23,9 @@ public class Mute extends SimpleCommand implements Listener {
 
     @Override
     public void onCommand() {
-        final Player a = findPlayer(args[0], VRNUtil.noton);
-        final PlayerData data = PlayerManager.getData(a);
-        data.setMuted(!data.getMuted());
-        say(a, "You are " + (data.getMuted() ? "now" : "no longer") + " muted.");
-        say(getSender(), "&a" + a.getName() + " &7is " + (data.getMuted() ? "now" : "no longer") + " muted.");
+        final VRNPlayer a = new VRNPlayer(findPlayer(args[0], VRNUtil.noton));
+        a.setMuted(!a.isMuted());
+        say(a, "You are " + (a.isMuted() ? "now" : "no longer") + " muted.");
+        say(getSender(), "&a" + a.getName() + " &7is " + (a.isMuted() ? "now" : "no longer") + " muted.");
     }
 }

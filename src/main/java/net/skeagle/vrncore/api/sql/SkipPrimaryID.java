@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.storage.api;
+package net.skeagle.vrncore.api.sql;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

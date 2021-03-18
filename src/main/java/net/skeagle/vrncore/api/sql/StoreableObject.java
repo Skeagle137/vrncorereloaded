@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils.storage.api;
+package net.skeagle.vrncore.api.sql;
 
 public abstract class StoreableObject<T> {
 

@@ -16,8 +16,8 @@ import org.mineacademy.fo.settings.YamlConfig;
 import java.util.List;
 import java.util.Random;
 
-import static net.skeagle.vrncore.utils.VRNUtil.sayActionBar;
-import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
+import static net.skeagle.vrncore.api.util.VRNUtil.sayActionBar;
+import static net.skeagle.vrncore.api.util.VRNUtil.sayNoPrefix;
 
 @Getter
 public class TimeRewards extends YamlConfig {

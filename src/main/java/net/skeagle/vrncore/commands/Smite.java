@@ -1,11 +1,11 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Smite extends SimpleCommand {
 
@@ -22,9 +22,8 @@ public class Smite extends SimpleCommand {
     public void onCommand() {
         final Player a = findPlayer(args[0], VRNUtil.noton);
         if (args[0].equalsIgnoreCase("*")) {
-            for (final Player pl : Bukkit.getOnlinePlayers()) {
+            for (final Player pl : Bukkit.getOnlinePlayers())
                 pl.getWorld().strikeLightning(pl.getLocation());
-            }
             say(getSender(), "smited all players.");
             return;
         }

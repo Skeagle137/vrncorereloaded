@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.utils.ItemUtil;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.ItemUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.warps.Warp;
 import net.skeagle.vrncore.utils.storage.warps.WarpManager;
 import org.bukkit.Material;
@@ -16,7 +16,7 @@ import org.mineacademy.fo.menu.button.ButtonMenu;
 import org.mineacademy.fo.remain.CompMaterial;
 import org.mineacademy.fo.remain.CompSound;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class WarpsGUI extends MenuPagged<String> {
 

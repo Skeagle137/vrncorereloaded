@@ -1,6 +1,8 @@
 package net.skeagle.vrncore;
 
 import net.md_5.bungee.api.ChatColor;
+import net.skeagle.vrncore.api.hook.HookManager;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.commands.homes.*;
 import net.skeagle.vrncore.commands.nicknames.Nick;
@@ -12,15 +14,13 @@ import net.skeagle.vrncore.commands.tpa.Tpahere;
 import net.skeagle.vrncore.commands.tpa.Tpdeny;
 import net.skeagle.vrncore.commands.warps.*;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
-import net.skeagle.vrncore.db.DBConnect;
+import net.skeagle.vrncore.api.sql.SQLConnection;
 import net.skeagle.vrncore.event.*;
-import net.skeagle.vrncore.hooks.VaultHook;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.tasks.*;
 import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.mineacademy.fo.Common;
 import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.YamlStaticConfig;
 
@@ -29,21 +29,21 @@ import java.util.List;
 
 public final class VRNcore extends SimplePlugin {
 
-    private UpdateAFKPlayerTask afktask;
-    private PlayerTrailTask trailtask;
-    private PlayerSitTask sittask;
+    private UpdateAFKPlayerTask afkTask;
+    private PlayerTrailTask trailTask;
+    private PlayerSitTask sitTask;
+    private AutoSaveTask saveTask;
 
     @Override
     public void onPluginStart() {
-        //database
-        DBConnect.getInstance().load();
-        //hooks
-        VaultHook.load();
+        //temp for compatibility, eventually called within api
+        HookManager.loadHooks();
+        new SQLConnection("");
         //config stuff
         RewardManager.getInstance().loadRewards();
         NPCResource.getInstance().loadAllNPCs();
         //server
-        Common.log(ChatColor.GREEN +
+        VRNUtil.log(ChatColor.GREEN +
                 "-------------------------------\n" +
                 ChatColor.GREEN + "\t\t  -***************-\n" +
                 ChatColor.GREEN + "\t\t  | VRNcore " + getVersion() + " |\n" +
@@ -53,9 +53,10 @@ public final class VRNcore extends SimplePlugin {
                 ChatColor.GREEN +
                 "-------------------------------");
         //tasks
-        afktask = new UpdateAFKPlayerTask(this);
-        trailtask = new PlayerTrailTask(this);
-        sittask = new PlayerSitTask(this);
+        afkTask = new UpdateAFKPlayerTask(this);
+        trailTask = new PlayerTrailTask(this);
+        sitTask = new PlayerSitTask(this);
+        saveTask = new AutoSaveTask(this);
         //commands
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
@@ -82,7 +83,7 @@ public final class VRNcore extends SimplePlugin {
         registerCommand(new Clearchat()); //vrn.clearchat
         registerCommand(new Gamemode()); //vrn.gamemode.self|others
         registerCommand(new Heal()); //vrn.heal.self|others
-        registerCommand(new Flymode()); //vrn.fly.self|others
+        registerCommand(new Fly()); //vrn.fly.self|others
         registerCommand(new Nick()); //vrn.nick.self|others
         registerCommand(new Realname()); //vrn.realname
         registerCommand(new RemoveNick()); //vrn.nick.self|others
@@ -103,7 +104,7 @@ public final class VRNcore extends SimplePlugin {
         registerCommand(new Skin()); //vrn.skin
         registerCommand(new Exptrade()); //vrn.exptrade
         registerCommand(new Trails()); //vrn.trails
-        registerCommand(new Demotroll()); //vrn.demo
+        registerCommand(new Demo()); //vrn.demo
         registerCommand(new Spawnmob()); //vrn.spawnmob
         registerCommand(new TimePlayed()); //vrn.timeplayed.setself|getself|setothers|getothers
         registerCommand(new Hallucinate()); //vrn.hallucinate.self|others
@@ -136,9 +137,10 @@ public final class VRNcore extends SimplePlugin {
     }
 
     private void cleanBeforeReload() {
-        stopTasks(afktask);
-        stopTasks(trailtask);
-        stopTasks(sittask);
+        stopTasks(afkTask);
+        stopTasks(trailTask);
+        stopTasks(sitTask);
+        stopTasks(saveTask);
     }
 
     private void stopTasks(final BukkitRunnable task) {

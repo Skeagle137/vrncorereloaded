@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.utils.storage.npc;
 
 import lombok.Getter;
-import net.skeagle.vrncore.utils.SkinUtil;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.SkinUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Location;
 import org.mineacademy.fo.settings.YamlConfig;
 

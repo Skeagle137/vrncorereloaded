@@ -1,9 +1,7 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.trail;
 
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.mineacademy.fo.remain.CompMaterial;
-import org.mineacademy.fo.remain.CompParticle;
 
 public enum VRNParticle {
     FIREWORKS_SPARK("Spark", Particle.FIREWORKS_SPARK, Material.FIREWORK_ROCKET),

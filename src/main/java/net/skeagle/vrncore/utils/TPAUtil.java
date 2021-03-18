@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 public final class TPAUtil {
     private final Map<Player, BukkitTask> tasks = new HashMap<>();
     private final HashMap<UUID, UUID> StoredPlayer = new HashMap<>();

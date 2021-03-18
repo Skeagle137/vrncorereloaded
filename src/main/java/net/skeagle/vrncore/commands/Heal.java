@@ -1,16 +1,18 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Heal extends SimpleCommand {
 
     public Heal() {
         super("heal");
         setDescription("Heal another player or yourself.");
+        setPermission(null);
         setPermissionMessage(VRNUtil.noperm);
     }
 
@@ -19,16 +21,16 @@ public class Heal extends SimpleCommand {
         if (args.length < 1) {
             checkConsole();
             final Player p = getPlayer();
-            hasPerm("vrn.heal.self");
-            p.setHealth(20);
+            checkPerm("vrn.heal.self");
+            p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             p.setFoodLevel(20);
             p.setFireTicks(0);
             say(p, "Your health and hunger are now full.");
             return;
         }
-        hasPerm("vrn.heal.others");
+        checkPerm("vrn.heal.others");
         final Player a = findPlayer(args[0], VRNUtil.noton);
-        a.setHealth(20);
+        a.setHealth(a.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         a.setFoodLevel(20);
         a.setFireTicks(0);
         say(a, "Your health and hunger are now full.");

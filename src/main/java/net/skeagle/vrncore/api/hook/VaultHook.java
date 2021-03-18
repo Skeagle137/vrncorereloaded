@@ -1,12 +1,7 @@
-package net.skeagle.vrncore.hooks;
+package net.skeagle.vrncore.api.hook;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import net.milkbowl.vault.chat.Chat;
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.utils.HookUtil;
 import net.skeagle.vrncore.utils.storage.player.PlayerData;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
@@ -17,18 +12,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class VaultHook {
+public final class VaultHook {
 
-    @Getter
-    private static VaultHook instance;
-    private Chat chat;
+    private final Chat chat;
 
-    public static void load() {
-        if (!(HookUtil.isVaultEnabled())) return;
-        instance = new VaultHook();
-        if (!instance.setupChat()) return;
-        VRNcore.getInstance().getLogger().info("Hooked into Vault");
+    VaultHook() {
+        RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+        this.chat = rsp.getProvider();
     }
 
     private String getPrefix(final Player p) {
@@ -64,7 +54,7 @@ public class VaultHook {
     }
 
     public String format(final Player p) {
-        final PlayerData data = PlayerManager.getData(p);
+        final PlayerData data = PlayerManager.getData(p.getUniqueId());
         String s = Settings.Chat.FORMAT;
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", data.getNickname() != null ? data.getNickname() + "&r" : p.getName());
@@ -75,20 +65,12 @@ public class VaultHook {
     }
 
     public String format(String s, final Player p) {
-        final PlayerData data = PlayerManager.getData(p);
+        final PlayerData data = PlayerManager.getData(p.getUniqueId());
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", data.getNickname() != null ? data.getNickname() + "&r" : p.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
         s = s.replaceAll("%world", p.getWorld().getName());
         s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
         return s;
-    }
-
-    private boolean setupChat() {
-        final RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
-        if (rsp == null) return false;
-        rsp.getProvider();
-        chat = rsp.getProvider();
-        return chat.isEnabled();
     }
 }

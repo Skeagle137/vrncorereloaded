@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.utils.storage.homes;
 
 import lombok.Getter;
-import net.skeagle.vrncore.utils.storage.api.StoreableObject;
+import net.skeagle.vrncore.api.sql.StoreableObject;
 import org.bukkit.Location;
 
 import java.util.UUID;

@@ -1,13 +1,13 @@
 package net.skeagle.vrncore.commands.weatherAndDay;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Ptime extends SimpleCommand {
     public Ptime() {

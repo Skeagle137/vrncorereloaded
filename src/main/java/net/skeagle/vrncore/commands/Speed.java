@@ -1,10 +1,10 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Speed extends SimpleCommand {
 
@@ -21,25 +21,22 @@ public class Speed extends SimpleCommand {
         checkConsole();
         final Player p = getPlayer();
         if (args.length < 1) {
-            if (p.isFlying()) {
+            if (p.isFlying())
                 p.setFlySpeed((float) 0.1);
-            } else {
+            else
                 p.setWalkSpeed((float) 0.2);
-            }
             say(p, "Your " + (p.isFlying() ? "flying" : "walking") + " speed has been reset.");
-            return;
         }
-        if (isInt(args[0])) {
+        else if (isInt(args[0])) {
             final int speed = Integer.parseInt(args[0]);
-            if (p.isFlying()) {
+            if (p.isFlying())
                 p.setFlySpeed((float) calcFly(speed));
-            } else {
+            else
                 p.setWalkSpeed((float) calcWalk(speed));
-            }
             say(p, "Your " + (p.isFlying() ? "flying" : "walking") + " speed has been set to &a" + (p.isFlying() ? ((int) (calcFly(speed) * 10)) : ((int) (calcWalk(speed)) * 10)) + "&7.");
-        } else {
-            say(p, "&cThe speed value specified is not a number.");
         }
+        else
+            say(p, "&cThe speed value specified is not a number.");
     }
 
     private boolean isInt(final String s) {
@@ -52,22 +49,18 @@ public class Speed extends SimpleCommand {
     }
 
     private double calcFly(final int speed) {
-        if (speed > 10) {
+        if (speed > 10)
             return 1;
-        }
-        if (speed < 0) {
+        if (speed < 0)
             return 0;
-        }
         return (double) speed / 10;
     }
 
     private double calcWalk(final int speed) {
-        if (speed > 10) {
+        if (speed > 10)
             return 1;
-        }
-        if (speed < 0) {
+        if (speed < 0)
             return 0;
-        }
         return 0.2 + (0.08 * speed);
     }
 }

@@ -1,16 +1,15 @@
 package net.skeagle.vrncore.GUIs.exptrade;
 
-import net.skeagle.vrncore.GUIs.CustomInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 class ExpTradeAmount extends CustomInventory {
 
     ExpTradeAmount(final Player p, final String name, final Material icon, final Double worth) {
-        super(9, "Exp Trade - Choose Amount");
+        super(9, "&9&lExp Trade - Choose Amount");
         final ItemStack i = new ItemStack(Material.AIR);
         final int amount = i.getAmount();
         i.setType(icon);
@@ -18,56 +17,53 @@ class ExpTradeAmount extends CustomInventory {
 
 
         setItem(0, new ItemStack(Material.EMERALD_BLOCK), player ->
-            new ExpTradeConfirm(p, name, icon, worth, 1).open(player), "&aConfirm item amount" , new String[]{});
+            new ExpTradeConfirm(p, name, icon, worth, 1).open(player), "&aConfirm item amount");
 
         setItem(2, new ItemStack(Material.MAP), player ->
         {
             final int newAmount = i.getAmount() - 10;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3-10" , new String[]{"&7Click to decrease item amount by &b10"});
+        }, "&3-10" , "&7Click to decrease item amount by &b10");
 
         setItem(3, new ItemStack(Material.PAPER), player ->
         {
             final int newAmount = i.getAmount() - 1;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3-1", new String[]{"&7Click to decrease item amount by &b1"});
+        }, "&3-1", "&7Click to decrease item amount by &b1");
 
         setItem(4, i, player ->
-                {}, "&l" + name, new String[]{
-                "&9-----------------------------------------",
+                {}, "&l" + name, "&9-----------------------------------------",
                 "&7Current amount to trade: &b" + i.getAmount(),
-                "&9-----------------------------------------"});
+                "&9-----------------------------------------");
 
         setItem(5, new ItemStack(Material.PAPER), player ->
         {
             final int newAmount = 1 + i.getAmount();
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3+1", new String[]{"&7Click to increase item amount by &b1"});
+        }, "&3+1", "&7Click to increase item amount by &b1");
 
         setItem(6, new ItemStack(Material.MAP), player ->
         {
             final int newAmount = 10 + i.getAmount();
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3+10", new String[]{"&7Click to increase item amount by &b10"});
+        }, "&3+10", "&7Click to increase item amount by &b10");
 
         setItem(8, new ItemStack(Material.ARROW), player ->
-                new ExpTradeGUI(p).open(player), "&7&lBack", new String[]{});
+                new ExpTradeGUI(p).open(player), "&7&lBack");
     }
 
     private ExpTradeAmount(final Player p, final String name, final Material icon, final Double worth, int amountnew) {
         super(9, "Exp Trade - Choose Amount");
         final ItemStack i = new ItemStack(Material.AIR);
         i.setType(icon);
-        if (amountnew < 1) {
+        if (amountnew < 1)
             amountnew = 1;
-        }
-        else if (amountnew > 64) {
+        else if (amountnew > 64)
             amountnew = 64;
-        }
         i.setAmount(amountnew);
         final int finalAmountnew = amountnew;
 
@@ -86,43 +82,50 @@ class ExpTradeAmount extends CustomInventory {
                     }
                 }
             }
-        }, "&aConfirm item amount" , new String[]{});
+        }, "&aConfirm item amount");
 
         setItem(2, new ItemStack(Material.MAP), player ->
         {
             final int newAmount = finalAmountnew - 10;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3-10" , new String[]{"&7Click to decrease item amount by &b10"});
+        }, "&3-10" , "&7Click to decrease item amount by &b10");
 
         setItem(3, new ItemStack(Material.PAPER), player ->
         {
             final int newAmount = finalAmountnew - 1;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3-1", new String[]{"&7Click to decrease item amount by &b1"});
+        }, "&3-1", "&7Click to decrease item amount by &b1");
 
         setItem(4, i, player ->
-        {}, "&l" + name, new String[]{
-                "&9-----------------------------------------",
+        {}, "&l" + name, "&9-----------------------------------------",
                 "&7Current amount to trade: &b" + i.getAmount(),
-                "&9-----------------------------------------"});
+                "&9-----------------------------------------");
 
         setItem(5, new ItemStack(Material.PAPER), player ->
         {
             final int newAmount = 1 + finalAmountnew;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3+1", new String[]{"&7Click to increase item amount by &b1"});
+        }, "&3+1", "&7Click to increase item amount by &b1");
 
         setItem(6, new ItemStack(Material.MAP), player ->
         {
             final int newAmount = 10 + finalAmountnew;
             i.setAmount(newAmount);
             new ExpTradeAmount(p, name, icon, worth, newAmount).open(player);
-        }, "&3+10", new String[]{"&7Click to increase item amount by &b10"});
+        }, "&3+10", "&7Click to increase item amount by &b10");
 
         setItem(8, new ItemStack(Material.ARROW), player ->
-                new ExpTradeGUI(p).open(player), "&7&lBack", new String[]{});
+                new ExpTradeGUI(p).open(player), "&7&lBack");
+    }
+
+    private int getAmount(final Player p, final ItemStack i) {
+        int total = 0;
+        for (final ItemStack item : p.getInventory().getContents())
+            if (item != null && item.getType() == i.getType())
+                total += item.getAmount();
+        return total;
     }
 }

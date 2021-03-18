@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.tasks;
 
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.utils.VRNParticle;
+import net.skeagle.vrncore.trail.VRNParticle;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -19,9 +19,9 @@ public class PlayerTrailTask extends BukkitRunnable {
     @Override
     public void run() {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
-            if (!PlayerManager.getData(pl).getVanished()) {
-                if (PlayerManager.getData(pl).getPlayertrail() != null) {
-                    final Particle particle = PlayerManager.getData(pl).getPlayertrail();
+            if (!PlayerManager.getData(pl.getUniqueId()).isVanished()) {
+                if (PlayerManager.getData(pl.getUniqueId()).getPlayertrail() != null) {
+                    final Particle particle = PlayerManager.getData(pl.getUniqueId()).getPlayertrail();
                     final String perm = VRNParticle.getNameFromParticle(particle);
                     if (perm != null) {
                         if (pl.hasPermission("vrn.playertrails." + perm)) {
@@ -30,7 +30,7 @@ public class PlayerTrailTask extends BukkitRunnable {
                             else
                                 spawnRedstone(pl.getLocation(), 3);
                         } else
-                            PlayerManager.getData(pl).setPlayertrail(null);
+                            PlayerManager.getData(pl.getUniqueId()).setPlayertrail(null);
                     }
                 }
             }

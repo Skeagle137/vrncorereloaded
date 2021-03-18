@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.utils;
+package net.skeagle.vrncore.trail;
 
 public enum TrailStyle {
     DEFAULT,

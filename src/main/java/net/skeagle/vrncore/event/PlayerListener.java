@@ -1,7 +1,9 @@
 package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.hooks.VaultHook;
+import net.skeagle.vrncore.api.hook.HookManager;
+import net.skeagle.vrncore.api.hook.VaultHook;
+import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.storage.player.PlayerData;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
@@ -10,15 +12,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.mineacademy.fo.Common;
 
-import static net.skeagle.vrncore.utils.VRNUtil.*;
+import static net.skeagle.vrncore.api.util.VRNUtil.*;
 
 public class PlayerListener implements Listener {
+
+    @EventHandler
+    public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent e) {
+        final VRNPlayer p = new VRNPlayer(e.getUniqueId());
+        /*
+        if (p.getBannedTime < System.currentTimeMillis() && p.getBannedTime != 0) {
+            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, color("&cYou are banned from this server."));
+            e.setKickMessage(color("&cYou have been banned by &b" + p.getBanPlayer() + "&c for: \n &6" + p.getBanReason()));
+        }
+        */
+
+    }
 
     /************************
      * =====JOIN EVENT=====
@@ -26,18 +37,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        final PlayerData data = PlayerManager.getData(e.getPlayer());
-        final String name = (data.getNickname() != null ? data.getNickname() + "&r" : e.getPlayer().getName());
-        e.getPlayer().setDisplayName(color(name));
+        final VRNPlayer p = new VRNPlayer(e.getPlayer());
+        final String name = p.getName();
+        e.getPlayer().setDisplayName(name);
         if (!e.getPlayer().hasPlayedBefore() && Settings.Joining.ENABLED) {
             e.setJoinMessage(color(Settings.Joining.WELCOME.replaceAll("%player%", name)));
             return;
         }
         String listname = null;
-        final VaultHook hook = VaultHook.getInstance();
-        if (hook != null) {
+        if (HookManager.isVaultLoaded()) {
             listname = "%prefix" + name + "%suffix";
-            listname = hook.format(listname, e.getPlayer());
+            listname = HookManager.format(listname, e.getPlayer());
         }
         e.getPlayer().setPlayerListName(color(listname != null ? listname : name));
         if (Settings.Joining.ENABLED) {
@@ -52,10 +62,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent e) {
-        final PlayerData data = PlayerManager.getData(e.getPlayer());
-        final String name = data.getNickname() != null ? data.getNickname() + "&r" : e.getPlayer().getName();
+        final VRNPlayer p = new VRNPlayer(e.getPlayer());
         if (Settings.Joining.ENABLED)
-            e.setQuitMessage(color(Settings.Joining.QUIT.replaceAll("%player%", name)));
+            e.setQuitMessage(color(Settings.Joining.QUIT.replaceAll("%player%", p.getName())));
     }
 
     /************************
@@ -64,24 +73,22 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent e) {
-        final Player p = e.getPlayer();
-        final PlayerData data = PlayerManager.getData(p);
-        if (data.getMuted()) {
+        final VRNPlayer p = new VRNPlayer(e.getPlayer());
+        if (p.isMuted()) {
             e.setCancelled(true);
             say(p, "&cYou are muted. You cannot chat.");
         }
         if (!Settings.Chat.ENABLED)
             return;
-        if (!p.hasPermission("vrn.chat.allow")) {
+        if (!hasPerm(p, "vrn.chat.allow")) {
             e.setCancelled(true);
             say(p, "&cYou do not have permission to use the chat.");
         }
-        if (p.hasPermission("vrn.chat.color"))
+        if (hasPerm(p, "vrn.chat.color"))
             e.setMessage(color(e.getMessage()));
-        final VaultHook hook = VaultHook.getInstance();
-        if (hook == null)
+        if (!HookManager.isVaultLoaded())
             return;
-        String msg = hook.format(p);
+        String msg = HookManager.format(p.getPlayer());
         msg = msg.replaceAll("%", "%%");
         msg = msg.replace("%%message", "%2$s");
         e.setFormat(color(msg));
@@ -93,8 +100,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoinVanished(final PlayerJoinEvent e) {
-        final PlayerData data = PlayerManager.getData(e.getPlayer());
-        if (data.getVanished())
+        VRNPlayer p = new VRNPlayer(e.getPlayer());
+        if (p.isVanished())
             for (final Player pl : Bukkit.getOnlinePlayers())
                 pl.hidePlayer(VRNcore.getInstance(), e.getPlayer());
     }
@@ -105,12 +112,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onGodDamage(final EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player) {
-            final Player p = (Player) e.getEntity();
-            final PlayerData data = PlayerManager.getData(p);
-            if (data.getGodmode())
-                e.setCancelled(true);
-        }
+        if (!(e.getEntity() instanceof Player)) return;
+        if (new VRNPlayer((Player) e.getEntity()).isGodmode())
+            e.setCancelled(true);
     }
 
     /**************************
@@ -119,7 +123,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void WorldChange(final PlayerChangedWorldEvent e) {
-        e.getPlayer().hasPermission("vrn.worldchange");
+        hasPerm(e.getPlayer(), "vrn.worldchange");
         sayActionBar(e.getPlayer(), "&a&lCurrently in world: \"" + e.getPlayer().getWorld().getName() + ".\"");
     }
 }

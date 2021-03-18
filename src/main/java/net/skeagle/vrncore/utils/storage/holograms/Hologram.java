@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.utils.storage.holograms;
 
 import lombok.Getter;
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;

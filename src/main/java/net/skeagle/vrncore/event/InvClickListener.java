@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.event;
 
-import net.skeagle.vrncore.GUIs.CustomInventory;
+import net.skeagle.vrncore.GUIs.exptrade.CustomInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,9 +13,8 @@ public class InvClickListener implements Listener {
     @EventHandler
     public void onClick(final InventoryClickEvent e) {
 
-        if (!(e.getWhoClicked() instanceof Player)) {
+        if (!(e.getWhoClicked() instanceof Player))
             return;
-        }
 
         final Player player = (Player) e.getWhoClicked();
         final UUID playerUUID = player.getUniqueId();
@@ -26,9 +25,8 @@ public class InvClickListener implements Listener {
             final CustomInventory gui = CustomInventory.getInventoriesByUUID().get(inventoryUUID);
             final CustomInventory.InvAction action = gui.getActions().get(e.getSlot());
 
-            if (action != null) {
+            if (action != null)
                 action.click(player);
-            }
         }
     }
 }

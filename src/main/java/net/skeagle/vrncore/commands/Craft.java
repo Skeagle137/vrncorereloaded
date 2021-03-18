@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.mineacademy.fo.command.SimpleCommand;
 
 public class Craft extends SimpleCommand {

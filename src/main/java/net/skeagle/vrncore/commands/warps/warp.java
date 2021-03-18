@@ -1,13 +1,11 @@
 package net.skeagle.vrncore.commands.warps;
 
-import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.warps.Warp;
 import net.skeagle.vrncore.utils.storage.warps.WarpManager;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.List;
-
-import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class warp extends SimpleCommand {
 
