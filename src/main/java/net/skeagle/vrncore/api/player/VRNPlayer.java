@@ -19,13 +19,13 @@ public class VRNPlayer {
     private List<String> warps;
 
 
-    public VRNPlayer(Player p) {
+    public VRNPlayer(final Player p) {
         this.data = PlayerManager.getData(p.getUniqueId());
         this.uuid = p.getUniqueId();
         this.p = p;
     }
 
-    public VRNPlayer(UUID uuid) {
+    public VRNPlayer(final UUID uuid) {
         this.data = PlayerManager.getData(uuid);
         this.uuid = uuid;
     }
@@ -38,8 +38,8 @@ public class VRNPlayer {
         return data.getNickname() != null ? color(data.getNickname()) + "&r" : getPlayer().getName();
     }
 
-    public void setName(String nickname) {
-        String name = color(nickname + "&r");
+    public void setName(final String nickname) {
+        final String name = color(nickname + "&r");
         data.setNickname(name);
         p.setDisplayName(name);
         String listname = name;
@@ -54,7 +54,7 @@ public class VRNPlayer {
         return data.isGodmode();
     }
 
-    public void setGodmode(boolean godmode) {
+    public void setGodmode(final boolean godmode) {
         data.setGodmode(godmode);
     }
 
@@ -62,7 +62,7 @@ public class VRNPlayer {
         return data.isMuted();
     }
 
-    public void setMuted(boolean muted) {
+    public void setMuted(final boolean muted) {
         data.setMuted(muted);
     }
 
@@ -70,8 +70,16 @@ public class VRNPlayer {
         return data.isVanished();
     }
 
-    public void setVanished(boolean vanished) {
+    public void setVanished(final boolean vanished) {
         data.setVanished(vanished);
+    }
+
+    public long getTimePlayed() {
+        return data.getTimeplayed();
+    }
+
+    public void setTimePlayed(final long timePlayed) {
+        data.setTimeplayed(timePlayed);
     }
 
     public void save() {

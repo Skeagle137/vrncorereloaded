@@ -1,10 +1,9 @@
 package net.skeagle.vrncore.tasks;
 
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.AFKManager;
-import net.skeagle.vrncore.utils.storage.player.PlayerData;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
 import net.skeagle.vrncore.utils.storage.timerewards.TimeRewards;
 import org.bukkit.Bukkit;
@@ -15,9 +14,9 @@ import org.mineacademy.fo.Common;
 import static net.skeagle.vrncore.api.util.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.api.util.VRNUtil.color;
 
-public class UpdateAFKPlayerTask extends BukkitRunnable {
+public class PlayerUpdateTask extends BukkitRunnable {
 
-    public UpdateAFKPlayerTask(VRNcore vrn) {
+    public PlayerUpdateTask(final VRNcore vrn) {
         runTaskTimerAsynchronously(vrn, 0, 20);
     }
 
@@ -25,16 +24,16 @@ public class UpdateAFKPlayerTask extends BukkitRunnable {
     public void run() {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             final AFKManager manager = AFKManager.getAfkManager(pl);
-            final PlayerData data = PlayerManager.getData(pl.getUniqueId());
+            final VRNPlayer p = new VRNPlayer(pl);
             final TimeRewards reward;
-            Long time = data.getTimeplayed();
+            long time = p.getTimePlayed();
             if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                 reward = RewardManager.getInstance().getReward(String.valueOf(time));
                 if (reward != null)
                     if (reward.checkPerm(pl))
                         Common.runAsync(() -> reward.doReward(pl));
                 time += 1;
-                data.setTimeplayed(time);
+                p.setTimePlayed(time);
                 if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING)
                     manager.setAfk(true);
             } else if (manager.getTimeAfk() >= Settings.Afk.KICK_TIME_IN_SECONDS)
@@ -44,16 +43,16 @@ public class UpdateAFKPlayerTask extends BukkitRunnable {
 
     private boolean updateAFKPlayer(final Player p) {
         final AFKManager manager = AFKManager.getAfkManager(p);
-        final AFKManager.MouseLocation OldMouseLocation = manager.getMouseLocation();
-        final AFKManager.MouseLocation NewMouseLocation = new AFKManager.MouseLocation(p);
-        manager.setMouseLocation(NewMouseLocation);
-        if (OldMouseLocation != null && manager.isLocEqual(OldMouseLocation)) {
-            manager.setTimeAfk(manager.getTimeAfk() + 1);
-            return true;
+        final AFKManager.SavedLocation oldLoc = manager.getSavedLocation();
+        final AFKManager.SavedLocation loc = new AFKManager.SavedLocation(p);
+        manager.setSavedLocation(loc);
+        if (oldLoc == null || !manager.isYawEqual(oldLoc) && !manager.isPitchEqual(oldLoc)) {
+            manager.setTimeAfk(0);
+            if (manager.isAfk())
+                manager.setAfk(false);
+            return false;
         }
-        manager.setTimeAfk(0);
-        if (manager.isAfk())
-            manager.setAfk(false);
-        return false;
+        manager.setTimeAfk(manager.getTimeAfk() + 1);
+        return true;
     }
 }

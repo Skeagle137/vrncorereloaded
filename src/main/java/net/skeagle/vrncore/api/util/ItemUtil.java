@@ -1,32 +1,31 @@
 package net.skeagle.vrncore.api.util;
 
-import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static net.skeagle.vrncore.api.util.VRNUtil.color;
 
 public final class ItemUtil {
 
-    public static ItemUtil.Builder genItem(Material mat, String name, @NonNull String... lore) {
-        if (lore == null)
-            throw new NullPointerException("lore is marked non-null but is null");
-        else
-            return builder().material(mat).name("&r" + name).lore(Arrays.asList(lore)).hideTags(true);
+    public static ItemUtil.Builder genItem(final Material mat, final String name, final String... lore) {
+        return builder().material(mat).name("&r" + name).lore(Arrays.asList(lore)).hideTags(true);
     }
 
-    public static ItemUtil.Builder genItem(Material mat) {
+    public static ItemUtil.Builder genItem(final Material mat) {
         return builder().material(mat);
     }
 
-    public static ItemUtil.Builder genItem(ItemStack item) {
-        ItemUtil.Builder builder = builder();
-        ItemMeta meta = item.getItemMeta();
+    public static ItemUtil.Builder genItem(final ItemStack item) {
+        final ItemUtil.Builder builder = builder();
+        final ItemMeta meta = item.getItemMeta();
         if (meta != null && meta.getLore() != null)
             builder.lore(meta.getLore());
 
@@ -52,28 +51,28 @@ public final class ItemUtil {
         Builder() {
         }
 
-        public Builder material(Material mat) {
+        public Builder material(final Material mat) {
             this.amount = 1;
             this.mat = mat;
             return this;
         }
 
-        public Builder meta(ItemMeta meta) {
+        public Builder meta(final ItemMeta meta) {
             this.meta = meta;
             return this;
         }
 
-        public Builder amount(int amount) {
+        public Builder amount(final int amount) {
             this.amount = amount;
             return this;
         }
 
-        public Builder name(String name) {
+        public Builder name(final String name) {
             this.name = name;
             return this;
         }
 
-        public Builder lore(String lore) {
+        public Builder lore(final String lore) {
             if (this.lore == null)
                 this.lore = new ArrayList<>();
 
@@ -81,15 +80,15 @@ public final class ItemUtil {
             return this;
         }
 
-        public Builder lore(Collection<? extends String> lore) {
-            if (this.lore == null)
+        public Builder lore(final Collection<? extends String> lore) {
+            if (this.lore == null || lore.isEmpty())
                 this.lore = new ArrayList<>();
 
             this.lore.addAll(lore);
             return this;
         }
 
-        public Builder enchant(Enchantment enchant) {
+        public Builder enchant(final Enchantment enchant) {
             if (this.enchants == null)
                 this.enchants = new ArrayList<>();
 
@@ -97,7 +96,7 @@ public final class ItemUtil {
             return this;
         }
 
-        public Builder enchants(Collection<? extends Enchantment> enchants) {
+        public Builder enchants(final Collection<? extends Enchantment> enchants) {
             if (this.enchants == null)
                 this.enchants = new ArrayList<>();
 
@@ -105,7 +104,7 @@ public final class ItemUtil {
             return this;
         }
 
-        public Builder flag(ItemFlag flag) {
+        public Builder flag(final ItemFlag flag) {
             if (this.flags == null)
                 this.flags = new ArrayList<>();
 
@@ -113,7 +112,7 @@ public final class ItemUtil {
             return this;
         }
 
-        public Builder flags(Collection<? extends ItemFlag> flags) {
+        public Builder flags(final Collection<? extends ItemFlag> flags) {
             if (this.flags == null)
                 this.flags = new ArrayList<>();
 
@@ -121,24 +120,24 @@ public final class ItemUtil {
             return this;
         }
 
-        public Builder unbreakable(boolean unbreakable) {
+        public Builder unbreakable(final boolean unbreakable) {
             this.unbreakable = unbreakable;
             return this;
         }
 
-        public Builder hideTags(boolean hide_tags) {
+        public Builder hideTags(final boolean hide_tags) {
             this.hide_tags = hide_tags;
             return this;
         }
 
-        public Builder glint(boolean glint) {
+        public Builder glint(final boolean glint) {
             this.glint = glint;
             return this;
         }
 
         public ItemStack build() {
-            ItemStack i = new ItemStack(mat, amount);
-            ItemMeta im = meta != null ? meta.clone() : i.getItemMeta();
+            final ItemStack i = new ItemStack(mat, amount);
+            final ItemMeta im = meta != null ? meta.clone() : i.getItemMeta();
             if (mat == Material.AIR)
                 return i;
 
@@ -146,16 +145,15 @@ public final class ItemUtil {
                 im.setDisplayName(color(name));
 
             if (lore != null && !lore.isEmpty()) {
-                ArrayList<String> colored = new ArrayList<>();
-                for (String line : lore) {
+                final ArrayList<String> colored = new ArrayList<>();
+                for (final String line : lore)
                     colored.add(color(line));
-                }
 
                 im.setLore(colored);
             }
 
             if (enchants != null && !enchants.isEmpty()) {
-                for (Enchantment ench : enchants) {
+                for (final Enchantment ench : enchants) {
                     if (im instanceof EnchantmentStorageMeta)
                         ((EnchantmentStorageMeta) im).addStoredEnchant(ench, ench.getStartLevel(), true);
                     else
@@ -167,8 +165,8 @@ public final class ItemUtil {
                 flags = new ArrayList<>();
 
             if (hide_tags) {
-                ItemFlag[] hidden = ItemFlag.values();
-                for (ItemFlag flag : hidden)
+                final ItemFlag[] hidden = ItemFlag.values();
+                for (final ItemFlag flag : hidden)
                     if (!flags.contains(flag))
                         flags.add(flag);
             }
@@ -178,10 +176,9 @@ public final class ItemUtil {
                 flags.add(ItemFlag.HIDE_ENCHANTS);
             }
 
-            if (!flags.isEmpty()) {
-                for (ItemFlag flag : flags)
+            if (!flags.isEmpty())
+                for (final ItemFlag flag : flags)
                     im.addItemFlags(flag);
-            }
 
             if (unbreakable) {
                 flags.add(ItemFlag.HIDE_ATTRIBUTES);

@@ -1,26 +1,25 @@
 package net.skeagle.vrncore.utils;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 public final class AFKManager {
 
     private static final Map<Player, AFKManager> afkPlayers = new HashMap<>();
 
-    @Setter
-    private boolean isAfk;
+    private boolean afk;
     private int timeAfk;
-    private MouseLocation mouseLocation;
+    private SavedLocation savedLocation;
+
+    public int getTimeAfk() {
+        return timeAfk;
+    }
 
     public void setTimeAfk(final int timeAfk) {
-        if (this.timeAfk <= -1) {
-            return;
-        }
+        if (timeAfk <= -1) return;
         this.timeAfk = timeAfk;
     }
 
@@ -37,35 +36,51 @@ public final class AFKManager {
         return manager;
     }
 
-    public void setMouseLocation(final Player p) {
-        this.mouseLocation = new MouseLocation(p);
+    public void setSavedLocation(final SavedLocation loc) {
+        savedLocation = new SavedLocation(loc);
     }
 
-    public void setMouseLocation(final MouseLocation loc) {
-        this.mouseLocation = new MouseLocation(loc);
+    public boolean isYawEqual(final SavedLocation loc) {
+        return getSavedLocation().isYawEqual(loc);
     }
 
-    public boolean isLocEqual(final MouseLocation mouseLocation) {
-        return getMouseLocation().isMouseLocationEqual(mouseLocation);
+    public boolean isPitchEqual(final SavedLocation loc) {
+        return getSavedLocation().isPitchEqual(loc);
+    }
+
+    public void setAfk(final boolean afk) {
+        this.afk = afk;
+    }
+
+    public boolean isAfk() {
+        return this.afk;
+    }
+
+    public SavedLocation getSavedLocation() {
+        return savedLocation;
     }
 
     @Getter
-    public static class MouseLocation {
+    public static class SavedLocation {
         private final float yaw;
         private final float pitch;
 
-        public MouseLocation(final Player player) {
-            this.yaw = player.getLocation().getYaw();
-            this.pitch = player.getLocation().getPitch();
+        public SavedLocation(final Player p) {
+            this.yaw = p.getLocation().getYaw();
+            this.pitch = p.getLocation().getPitch();
         }
 
-        public MouseLocation(final MouseLocation loc) {
+        public SavedLocation(final SavedLocation loc) {
             this.yaw = loc.getYaw();
             this.pitch = loc.getPitch();
         }
 
-        boolean isMouseLocationEqual(final MouseLocation mouseLocation) {
-            return mouseLocation.pitch == this.pitch && mouseLocation.yaw == this.yaw;
+        boolean isYawEqual(final SavedLocation loc) {
+            return loc.yaw == this.yaw;
+        }
+
+        boolean isPitchEqual(final SavedLocation loc) {
+            return loc.pitch == this.pitch;
         }
     }
 }

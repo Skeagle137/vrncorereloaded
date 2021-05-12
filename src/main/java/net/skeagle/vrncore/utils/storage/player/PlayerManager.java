@@ -1,18 +1,19 @@
 package net.skeagle.vrncore.utils.storage.player;
 
 import lombok.Getter;
-import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.api.sql.DBObject;
+import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.entity.Player;
 import org.mineacademy.fo.Common;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public class PlayerManager extends DBObject<PlayerData> {
@@ -34,12 +35,12 @@ public class PlayerManager extends DBObject<PlayerData> {
         return data;
     }
 
-    private PlayerData loadData(UUID uuid) {
+    private PlayerData loadData(final UUID uuid) {
         try {
-            PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE uuid = ?");
+            final PreparedStatement ps = getConn().prepareStatement("SELECT * FROM " + getName() + " WHERE uuid = ?");
             ps.setString(1, uuid.toString());
             try (final ResultSet rs = ps.executeQuery()) {
-                Location loc = VRNUtil.LocationSerialization.deserialize(rs.getString("last_location"));
+                final Location loc = VRNUtil.LocationSerialization.deserialize(rs.getString("last_location"));
                 return new PlayerData(uuid, rs.getString("nickname"),
                         rs.getString("arrowtrail") != null ? Particle.valueOf(rs.getString("arrowtrail")) : null,
                         rs.getString("playertrail") != null ? Particle.valueOf(rs.getString("playertrail")) : null,
@@ -47,10 +48,9 @@ public class PlayerManager extends DBObject<PlayerData> {
                         rs.getBoolean("muted"), rs.getBoolean("godmode"), rs.getLong("last_online"),
                         loc, rs.getLong("timeplayed"));
             }
-        }
-        catch (SQLException e) {
+        } catch (final SQLException e) {
             try {
-                PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() +
+                final PreparedStatement ps = getConn().prepareStatement("INSERT INTO " + getName() +
                         " (uuid, nickname, arrowtrail, playertrail, vanished, muted, godmode, last_online, last_location, timeplayed) " +
                         "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 ps.setString(1, uuid.toString());
@@ -65,8 +65,7 @@ public class PlayerManager extends DBObject<PlayerData> {
                 ps.setLong(10, 0);
                 ps.execute();
                 loadData(uuid);
-            }
-            catch (Exception e2) {
+            } catch (final Exception e2) {
                 Common.log("Could not create player data");
                 e2.printStackTrace();
             }

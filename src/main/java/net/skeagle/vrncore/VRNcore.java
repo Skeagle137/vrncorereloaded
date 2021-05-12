@@ -2,9 +2,14 @@ package net.skeagle.vrncore;
 
 import net.md_5.bungee.api.ChatColor;
 import net.skeagle.vrncore.api.hook.HookManager;
+import net.skeagle.vrncore.api.player.VRNPlayer;
+import net.skeagle.vrncore.api.sql.SQLConnection;
 import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.commands.*;
-import net.skeagle.vrncore.commands.homes.*;
+import net.skeagle.vrncore.commands.homes.delhome;
+import net.skeagle.vrncore.commands.homes.home;
+import net.skeagle.vrncore.commands.homes.homes;
+import net.skeagle.vrncore.commands.homes.sethome;
 import net.skeagle.vrncore.commands.nicknames.Nick;
 import net.skeagle.vrncore.commands.nicknames.Realname;
 import net.skeagle.vrncore.commands.nicknames.RemoveNick;
@@ -12,14 +17,21 @@ import net.skeagle.vrncore.commands.tpa.Tpa;
 import net.skeagle.vrncore.commands.tpa.Tpaccept;
 import net.skeagle.vrncore.commands.tpa.Tpahere;
 import net.skeagle.vrncore.commands.tpa.Tpdeny;
-import net.skeagle.vrncore.commands.warps.*;
+import net.skeagle.vrncore.commands.warps.delwarp;
+import net.skeagle.vrncore.commands.warps.setwarp;
+import net.skeagle.vrncore.commands.warps.warp;
+import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.commands.weatherAndDay.*;
-import net.skeagle.vrncore.api.sql.SQLConnection;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.tasks.*;
+import net.skeagle.vrncore.tasks.AutoSaveTask;
+import net.skeagle.vrncore.tasks.PlayerSitTask;
+import net.skeagle.vrncore.tasks.PlayerTrailTask;
+import net.skeagle.vrncore.tasks.PlayerUpdateTask;
 import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.YamlStaticConfig;
@@ -29,7 +41,7 @@ import java.util.List;
 
 public final class VRNcore extends SimplePlugin {
 
-    private UpdateAFKPlayerTask afkTask;
+    private PlayerUpdateTask playerTask;
     private PlayerTrailTask trailTask;
     private PlayerSitTask sitTask;
     private AutoSaveTask saveTask;
@@ -53,7 +65,7 @@ public final class VRNcore extends SimplePlugin {
                 ChatColor.GREEN +
                 "-------------------------------");
         //tasks
-        afkTask = new UpdateAFKPlayerTask(this);
+        playerTask = new PlayerUpdateTask(this);
         trailTask = new PlayerTrailTask(this);
         sitTask = new PlayerSitTask(this);
         saveTask = new AutoSaveTask(this);
@@ -137,7 +149,7 @@ public final class VRNcore extends SimplePlugin {
     }
 
     private void cleanBeforeReload() {
-        stopTasks(afkTask);
+        stopTasks(playerTask);
         stopTasks(trailTask);
         stopTasks(sitTask);
         stopTasks(saveTask);
@@ -155,6 +167,13 @@ public final class VRNcore extends SimplePlugin {
     @Override
     public void onPluginStop() {
         cleanBeforeReload();
+        VRNPlayer p;
+        for (final Player pl : Bukkit.getOnlinePlayers()) {
+            p = new VRNPlayer(pl);
+            p.save();
+        }
+        //homes.saveAll();
+        //warps.saveAll();
     }
 }
 

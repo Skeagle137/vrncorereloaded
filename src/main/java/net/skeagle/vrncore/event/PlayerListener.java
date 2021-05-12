@@ -2,16 +2,15 @@ package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.api.hook.HookManager;
-import net.skeagle.vrncore.api.hook.VaultHook;
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.utils.storage.player.PlayerData;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
 import org.mineacademy.fo.Common;
 
@@ -96,15 +95,31 @@ public class PlayerListener implements Listener {
     }
 
     /**************************
-     * =====VANISH EVENT=====
+     * =====VANISH EVENTS=====
      **************************/
 
     @EventHandler
     public void onPlayerJoinVanished(final PlayerJoinEvent e) {
-        VRNPlayer p = new VRNPlayer(e.getPlayer());
+        final VRNPlayer p = new VRNPlayer(e.getPlayer());
         if (p.isVanished())
             for (final Player pl : Bukkit.getOnlinePlayers())
                 pl.hidePlayer(VRNcore.getInstance(), e.getPlayer());
+    }
+
+    @EventHandler
+    public void onEntityTarget(final EntityTargetEvent e) {
+        System.out.println(e.getReason() + " " + e.getEntity());
+        if (!(e.getTarget() instanceof Player)) return;
+        final VRNPlayer p = new VRNPlayer((Player) e.getTarget());
+        if (p.isVanished()) {
+            e.setCancelled(true);
+            e.setTarget(null);
+        }
+        if (e.getEntity() instanceof Mob) {
+            final Mob mob = (Mob) e.getEntity();
+            mob.setTarget(null);
+        }
+
     }
 
     /***********************

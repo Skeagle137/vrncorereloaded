@@ -13,13 +13,11 @@ public abstract class DBObject<T extends StoreableObject<T>> {
     @Getter
     private final Connection conn = SQLConnection.getConnection();
 
-    public DBObject(String name, Class<T> object) {
+    public DBObject(final String name, final Class<T> object) {
         this.name = name;
         this.objectClass = object;
     }
 
     public void onFinishLoad() {
     }
-
-
 }

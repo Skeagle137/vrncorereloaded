@@ -20,9 +20,8 @@ public class Broadcast extends SimpleCommand {
     @Override
     protected void onCommand() {
         final StringBuilder sb = new StringBuilder();
-        for (final String arg : args) {
+        for (final String arg : args)
             sb.append(arg).append(" ");
-        }
         Bukkit.broadcastMessage(color("&8[&3&lVRN Broadcast&r&8] &b" + sb.toString()));
     }
 }
