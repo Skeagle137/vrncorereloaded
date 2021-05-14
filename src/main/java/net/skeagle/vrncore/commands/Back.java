@@ -1,9 +1,13 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.utils.BackUtil;
 import net.skeagle.vrncore.api.util.VRNUtil;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
@@ -16,29 +20,42 @@ public class Back extends SimpleCommand {
         setPermissionMessage(VRNUtil.noperm);
     }
 
-    private final BackUtil back = BackUtil.getInstance();
-
     @Override
     public void onCommand() {
         checkConsole();
-        final Player p = getPlayer();
-        if (args.length < 1) {
+        if (args.length < 1)
             checkPerm("vrn.back.self");
-            if (back.hasBackLoc(p.getUniqueId())) {
-                back.teleToBackLoc(p.getUniqueId(), p);
-                say(p, "&7Teleported to your last location.");
-                return;
-            }
-            say(p, "&cYou do not have anywhere to teleport back to.");
+        else
+            checkPerm("vrn.back.others");
+        final Player p = args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton);
+        final BackCache back = new BackCache();
+        final Location backLoc = back.getBackLoc(getPlayer().getUniqueId());
+        if (backLoc == null) {
+            say(p, args.length < 1 ? "&cYou do not have anywhere to teleport back to."
+                    : "&a" + p.getName() + " &7does not have a saved last location.");
             return;
         }
-        checkPerm("vrn.back.others");
-        final Player a = findPlayer(args[0], VRNUtil.noton);
-        if (back.hasBackLoc(a.getUniqueId())) {
-            back.teleToBackLoc(p.getUniqueId(), a);
-            say(p, "&7Teleported to &a" + a.getName() + "&7's last location.");
-            return;
+        final Location newLoc = getPlayer().getLocation();
+        back.teleToBackLoc(getPlayer(), p);
+        back.setBackLoc(getPlayer().getUniqueId(), newLoc);
+        say(p, args.length < 1 ? "&7Teleported to your last location."
+                : "&7Teleported to &a" + p.getName() + "&7's last location.");
+    }
+
+    private static class BackCache {
+        private final Map<UUID, Location> backLoc = new HashMap<>();
+
+        public Location getBackLoc(final UUID id) {
+            return this.backLoc.get(id);
         }
-        say(p, "&a" + a.getName() + " &7does not have a saved last location.");
+
+        public void setBackLoc(final UUID id, final Location loc) {
+            this.backLoc.remove(id);
+            this.backLoc.put(id, loc);
+        }
+
+        public void teleToBackLoc(final Player p, final Player targetLoc) {
+            p.teleport(backLoc.get(targetLoc.getUniqueId()));
+        }
     }
 }

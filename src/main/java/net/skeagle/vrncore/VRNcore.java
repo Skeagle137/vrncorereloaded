@@ -130,7 +130,6 @@ public final class VRNcore extends SimplePlugin {
         registerEvents(new InvCloseListener());
         registerEvents(new InvClickListener());
         registerEvents(new AFKListener());
-        registerEvents(new BackListener());
         registerEvents(new ArrowListener());
         registerEvents(new ServerListListener());
         registerEvents(new UpdateNPCsListener());
