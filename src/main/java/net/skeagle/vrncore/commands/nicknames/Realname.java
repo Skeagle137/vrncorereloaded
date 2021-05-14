@@ -1,9 +1,6 @@
 package net.skeagle.vrncore.commands.nicknames;
 
-import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.api.util.VRNUtil;
-import net.skeagle.vrncore.utils.storage.player.PlayerData;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

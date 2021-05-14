@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.settings.Settings;
 import org.bukkit.Bukkit;
@@ -13,8 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -47,26 +44,25 @@ public final class VRNUtil {
             p.getPlayer().sendMessage(color(msg));
     }
 
-    public static boolean hasPerm(final Player p, String perm) {
+    public static boolean hasPerm(final Player p, final String perm) {
         return p.hasPermission(perm);
     }
 
-    public static boolean hasPerm(final VRNPlayer p, String perm) {
+    public static boolean hasPerm(final VRNPlayer p, final String perm) {
         return p.getPlayer().hasPermission(perm);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Exception> void sneakyThrow(Throwable t) throws T {
+    public static <T extends Exception> void sneakyThrow(final Throwable t) throws T {
         throw (T) t;
     }
 
-    public static void log(String... messages) {
+    public static void log(final String... messages) {
         log(Level.INFO, messages);
     }
 
-    public static void log(Level level, String... messages) {
+    public static void log(final Level level, final String... messages) {
         if (messages == null) return;
-        for (String s : messages)
+        for (final String s : messages)
             Bukkit.getLogger().log(level, color(s));
     }
 

@@ -1,12 +1,10 @@
 package net.skeagle.vrncore.utils.storage.npc;
 
-import lombok.Getter;
 import net.skeagle.vrncore.api.util.SkinUtil;
 import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Location;
 import org.mineacademy.fo.settings.YamlConfig;
 
-@Getter
 public class NPCManager extends YamlConfig {
 
     private String name;
@@ -68,7 +66,22 @@ public class NPCManager extends YamlConfig {
 
         save("Rotate_head", rotatehead);
     }
+    
+    public String getName() {
+        return name;
+    }
 
+    public Location getLoc() {
+        return loc;
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public SkinUtil getSkin() {
+        return skin;
+    }
 
     public String getNPCName() {
         return getFileName().replace(".yml", "");

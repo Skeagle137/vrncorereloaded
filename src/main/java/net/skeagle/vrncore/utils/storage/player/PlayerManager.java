@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.utils.storage.player;
 
-import lombok.Getter;
 import net.skeagle.vrncore.api.sql.DBObject;
 import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Location;
@@ -15,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Getter
 public class PlayerManager extends DBObject<PlayerData> {
 
     public PlayerManager() {

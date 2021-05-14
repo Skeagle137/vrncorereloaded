@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.utils.storage.holograms;
 
-import lombok.Getter;
 import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,11 +8,8 @@ import org.bukkit.entity.Entity;
 import java.util.UUID;
 
 public class Hologram {
-    @Getter
     private final UUID id;
-    @Getter
     private final Location loc;
-    @Getter
     private String hologram;
 
     public Hologram(final Location loc, final String hologram, final UUID id) {
@@ -50,7 +46,7 @@ public class Hologram {
     }
 
     public String serialize(final Hologram holo) {
-        return serializeHoloLoc(getLoc()) + " " + getHologram() + " " + getId().toString();
+        return serializeHoloLoc(loc) + " " + hologram + " " + id.toString();
     }
 
     public static Hologram deserialize(final String s) {

@@ -1,16 +1,13 @@
 package net.skeagle.vrncore.trail;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-@Getter
-@Setter
+
 public final class TrailOptions {
 
-    private ChatColor color;
-    private TrailStyle style;
+    private final ChatColor color;
+    private final TrailStyle style;
 
     protected TrailOptions(final ChatColor color, final TrailStyle style) {
         this.color = color;
@@ -33,5 +30,11 @@ public final class TrailOptions {
 
     }
 
+    public ChatColor getColor() {
+        return color;
+    }
 
+    public TrailStyle getStyle() {
+        return style;
+    }
 }

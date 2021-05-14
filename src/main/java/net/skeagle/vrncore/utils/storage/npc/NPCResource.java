@@ -2,9 +2,6 @@ package net.skeagle.vrncore.utils.storage.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import net.minecraft.server.v1_16_R3.*;
 import net.skeagle.vrncore.api.util.SkinUtil;
 import org.bukkit.Bukkit;
@@ -20,13 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NPCResource {
 
-    @Getter
     private static final NPCResource instance = new NPCResource();
 
-    @Getter
+    public static NPCResource getInstance() {
+        return instance;
+    }
+
     private final List<NPCManager> manData = new ArrayList<>();
 
     public boolean addNewNPC(final String name, final Player p) {

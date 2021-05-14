@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.utils.storage.timerewards;
 
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -19,7 +18,6 @@ import java.util.Random;
 import static net.skeagle.vrncore.api.util.VRNUtil.sayActionBar;
 import static net.skeagle.vrncore.api.util.VRNUtil.sayNoPrefix;
 
-@Getter
 public class TimeRewards extends YamlConfig {
     private String permission;
     private Boolean use_permission;

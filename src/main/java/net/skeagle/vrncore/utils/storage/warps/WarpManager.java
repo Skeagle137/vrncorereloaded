@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.utils.storage.warps;
 
-import lombok.Getter;
 import net.skeagle.vrncore.api.sql.DBObject;
 import net.skeagle.vrncore.api.util.VRNUtil;
 import org.bukkit.Location;
@@ -18,8 +17,11 @@ public class WarpManager extends DBObject<Warp> {
         super("warps", Warp.class);
     }
 
-    @Getter
     private static final WarpManager instance = new WarpManager();
+
+    public static WarpManager getInstance() {
+        return instance;
+    }
 
     public boolean setWarp(final Player p, final String name) {
         try {

@@ -1,21 +1,19 @@
 package net.skeagle.vrncore.utils.storage.timerewards;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.mineacademy.fo.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RewardManager {
 
-    @Getter
     private static final RewardManager instance = new RewardManager();
 
-    @Getter
+    public static RewardManager getInstance() {
+        return instance;
+    }
+
     private final List<TimeRewards> rewards = new ArrayList<>();
 
     public TimeRewards getReward(final String time) {

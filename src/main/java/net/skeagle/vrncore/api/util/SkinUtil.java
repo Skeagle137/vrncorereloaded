@@ -1,12 +1,8 @@
 package net.skeagle.vrncore.api.util;
 
-import lombok.Getter;
-
 public final class SkinUtil {
 
-    @Getter
     private final String texture;
-    @Getter
     private final String signature;
 
     public SkinUtil(final String texture, final String signature) {
@@ -26,7 +22,7 @@ public final class SkinUtil {
     }
 
     public String serialize() {
-        return getTexture() + " " + getSignature();
+        return texture + " " + signature;
     }
 
     public static SkinUtil deserialize(final String s) {
@@ -40,5 +36,11 @@ public final class SkinUtil {
         return new SkinUtil(split[0], split[1]);
     }
 
+    public String getTexture() {
+        return texture;
+    }
 
+    public String getSignature() {
+        return signature;
+    }
 }
