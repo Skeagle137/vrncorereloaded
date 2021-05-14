@@ -23,11 +23,8 @@ public class Back extends SimpleCommand {
     @Override
     public void onCommand() {
         checkConsole();
-        if (args.length < 1)
-            checkPerm("vrn.back.self");
-        else
-            checkPerm("vrn.back.others");
         final Player p = args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton);
+        checkPerm("vrn.back." + (args.length < 1 ? "self" : "others"));
         final BackCache back = new BackCache();
         final Location backLoc = back.getBackLoc(getPlayer().getUniqueId());
         if (backLoc == null) {
@@ -40,18 +37,19 @@ public class Back extends SimpleCommand {
         back.setBackLoc(getPlayer().getUniqueId(), newLoc);
         say(p, args.length < 1 ? "&7Teleported to your last location."
                 : "&7Teleported to &a" + p.getName() + "&7's last location.");
+        back.setBackLoc(getPlayer().getUniqueId(), newLoc);
     }
 
-    private static class BackCache {
-        private final Map<UUID, Location> backLoc = new HashMap<>();
+    public static class BackCache {
+        private static final Map<UUID, Location> backLoc = new HashMap<>();
 
         public Location getBackLoc(final UUID id) {
-            return this.backLoc.get(id);
+            return backLoc.get(id);
         }
 
         public void setBackLoc(final UUID id, final Location loc) {
-            this.backLoc.remove(id);
-            this.backLoc.put(id, loc);
+            backLoc.remove(id);
+            backLoc.put(id, loc);
         }
 
         public void teleToBackLoc(final Player p, final Player targetLoc) {

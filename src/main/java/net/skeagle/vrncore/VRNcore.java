@@ -134,7 +134,7 @@ public final class VRNcore extends SimplePlugin {
         registerEvents(new ServerListListener());
         registerEvents(new UpdateNPCsListener());
         registerEvents(new PlayerSitListener());
-
+        registerEvents(new BackListener());
     }
 
     @Override

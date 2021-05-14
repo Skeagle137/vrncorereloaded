@@ -17,19 +17,14 @@ public class Fly extends SimpleCommand {
 
     @Override
     protected void onCommand() {
-        checkConsole();
-        final Player p = getPlayer();
-        if (args.length < 1) {
-            checkPerm("vrn.fly.self");
-            p.setAllowFlight(!p.getAllowFlight());
-            say(p, "Fly mode has been " + (p.getAllowFlight() ? "enabled" : "disabled") + ".");
-            return;
-        }
-        checkPerm("vrn.fly.others");
-        final Player a = findPlayer(args[0], VRNUtil.noton);
-        a.setAllowFlight(!a.getAllowFlight());
-        say(a, "Fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
-        say(p, "&a" + a.getName() + "&7's fly mode has been " + (a.getAllowFlight() ? "enabled" : "disabled") + ".");
+        if (args.length < 1)
+            checkConsole();
+        final Player p = args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton);
+        checkPerm("vrn.fly." + (args.length < 1 ? "self" : "others"));
+        p.setAllowFlight(!p.getAllowFlight());
+        say(p, "Fly mode has been " + (p.getAllowFlight() ? "enabled" : "disabled") + ".");
+        if (args.length < 1 || p == getSender()) return;
+        say(getSender(), "&a" + p.getName() + "&7's fly mode has been " + (p.getAllowFlight() ? "enabled" : "disabled") + ".");
     }
 }
 

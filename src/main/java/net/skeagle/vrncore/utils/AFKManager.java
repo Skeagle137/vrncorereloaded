@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.utils;
 
-import lombok.Getter;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -60,7 +59,6 @@ public final class AFKManager {
         return savedLocation;
     }
 
-    @Getter
     public static class SavedLocation {
         private final float yaw;
         private final float pitch;
@@ -76,11 +74,19 @@ public final class AFKManager {
         }
 
         boolean isYawEqual(final SavedLocation loc) {
-            return loc.yaw == this.yaw;
+            return ((int) loc.yaw) == ((int) this.yaw);
         }
 
         boolean isPitchEqual(final SavedLocation loc) {
-            return loc.pitch == this.pitch;
+            return ((int) loc.pitch) == ((int) this.pitch);
+        }
+
+        public float getYaw() {
+            return yaw;
+        }
+
+        public float getPitch() {
+            return pitch;
         }
     }
 }

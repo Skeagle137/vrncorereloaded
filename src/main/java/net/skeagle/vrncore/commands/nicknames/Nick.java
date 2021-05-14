@@ -2,14 +2,11 @@ package net.skeagle.vrncore.commands.nicknames;
 
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.api.util.VRNUtil;
-import net.skeagle.vrncore.utils.storage.player.PlayerData;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.color;
 import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 public class Nick extends SimpleCommand {
@@ -23,32 +20,31 @@ public class Nick extends SimpleCommand {
 
     @Override
     public void onCommand() {
-        if (args.length < 1)
+        if (args.length < 1) {
             say(getSender(), "You need to provide a nickname.");
-        else if (args.length == 1) {
+            return;
+        }
+        if (args.length < 2)
             checkConsole();
-            checkPerm("vrn.nick.self");
-            final VRNPlayer p = new VRNPlayer(getPlayer());
-            checkNick(getPlayer(), args[0]);
-            say(p, "&aNickname successfully changed.");
-            p.setName(args[0]);
-        }
-        else {
-            checkPerm("vrn.nick.other");
-            final VRNPlayer a = new VRNPlayer(findPlayer(args[0], VRNUtil.noton));
-            checkNick(a.getPlayer(), args[1]);
-            say(getSender(), "&7Successfully set &a" + a.getName() + "&7's nick to " + args[1] + "&r&7.");
-            a.setName(args[1]);
-            say(a, "&7Your nickname was changed to " + a.getName());
-        }
+        final VRNPlayer p = new VRNPlayer(args.length < 2 ? getPlayer() : findPlayer(args[0], VRNUtil.noton));
+        checkPerm("vrn.nick." + (args.length < 2 ? "self" : "others"));
+        final int index = args.length < 2 ? 0 : 1;
+        checkNick(p.getPlayer(), args[index]);
+        say(getSender(), "&7Successfully set " +
+                (p.getPlayer() == getSender() ? "your" : "&a" + p.getName() + "&7's") + " nick to " + args[index] + "&r&7.");
+        p.setName(args[index]);
+        if (args.length < 2 || p.getPlayer() == getSender()) return;
+        say(p, "&7Your nickname was changed to " + p.getName());
     }
 
-    private void checkNick(Player p, String s) {
-        for (Player pl : Bukkit.getOnlinePlayers()) {
+    private void checkNick(final Player p, final String s) {
+        for (final Player pl : Bukkit.getOnlinePlayers()) {
             if (pl == p)
                 continue;
             if (ChatColor.stripColor(s).equals(ChatColor.stripColor(pl.getDisplayName())))
-                returnTell("&cYou cannot have a nickname the same as another player.");
+                returnTell("&cAnother player already has this nickname.");
+            if (s.equalsIgnoreCase(p.getName()))
+                returnTell("&cThe nickname can't be your own name.");
         }
     }
 }

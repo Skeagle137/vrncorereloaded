@@ -25,12 +25,9 @@ public class Kick extends SimpleCommand {
         final String reason = sb.toString();
 
         final Player a = findPlayer(args[0], VRNUtil.noton);
-        if (args.length == 1) {
-            a.kickPlayer(color("&cYou have been kicked by &b" + getSender().getName() + "&c."));
-            Bukkit.broadcastMessage(color("&a" + a.getName() + " &7was kicked by&c " + getSender().getName() + "&7."));
-            return;
-        }
-        a.kickPlayer(color("&cYou have been kicked by &b" + getSender().getName() + "&c for: \n &6" + reason));
-        Bukkit.broadcastMessage(color("&a" + a.getName() + " &7was kicked by&c " + getSender().getName() + "&7 for: &b" + reason));
+        a.kickPlayer(color("&cYou have been kicked by &b" + getSender().getName() + "&c" +
+                (args.length == 1 ? "." : " for: \n&6" + reason)));
+        Bukkit.broadcastMessage(color("&a" + a.getName() + " &7was kicked by&c " + getSender().getName() + "&7" +
+                (args.length == 1 ? "." : " for: &b" + reason)));
     }
 }

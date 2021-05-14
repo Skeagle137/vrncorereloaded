@@ -17,17 +17,11 @@ public class Echest extends SimpleCommand {
 
     @Override
     protected void onCommand() {
-        checkConsole();
-        final Player p = getPlayer();
-        if (args.length < 1) {
-            checkPerm("vrn.echest.self");
-            p.openInventory(p.getEnderChest());
-            say(p, "Now showing your inventory.");
-            return;
-        }
-        final Player a = findPlayer(args[0], VRNUtil.noton);
-        checkPerm("vrn.echest.others");
-        p.openInventory(a.getEnderChest());
-        say(p, "Now showing &a" + a.getName() + "&7's ender chest.");
+        if (args.length < 1)
+            checkConsole();
+        final Player p = args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton);
+        checkPerm("vrn.echest." + (args.length < 1 ? "self" : "others"));
+        p.openInventory(p.getEnderChest());
+        say(getSender(), args.length < 1 ? "Now showing your ender chest." : "Now showing &a" + p.getName() + "&7's ender chest.");
     }
 }

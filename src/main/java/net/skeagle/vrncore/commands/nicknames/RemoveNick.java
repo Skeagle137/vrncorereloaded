@@ -2,9 +2,6 @@ package net.skeagle.vrncore.commands.nicknames;
 
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.api.util.VRNUtil;
-import net.skeagle.vrncore.utils.storage.player.PlayerData;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
-import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import static net.skeagle.vrncore.api.util.VRNUtil.say;
@@ -21,22 +18,15 @@ public class RemoveNick extends SimpleCommand {
 
     @Override
     public void onCommand() {
-        if (args.length < 1) {
+        if (args.length < 1)
             checkConsole();
-            final VRNPlayer p = new VRNPlayer(getPlayer());
-            checkPerm("vrn.nick.self");
-            say(p, "&aNickname successfully removed.");
-            p.setName(p.getPlayer().getName());
-            p.getPlayer().setDisplayName(p.getPlayer().getName());
-            p.getPlayer().setPlayerListName(p.getPlayer().getName());
-            return;
-        }
-        checkPerm("vrn.nick.other");
-        final VRNPlayer a = new VRNPlayer(findPlayer(args[0], VRNUtil.noton));
-        say(getSender(), "&7Removed nickname for &a" + a.getName() + ".");
-        say(a, "&7Your nickname was disabled.");
-        a.setName(a.getPlayer().getName());
-        a.getPlayer().setDisplayName(a.getPlayer().getName());
-        a.getPlayer().setPlayerListName(a.getPlayer().getName());
+        final VRNPlayer p = new VRNPlayer(args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton));
+        checkPerm("vrn.nick." + (args.length < 1 ? "self" : "others"));
+        p.setName(p.getPlayer().getName());
+        p.getPlayer().setDisplayName(p.getPlayer().getName());
+        p.getPlayer().setPlayerListName(p.getPlayer().getName());
+        say(getSender(), p.getPlayer() == getSender() ? "&7Removed your nickname." : "&7Removed nickname for &a" + p.getName() + ".");
+        if (args.length < 1 || p.getPlayer() == getSender()) return;
+        say(p, "&7Your nickname was disabled.");
     }
 }

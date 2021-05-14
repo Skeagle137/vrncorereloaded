@@ -2,9 +2,6 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.api.util.VRNUtil;
-import net.skeagle.vrncore.utils.storage.player.PlayerData;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.mineacademy.fo.command.SimpleCommand;
 
@@ -22,18 +19,13 @@ public class Godmode extends SimpleCommand implements Listener {
 
     @Override
     protected void onCommand() {
-        checkConsole();
-        if (args.length < 1) {
-            final VRNPlayer p = new VRNPlayer(getPlayer());
-            checkPerm("vrn.god.self");
-            p.setGodmode(!p.isGodmode());
-            say(p, "You are " + (p.isGodmode() ? "now" : "no longer") + " invulnerable.");
-            return;
-        }
-        checkPerm("vrn.god.others");
-        final VRNPlayer a = new VRNPlayer(findPlayer(args[0], VRNUtil.noton));
-        a.setGodmode(!a.isGodmode());
-        say(a, "You are " + (a.isGodmode() ? "now" : "no longer") + " invulnerable.");
-        say(getPlayer(), "&a" + a.getName() + " &7is " + (a.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        if (args.length < 1)
+            checkConsole();
+        final VRNPlayer p = new VRNPlayer(args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton));
+        checkPerm("vrn.god." + (args.length < 1 ? "self" : "others"));
+        p.setGodmode(!p.isGodmode());
+        say(p, "You are " + (p.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        if (args.length < 1 || p.getPlayer() == getSender()) return;
+        say(getSender(), "&a" + p.getName() + " &7is " + (p.isGodmode() ? "now" : "no longer") + " invulnerable.");
     }
 }

@@ -18,22 +18,15 @@ public class Heal extends SimpleCommand {
 
     @Override
     protected void onCommand() {
-        if (args.length < 1) {
+        if (args.length < 1)
             checkConsole();
-            final Player p = getPlayer();
-            checkPerm("vrn.heal.self");
-            p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-            p.setFoodLevel(20);
-            p.setFireTicks(0);
-            say(p, "Your health and hunger are now full.");
-            return;
-        }
-        checkPerm("vrn.heal.others");
-        final Player a = findPlayer(args[0], VRNUtil.noton);
-        a.setHealth(a.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        a.setFoodLevel(20);
-        a.setFireTicks(0);
-        say(a, "Your health and hunger are now full.");
-        say(getSender(), "&a" + a.getName() + "&7's health and hunger are now full.");
+        final Player p = args.length < 1 ? getPlayer() : findPlayer(args[0], VRNUtil.noton);
+        checkPerm("vrn.heal." + (args.length < 1 ? "self" : "others"));
+        p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        p.setFoodLevel(20);
+        p.setFireTicks(0);
+        say(p, "Your health and hunger are now full.");
+        if (args.length < 1 || p == getSender()) return;
+        say(getSender(), "&a" + p.getName() + "&7's health and hunger are now full.");
     }
 }
