@@ -30,6 +30,8 @@ import net.skeagle.vrncore.tasks.PlayerTrailTask;
 import net.skeagle.vrncore.tasks.PlayerUpdateTask;
 import net.skeagle.vrncore.utils.storage.npc.NPCResource;
 import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
+import net.skeagle.vrnlib.commandmanager.CommandParser;
+import net.skeagle.vrnlib.commandmanager.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -48,6 +50,8 @@ public final class VRNcore extends SimplePlugin {
 
     @Override
     public void onPluginStart() {
+        //messages
+        Messages.load(this);
         //temp for compatibility, eventually called within api
         HookManager.loadHooks();
         new SQLConnection("");
@@ -56,20 +60,23 @@ public final class VRNcore extends SimplePlugin {
         NPCResource.getInstance().loadAllNPCs();
         //server
         VRNUtil.log(ChatColor.GREEN +
-                "-------------------------------\n" +
-                ChatColor.GREEN + "\t\t  -***************-\n" +
-                ChatColor.GREEN + "\t\t  | VRNcore " + getVersion() + " |\n" +
-                ChatColor.GREEN + "\t\t  |***************|\n" +
-                ChatColor.GREEN + "\t\t  |   by Skeagle  |\n" +
-                ChatColor.GREEN + "\t\t  -***************-\n" +
+                        "-------------------------------",
+                ChatColor.GREEN + "\t\t  -***************-",
+                ChatColor.GREEN + "\t\t  | VRNcore " + this.getDescription().getVersion() + " |",
+                ChatColor.GREEN + "\t\t  |***************|",
+                ChatColor.GREEN + "\t\t  |   by Skeagle  |",
+                ChatColor.GREEN + "\t\t  -***************-",
                 ChatColor.GREEN +
-                "-------------------------------");
+                        "-------------------------------");
         //tasks
         playerTask = new PlayerUpdateTask(this);
         trailTask = new PlayerTrailTask(this);
         sitTask = new PlayerSitTask(this);
         saveTask = new AutoSaveTask(this);
         //commands
+        new CommandParser(this.getResource("commands.txt"))
+                .parse()
+                .register("vrncore", new AdminCommands(), new TpCommands());
         registerCommand(new Kick()); //vrn.kick
         registerCommand(new TPhere()); //vrn.tphere
         registerCommand(new TPall()); //vrn.tpall
@@ -135,6 +142,10 @@ public final class VRNcore extends SimplePlugin {
         registerEvents(new UpdateNPCsListener());
         registerEvents(new PlayerSitListener());
         registerEvents(new BackListener());
+    }
+
+    public static VRNcore getInstance() {
+        return VRNcore.getPlugin(VRNcore.class);
     }
 
     @Override

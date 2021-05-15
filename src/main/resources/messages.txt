@@ -1,0 +1,2 @@
+prefix: &8[&9&lVRN&r&8] &r&7
+noPerm: &cYou do not have permission to do this.

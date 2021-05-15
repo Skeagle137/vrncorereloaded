@@ -108,7 +108,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onEntityTarget(final EntityTargetEvent e) {
-        System.out.println(e.getReason() + " " + e.getEntity());
         if (!(e.getTarget() instanceof Player)) return;
         final VRNPlayer p = new VRNPlayer((Player) e.getTarget());
         if (p.isVanished()) {

@@ -1,7 +1,8 @@
 name: VRNcore
 version: ${project.version}
-main: ${main.class}
+main: net.skeagle.vrncore.VRNcore
 author: Skeagle
 description: ${project.description}
-softdepend: [Vault, VRNEnchants]
+depend: [ VRNLib ]
+softdepend: [ Vault ]
 api-version: 1.16

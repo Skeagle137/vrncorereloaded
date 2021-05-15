@@ -1,0 +1,5 @@
+sudo player:player string...:command {
+	permission vrn.sudo
+	help Forces a user to chat or execute a command.
+	hook sudo
+}
