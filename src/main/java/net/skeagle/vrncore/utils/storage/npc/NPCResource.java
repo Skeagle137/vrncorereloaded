@@ -3,6 +3,7 @@ package net.skeagle.vrncore.utils.storage.npc;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_16_R3.*;
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.api.util.SkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -38,7 +39,7 @@ public class NPCResource {
         man.setName(name);
         man.setDisplay(name);
         man.setLoc(p.getLocation());
-        man.setSkin("Skeagle_");
+        man.setSkin(name);
         man.setRotatehead(false);
         return true;
     }
@@ -63,25 +64,33 @@ public class NPCResource {
 
     public void updateNPCsForPlayer(final Player p) {
         for (final NPCManager man : manData) {
-            final MinecraftServer ms = ((CraftServer) Bukkit.getServer()).getServer();
-            final WorldServer ws = ((CraftWorld) p.getWorld()).getHandle();
-            final GameProfile gp = new GameProfile(UUID.randomUUID(), (man.getDisplay() == null ? man.getName() : man.getDisplay()));
-            final EntityPlayer npc = new EntityPlayer(ms, ws, gp, new PlayerInteractManager(ws));
             final Location loc = man.getLoc();
-            npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+            if (loc.getWorld() == null) continue;
+            final MinecraftServer ms = ((CraftServer) Bukkit.getServer()).getServer();
+            final WorldServer ws = ((CraftWorld) loc.getWorld()).getHandle();
+            final GameProfile gp = new GameProfile(UUID.randomUUID(), (man.getDisplay() == null ? man.getName() : man.getDisplay()));
             if (man.getSkin() != null) {
                 final SkinUtil skin = man.getSkin();
-                npc.getProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
+                gp.getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
             }
-            updateNPC(p, npc);
+            final EntityPlayer npc = new EntityPlayer(ms, ws, gp, new PlayerInteractManager(ws));
+            npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+            final DataWatcher watcher = npc.getDataWatcher();
+            watcher.set(new DataWatcherObject<>(16, DataWatcherRegistry.a), (byte) 127);
+            final EntityPlayer ep = ((CraftPlayer) p).getHandle();
+            Bukkit.getScheduler().runTask(VRNcore.getInstance(), () ->
+                    ep.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(npc.getId(), watcher, true)));
+            addNPC(p, npc);
         }
     }
 
-    public void updateNPC(final Player p, final EntityPlayer npc) {
+    public void addNPC(final Player p, final EntityPlayer npc) {
         final EntityPlayer ep = ((CraftPlayer) p).getHandle();
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
         ep.playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
         ep.playerConnection.sendPacket(new PacketPlayOutEntityHeadRotation(npc, (byte) (npc.yaw * 256 / 360)));
+        Bukkit.getScheduler().runTaskLater(VRNcore.getInstance(), () ->
+                ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc)), 20);
     }
 
     public void loadAllNPCs() {

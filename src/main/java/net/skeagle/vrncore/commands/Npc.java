@@ -71,12 +71,10 @@ public class Npc extends SimpleCommand {
         final SkinUtil skin = new SkinUtil(getPlayer().getName());
         npc.getProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
         final DataWatcher watcher = npc.getDataWatcher();
-        for (final Player p : Bukkit.getOnlinePlayers()) {
-            NPCResource.getInstance().updateNPC(p, npc);
-        }
         watcher.set(new DataWatcherObject<>(16, DataWatcherRegistry.a), (byte) 127);
-        final PacketPlayOutEntityMetadata metadata = new PacketPlayOutEntityMetadata(npc.getId(), watcher, true);
         final EntityPlayer ep = ((CraftPlayer) getPlayer()).getHandle();
-        ep.playerConnection.sendPacket(metadata);
+        ep.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(ep.getId(), watcher, true));
+        for (final Player p : Bukkit.getOnlinePlayers())
+            NPCResource.getInstance().addNPC(p, npc);
     }
 }
