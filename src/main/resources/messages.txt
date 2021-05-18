@@ -1,2 +1,6 @@
-prefix: &8[&9&lVRN&r&8] &r&7
-noPerm: &cYou do not have permission to do this.
+prefix: &8[&9&lVRN&r&8]&7
+noPermission: <prefix> &cYou do not have permission to do this.
+broadcastPrefix: &8[&3&lVRN Broadcast&r&8]&b
+teleporting: Teleporting...
+teleportedAll: Teleported all players.
+sitAir: &cYou cannot sit while in the air.

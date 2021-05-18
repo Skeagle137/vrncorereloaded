@@ -1,4 +1,4 @@
 package net.skeagle.vrncore.commands;
 
-public class Ban {
+public class HomesWarpsCommands {
 }

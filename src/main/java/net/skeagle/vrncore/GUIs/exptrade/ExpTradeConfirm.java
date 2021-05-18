@@ -1,11 +1,12 @@
 package net.skeagle.vrncore.GUIs.exptrade;
 
-import net.skeagle.vrncore.api.util.ExpUtil;
+import net.skeagle.vrncore.utils.ExpUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
+
 import static net.skeagle.vrncore.api.util.VRNUtil.say;
 
 class ExpTradeConfirm extends CustomInventory {
@@ -15,7 +16,7 @@ class ExpTradeConfirm extends CustomInventory {
 
         final float calcCost = (float) (ExpUtil.getExp(p) + worth * amount);
         final int finalLevel = (int) ExpUtil.getLevelFromExp((long) calcCost);
-        DecimalFormat df = new DecimalFormat("##.00");
+        final DecimalFormat df = new DecimalFormat("##.00");
         setItem(0, new ItemStack(Material.MAP), player -> {
         }, "&9&lInformation", "&9Material: &a" + name,
                 "&9Amount of material to trade: &a" + amount,

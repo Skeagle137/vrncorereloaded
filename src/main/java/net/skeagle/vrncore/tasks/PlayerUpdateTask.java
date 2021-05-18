@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.Common;
 
-import static net.skeagle.vrncore.api.util.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.api.util.VRNUtil.color;
+import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
 public class PlayerUpdateTask extends BukkitRunnable {
 

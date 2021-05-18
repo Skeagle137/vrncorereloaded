@@ -7,6 +7,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrnlib.commandmanager.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -19,18 +20,18 @@ import java.util.logging.Level;
 
 public final class VRNUtil {
 
-    public static String noperm = color(Settings.PREFIX + "&cYou do not have permission to do this.");
-    public static String noton = color(Settings.PREFIX + "&cThat player is not online.");
+    public static String noperm = color(Messages.msg("noPermission"));
+    public static String noton = color(Settings.PREFIX + " &cThat player is not online.");
 
     public static void say(final CommandSender cs, final String... message) {
         if (cs == null) return;
         for (final String msg : message)
-            cs.sendMessage(color(Settings.PREFIX + msg));
+            cs.sendMessage(color(Messages.msg("prefix") + " " + msg));
     }
 
     public static void say(final VRNPlayer p, final String... message) {
         for (final String msg : message)
-            p.getPlayer().sendMessage(color(Settings.PREFIX + msg));
+            p.getPlayer().sendMessage(color(Messages.msg("prefix") + " " + msg));
     }
 
     public static void sayNoPrefix(final CommandSender cs, final String... message) {

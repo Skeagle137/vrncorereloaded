@@ -1,5 +1,223 @@
-sudo player:player string...:command {
+back player:player*? {
+    optionalTarget
+    permission vrn.back
+    help Teleport back to a player's previous location.
+    user player
+    hook back
+}
+broadcast,bc string...:message* {
+    permission vrn.broadcast
+    help Broadcast a message to the entire server.
+    hook broadcast
+}
+clearchat {
+    permission vrn.clearchat
+    help Clears the chat.
+    hook clearchat
+}
+craft {
+    permission vrn.craft
+    help Opens a crafting table interface.
+    hook craft
+}
+day {
+    permission vrn.time
+    help Set the time to day.
+    hook day
+}
+demo player:player* {
+    permission vrn.clearchat
+    help Shows the demo screen to a player.
+    hook demo
+}
+echest player:player*? {
+    optionalTarget
+    permission vrn.echest
+    help Opens a player's ender chest.
+    user player
+    hook echest
+}
+exptrade {
+    permission vrn.exptrade
+    help Allows Trading items for experience points.
+    user player
+    hook exptrade
+}
+giveplus,givep {
+    permission vrn.giveplus
+    help Opens a gui for a quick way to obtain creative only items.
+    user player
+    hook giveplus
+}
+hallucinate,hallu player:player*? {
+    optionalTarget
+    permission vrn.hallucinate
+    help Make another player see hallucinations.
+    hook hallucinate
+}
+heal player:player*? {
+    optionalTarget
+    permission vrn.heal
+    help Heal another player or yourself.
+    hook heal
+}
+kick --silent,-s player:player* string...:reason*? {
+    permission vrn.kick
+    help Kick a player from the server.
+    hook kick
+}
+night {
+    permission vrn.time
+    help Set the time to night.
+    user player
+    hook night
+}
+ptime {
+    day {
+        permission vrn.ptime
+        help Set personal time to day.
+        user player
+        hook ptimeday
+    }
+    night {
+        permission vrn.ptime
+        help Set personal time to night.
+        user player
+        hook ptimenight
+    }
+    reset {
+        permission vrn.ptime
+        help Reset personal time state.
+        user player
+        hook ptimereset
+    }
+}
+push player:player* int:multiplier*?(3) {
+    permission vrn.push
+    help Pushes a player and sends them flying backwards.
+    hook push
+}
+pweather {
+    sun {
+        permission vrn.pweather
+        help Set personal weather to sun.
+        user player
+        hook pweathersun
+    }
+    rain {
+        permission vrn.pweather
+        help Set personal weather to rain.
+        user player
+        hook pweatherrain
+    }
+    reset {
+        permission vrn.pweather
+        help Reset personal weather state.
+        user player
+        hook pweatherreset
+    }
+}
+rain {
+    permission vrn.weather
+    help Set the weather to rain.
+    user player
+    hook rain
+}
+sit {
+    permission vrn.sit
+    help Defy all known laws of minecraft physics and sit anywhere.
+    user player
+    hook sit
+}
+smite --all,-a player:player* {
+    permission vrn.smite
+    help Strike a player by summoning lightning at their location.
+    hook smite
+}
+spawnmob entitytype:entitytype* int:count*?(1) {
+    permission vrn.spawnmob
+    help Spawns a mob where the player is looking or at a specific location.
+    user player
+    hook spawnmob
+}
+sudo player:player* string...:command* {
 	permission vrn.sudo
 	help Forces a user to chat or execute a command.
 	hook sudo
+}
+sun {
+    permission vrn.weather
+    help Set the weather to sun.
+    user player
+    hook sun
+}
+thunder {
+    permission vrn.weather
+    help Set the weather to thunder.
+    user player
+    hook thunder
+}
+top {
+    permission vrn.top
+    help Teleport to the highest block above you.
+    user player
+    hook top
+}
+tpa player:player* {
+    permission vrn.tpa
+    help Request to teleport to another player.
+    user player
+    hook tpa
+}
+tpaccept {
+    permission vrn.tpaccept
+    help Accept a pending teleport request from another player.
+    user player
+    hook tpaccept
+}
+tpahere player:player* {
+    permission vrn.tpahere
+    help Request another player to teleport to you.
+    user player
+    hook tpahere
+}
+tpall {
+    permission vrn.tpall
+    help Teleport every online player to your location.
+    user player
+    hook tpall
+}
+tpdeny {
+    permission vrn.tpdeny
+    help Deny a pending teleport request from another player.
+    user player
+    hook tpdeny
+}
+tphere player:player* {
+    permission vrn.tphere
+    help Teleport a player to your location.
+    user player
+    hook tphere
+}
+trails,trail player:player*? {
+    optionalTarget
+    permission vrn.trails
+    help Select and customize your arrow and player trails through a gui.
+    user player
+    hook trails
+}
+vanish player:player*? {
+    optionalTarget
+    permission vrn.vanish
+    help Hide yourself or another player from other players.
+    hook vanish
+}
+vrn {
+    help Display plugin information and admin options.
+    hook vrn
+    reload {
+        nohelp
+        permission vrn.reload
+        hook reload
+    }
 }

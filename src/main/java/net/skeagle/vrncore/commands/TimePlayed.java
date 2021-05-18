@@ -1,18 +1,18 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.api.util.TimeUtil;
 import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.utils.storage.player.PlayerData;
 import net.skeagle.vrncore.utils.storage.player.PlayerManager;
+import net.skeagle.vrnlib.misc.TimeUtil;
 import org.bukkit.entity.Player;
 import org.mineacademy.fo.command.SimpleCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.skeagle.vrncore.api.util.TimeUtil.parseTimeString;
-import static net.skeagle.vrncore.api.util.TimeUtil.timeToMessage;
 import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrnlib.misc.TimeUtil.parseTimeString;
+import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
 public class TimePlayed extends SimpleCommand {
 
@@ -32,18 +32,18 @@ public class TimePlayed extends SimpleCommand {
             return;
         }
         if (args[0].equalsIgnoreCase("set")) {
-            long totalsec;
+            final long totalsec;
             if (args.length == 1) {
                 say(getPlayer(), "&cYou must provide a time.");
                 return;
             }
             try {
                 totalsec = parseTimeString(args[1]);
-            } catch (TimeUtil.TimeFormatException e) {
+            } catch (final TimeUtil.TimeFormatException e) {
                 say(getPlayer(), e.getMessage());
                 return;
             }
-            Player p;
+            final Player p;
             if (args.length > 2) {
                 checkPerm("vrn.timeplayed.setothers");
                 p = findPlayer(args[2], VRNUtil.noton);
@@ -56,7 +56,7 @@ public class TimePlayed extends SimpleCommand {
             data.setTimeplayed(totalsec);
             say(getSender(), "Time played set to &a" + timeToMessage(totalsec) + (isPlayer(p) ? "&7." : "&7 for &a" + p.getName() + "&7."));
         } else if (args[0].equalsIgnoreCase("get")) {
-            Player p;
+            final Player p;
             if (args.length > 1) {
                 checkPerm("vrn.timeplayed.getothers");
                 p = findPlayer(args[1], VRNUtil.noton);
@@ -68,18 +68,18 @@ public class TimePlayed extends SimpleCommand {
             final PlayerData data = PlayerManager.getData(p.getUniqueId());
             say(getPlayer(), (isPlayer(p) ? "Your" : "&a" + p.getName() + "&7's") + " time played is &a" + timeToMessage(data.getTimeplayed()) + "&7.");
         } else if (args[0].equalsIgnoreCase("add")) {
-            long totalsec;
+            final long totalsec;
             if (args.length == 1) {
                 say(getPlayer(), "&cYou must provide a time.");
                 return;
             }
             try {
                 totalsec = parseTimeString(args[1]);
-            } catch (TimeUtil.TimeFormatException e) {
+            } catch (final TimeUtil.TimeFormatException e) {
                 say(getPlayer(), e.getMessage());
                 return;
             }
-            Player p;
+            final Player p;
             if (args.length > 2) {
                 checkPerm("vrn.timeplayed.setothers");
                 p = findPlayer(args[2], VRNUtil.noton);
@@ -94,18 +94,18 @@ public class TimePlayed extends SimpleCommand {
             say(getSender(), "Added &a" + timeToMessage(totalsec) + "&7 to " + (isPlayer(p) ? "your" : "&a" + p.getName() + "&7's") + " time. " +
                     (isPlayer(p) ? "Your" : "Their") + " total time is now &a" + timeToMessage(l) + "&7.");
         } else if (args[0].equalsIgnoreCase("subtract")) {
-            long totalsec;
+            final long totalsec;
             if (args.length == 1) {
                 say(getPlayer(), "&cYou must provide a time.");
                 return;
             }
             try {
                 totalsec = parseTimeString(args[1]);
-            } catch (TimeUtil.TimeFormatException e) {
+            } catch (final TimeUtil.TimeFormatException e) {
                 say(getPlayer(), e.getMessage());
                 return;
             }
-            Player p;
+            final Player p;
             if (args.length > 2) {
                 checkPerm("vrn.timeplayed.setothers");
                 p = findPlayer(args[2], VRNUtil.noton);
@@ -128,7 +128,7 @@ public class TimePlayed extends SimpleCommand {
             say(getSender(), "&cThat is not a valid argument. Please use set, get, add, or subtract.");
     }
 
-    private boolean isPlayer(Player p) {
+    private boolean isPlayer(final Player p) {
         return p == getPlayer();
     }
 

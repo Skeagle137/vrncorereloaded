@@ -2,7 +2,7 @@ package net.skeagle.vrncore.GUIs;
 
 import org.bukkit.Material;
 
-public enum GGiveMaterial {
+public enum GivePlusMaterial {
     BARRIER(Material.BARRIER, "Barrier"),
     CMDBLOCK(Material.COMMAND_BLOCK, "Command Block (Normal)"),
     CMD_CHAIN(Material.CHAIN_COMMAND_BLOCK, "Command Block (Chain)"),
@@ -15,7 +15,7 @@ public enum GGiveMaterial {
     private final Material mat;
     private final String name;
 
-    GGiveMaterial(final Material mat, final String name) {
+    GivePlusMaterial(final Material mat, final String name) {
         this.mat = mat;
         this.name = name;
     }

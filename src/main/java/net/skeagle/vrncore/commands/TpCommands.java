@@ -1,80 +1,225 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.api.util.VRNUtil;
+import net.skeagle.vrnlib.commandmanager.CommandHook;
+import net.skeagle.vrnlib.commandmanager.Messages;
+import net.skeagle.vrnlib.misc.EventListener;
+import net.skeagle.vrnlib.misc.Task;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static net.skeagle.vrncore.api.util.VRNUtil.say;
+
 public class TpCommands {
 
-    /*@CommandHook("tpall")
-    public void tpall(Player p) {
+    public TpCommands() {
+        new EventListener<>(VRNcore.getInstance(), PlayerTeleportEvent.class, e -> {
+            if (e.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND || e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN) {
+                final BackCache back = new BackCache();
+                back.setBackLoc(e.getPlayer().getUniqueId(), e.getFrom());
+            }
+        });
+    }
 
-    }*/
-
-    /*private static class TPAUtil {
-        private final Map<Player, BukkitTask> tasks = new HashMap<>();
-        private final HashMap<UUID, UUID> StoredPlayer = new HashMap<>();
-        private boolean tpahere;
-
-        public static final net.skeagle.vrncore.utils.TPAUtil instance = new net.skeagle.vrncore.utils.TPAUtil();
-
-        public static net.skeagle.vrncore.utils.TPAUtil getInstance() {
-            return instance;
+    @CommandHook("tpall")
+    public void onTpAll(final Player player) {
+        for (final Player pl : Bukkit.getOnlinePlayers()) {
+            if (pl != player)
+                onTpHere(player, pl);
         }
+        say(player, Messages.msg("teleportedAll"));
+    }
+
+    @CommandHook("tphere")
+    public void onTpHere(final Player player, final Player target) {
+        sayTp(player);
+        target.teleport(player.getLocation());
+    }
+
+    @CommandHook("top")
+    public void onTop(final Player player) {
+        final int y;
+        final Block b = VRNUtil.getBlockExact(player.getLocation());
+        if (b != null)
+            y = player.getWorld().getHighestBlockYAt(b.getLocation());
+        else
+            y = player.getWorld().getHighestBlockYAt(player.getLocation());
+        sayTp(player);
+        final Location loc = player.getLocation().clone();
+        loc.setY(y + 1);
+        player.teleport(loc);
+    }
+
+    @CommandHook("back")
+    public void onBack(final Player player, final Player target) {
+        final Player backPlayer = target != null ? target : player;
+        final BackCache back = new BackCache();
+        final Location backLoc = back.getBackLoc(backPlayer.getUniqueId());
+        if (backLoc == null) {
+            say(player, backPlayer == player ? "&cYou do not have anywhere to teleport back to."
+                    : "&a" + backPlayer.getName() + " &7does not have a saved last location.");
+            return;
+        }
+        final Location newLoc = player.getLocation();
+        back.teleToBackLoc(player, backPlayer);
+        back.setBackLoc(player.getUniqueId(), newLoc);
+        say(player, backPlayer == player ? "&7Teleported to your last location."
+                : "&7Teleported to &a" + backPlayer.getName() + "&7's last location.");
+        back.setBackLoc(player.getUniqueId(), newLoc);
+    }
+
+    @CommandHook("tpa")
+    public void onTpa(final Player player, final Player target) {
+        if (player == target) {
+            say(player, "&cYou cannot teleport to yourself.");
+            return;
+        }
+        final TpaUtil util = new TpaUtil();
+        if (util.hasRequest(player)) {
+            say(player, "&cYou already have a pending teleport request.");
+            return;
+        }
+        util.setTpahere(false);
+        say(player, "&aTeleport request sent.");
+        say(target, "&a" + player.getName() + " &7is requesting to teleport to you. " +
+                "Do /tpaccept to accept the request or /tpdeny to deny it. This request will expire in 2 minutes.");
+        util.addPlayers(player, target);
+        util.DelTPATimer(player, target);
+    }
+
+    @CommandHook("tpdeny")
+    public void onTpdeny(final Player player) {
+        final TpaUtil util = new TpaUtil();
+        if (!util.hasRequest(player)) {
+            say(player, "&cYou do not have any pending teleport requests.");
+            return;
+        }
+        final Player target = util.getTpaPlayer(player);
+        say(player, "&7Denied the teleport request from &a" + target.getName() + "&7.");
+        if (target.isOnline())
+            say(target, "&cYour teleport request was denied.");
+        util.DelRequest(player, target, false);
+    }
+
+    @CommandHook("tpaccept")
+    public void onTpaccept(final Player player) {
+        final TpaUtil util = new TpaUtil();
+        if (!util.hasRequest(player)) {
+            say(player, "&cYou do not have any pending teleport requests.");
+            return;
+        }
+        final Player target = util.getTpaPlayer(player);
+        say(player, "&7Accepted the teleport request from &a" + target.getName() + "&7.");
+        if (target.isOnline())
+            say(target, "&aTeleport request accepted.");
+        util.teleportPlayer(player, target);
+    }
+
+    @CommandHook("tpahere")
+    public void onTpaHere(final Player player, final Player target) {
+        if (player == target) {
+            say(player, "&cYou cannot teleport to yourself.");
+            return;
+        }
+        final TpaUtil util = new TpaUtil();
+        if (util.hasRequest(player)) {
+            say(player, "&cYou already have a pending teleport request.");
+            return;
+        }
+        util.setTpahere(true);
+        say(player, "&aTeleport request sent.");
+        say(target, "&a" + player.getName() + " &7is requesting for you to teleport to them. " +
+                "Do /tpaccept to accept the request or /tpdeny to deny it. This request will expire in 2 minutes.");
+        util.addPlayers(player, target);
+        util.DelTPATimer(player, target);
+    }
+
+    @CommandHook("tpcancel")
+    public void onTpcancel(final Player player) {
+
+    }
+
+    public void sayTp(final Player player) {
+        say(player, Messages.msg("teleporting"));
+    }
+
+    private static class BackCache {
+        private static final Map<UUID, Location> backLoc = new HashMap<>();
+
+        public Location getBackLoc(final UUID id) {
+            return backLoc.get(id);
+        }
+
+        public void setBackLoc(final UUID id, final Location loc) {
+            backLoc.remove(id);
+            backLoc.put(id, loc);
+        }
+
+        public void teleToBackLoc(final Player p, final Player targetLoc) {
+            p.teleport(backLoc.get(targetLoc.getUniqueId()));
+        }
+    }
+
+    private static class TpaUtil {
+        private final static Map<UUID, Task> tasks = new HashMap<>();
+        private final static HashMap<UUID, UUID> tpaMap = new HashMap<>();
+        private boolean tpahere;
 
         public void setTpahere(final boolean tpahere) {
             this.tpahere = tpahere;
         }
 
-        public boolean hasRequest(final Player p) {
-            final UUID uuid = StoredPlayer.get(p.getUniqueId());
-            return uuid != null;
+        public boolean hasRequest(final Player player) {
+            return tpaMap.get(player.getUniqueId()) != null;
         }
 
-        public boolean hasSentRequest(final Player p) {
-            return StoredPlayer.containsKey(p.getUniqueId());
-        }
-
-        public Player getStoredPlayer(final Player p) {
-            if (hasRequest(p)) {
-                final UUID uuid = StoredPlayer.get(p.getUniqueId());
-                return Bukkit.getPlayer(uuid);
-            }
-            say(p, "&cThat player is not online.");
+        public Player getTpaPlayer(final Player p) {
+            if (hasRequest(p))
+                return Bukkit.getPlayer(tpaMap.get(p.getUniqueId()));
             return null;
         }
 
-        public void addPlayers(final UUID u1, final UUID u2) {
-            this.StoredPlayer.put(u1, u2);
+        public void addPlayers(final Player player, final Player target) {
+            tpaMap.put(player.getUniqueId(), target.getUniqueId());
         }
 
-        public void teleportPlayer(final Player p, final Player a) {
-            if (tpahere) {
-                p.teleport(a);
-                DelRequest(p.getUniqueId(), a.getUniqueId(), false);
-                return;
-            }
-            a.teleport(p);
-            DelRequest(p.getUniqueId(), a.getUniqueId(), false);
-            DelTask(a);
+        public void teleportPlayer(final Player player, final Player target) {
+            if (tpahere)
+                player.teleport(target);
+            else
+                target.teleport(player);
+            DelRequest(player, target, false);
+            DelTask(player);
         }
 
-        public void DelRequest(final UUID u1, final UUID u2, final boolean showmsg) {
+        public void DelRequest(final Player player, final Player target, final boolean showmsg) {
             if (showmsg) {
-                if (Bukkit.getPlayer(u2) != null && Bukkit.getPlayer(u1) != null) {
-                    say(Bukkit.getPlayer(u2), "&cThe teleport request has expired.");
-                    say(Bukkit.getPlayer(u1), "&cThe teleport request from " + Bukkit.getPlayer(u2).getName() + " has expired.");
-                }
+                if (player.isOnline())
+                    say(player, "&cThe teleport request has expired.");
+                if (target.isOnline())
+                    say(target, "&cThe teleport request from " + player.getName() + " has expired.");
             }
-            StoredPlayer.remove(u1, u2);
-            DelTask(Bukkit.getPlayer(u2));
+            tpaMap.remove(player.getUniqueId(), target.getUniqueId());
+            DelTask(player);
         }
 
-        public void DelTPATimer(final Player p, final Player a) {
-            tasks.put(p, Common.runLater(20 * 120, () -> DelRequest(a.getUniqueId(), p.getUniqueId(), true)));
+        public void DelTPATimer(final Player player, final Player target) {
+            tasks.put(player.getUniqueId(), Task.syncDelayed(VRNcore.getInstance(), () -> DelRequest(player, target, true), 20 * 120));
         }
 
-        private void DelTask(final Player p) {
-            if (tasks.containsKey(p)) {
-                final BukkitTask task = tasks.remove(p);
+        private static void DelTask(final Player p) {
+            if (tasks.containsKey(p.getUniqueId())) {
+                final Task task = tasks.remove(p.getUniqueId());
                 task.cancel();
             }
         }
-    }*/
+    }
 }
