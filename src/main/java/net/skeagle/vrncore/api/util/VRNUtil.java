@@ -150,13 +150,11 @@ public final class VRNUtil {
         String texture = null;
         String signature = null;
         try {
-            final URL url_0 = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
-            final InputStreamReader reader_0 = new InputStreamReader(url_0.openStream());
-            final String uuid = new JsonParser().parse(reader_0).getAsJsonObject().get("id").getAsString();
+            final URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+            final String uuid = new JsonParser().parse(new InputStreamReader(url.openStream())).getAsJsonObject().get("id").getAsString();
 
-            final URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
-            final InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
-            final JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+            final URL session = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+            final JsonObject textureProperty = new JsonParser().parse(new InputStreamReader(session.openStream())).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
             texture = textureProperty.get("value").getAsString();
             signature = textureProperty.get("signature").getAsString();
         } catch (final Exception ignored) {

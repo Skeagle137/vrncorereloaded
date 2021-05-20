@@ -10,9 +10,6 @@ import net.skeagle.vrncore.commands.homes.delhome;
 import net.skeagle.vrncore.commands.homes.home;
 import net.skeagle.vrncore.commands.homes.homes;
 import net.skeagle.vrncore.commands.homes.sethome;
-import net.skeagle.vrncore.commands.nicknames.Nick;
-import net.skeagle.vrncore.commands.nicknames.Realname;
-import net.skeagle.vrncore.commands.nicknames.RemoveNick;
 import net.skeagle.vrncore.commands.warps.delwarp;
 import net.skeagle.vrncore.commands.warps.setwarp;
 import net.skeagle.vrncore.commands.warps.warp;
@@ -67,19 +64,9 @@ public final class VRNcore extends SimplePlugin {
                 .setArgTypes(ArgType.of("entitytype", EntityType.class))
                 .parse()
                 .register("vrncore", this, new AdminCommands(), new TpCommands(),
-                        new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands());
+                        new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
+                        new NickCommands(), new NpcCommands());
 
-        registerCommand(new Invsee()); //vrn.invsee
-        registerCommand(new Mute()); //vrn.mute
-        registerCommand(new Godmode()); //vrn.god.self|others
-        registerCommand(new Speed()); //vrn.speed
-        registerCommand(new Slap()); //vrn.slap.self|others
-        registerCommand(new Rename()); //vrn.rename
-        registerCommand(new Gamemode()); //vrn.gamemode.self|others
-        registerCommand(new Fly()); //vrn.fly.self|others
-        registerCommand(new Nick()); //vrn.nick.self|others
-        registerCommand(new Realname()); //vrn.realname
-        registerCommand(new RemoveNick()); //vrn.nick.self|others
         registerCommand(new home()); //vrn.home
         registerCommand(new homes()); //vrn.homes
         registerCommand(new delhome()); //vrn.home
@@ -88,10 +75,6 @@ public final class VRNcore extends SimplePlugin {
         registerCommand(new warps()); //vrn.warps
         registerCommand(new delwarp()); //vrn.delwarp
         registerCommand(new setwarp()); //vrn.setwarp
-        registerCommand(new Skin()); //vrn.skin
-        registerCommand(new TimePlayed()); //vrn.timeplayed.setself|getself|setothers|getothers
-        registerCommand(new Npc()); //vrn.npc
-        registerCommand(new Rtp()); //vrn.rtp
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());

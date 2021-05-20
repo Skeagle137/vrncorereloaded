@@ -14,15 +14,15 @@ public class VRNPlayer {
 
     private final PlayerData data;
     private final UUID uuid;
-    private Player p;
+    private Player player;
     private List<String> homes;
     private List<String> warps;
 
 
-    public VRNPlayer(final Player p) {
-        this.data = PlayerManager.getData(p.getUniqueId());
-        this.uuid = p.getUniqueId();
-        this.p = p;
+    public VRNPlayer(final Player player) {
+        this.data = PlayerManager.getData(player.getUniqueId());
+        this.uuid = player.getUniqueId();
+        this.player = player;
     }
 
     public VRNPlayer(final UUID uuid) {
@@ -31,7 +31,7 @@ public class VRNPlayer {
     }
 
     public Player getPlayer() {
-        return p;
+        return player;
     }
 
     public String getName() {
@@ -41,13 +41,13 @@ public class VRNPlayer {
     public void setName(final String nickname) {
         final String name = color(nickname + "&r");
         data.setNickname(name);
-        p.setDisplayName(name);
+        player.setDisplayName(name);
         String listname = name;
         if (HookManager.isVaultLoaded()) {
             listname = "%prefix" + name + "%suffix";
-            listname = HookManager.format(listname, p);
+            listname = HookManager.format(listname, player);
         }
-        p.setPlayerListName(listname);
+        player.setPlayerListName(color(listname));
     }
 
     public boolean isGodmode() {

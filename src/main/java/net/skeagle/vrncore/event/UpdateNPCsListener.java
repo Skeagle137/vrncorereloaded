@@ -9,6 +9,6 @@ public class UpdateNPCsListener implements Listener {
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent e) {
-        NPCResource.getInstance().updateNPCsForPlayer(e.getPlayer());
+        NPCResource.getInstance().LoadNPCsForPlayer(e.getPlayer());
     }
 }

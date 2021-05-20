@@ -5,7 +5,9 @@ import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.api.player.VRNPlayer;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.Messages;
+import net.skeagle.vrnlib.misc.TimeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,8 @@ import org.bukkit.entity.Player;
 
 import static net.skeagle.vrncore.api.util.VRNUtil.color;
 import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrnlib.misc.TimeUtil.parseTimeString;
+import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
 public class AdminCommands {
 
@@ -73,7 +77,10 @@ public class AdminCommands {
 
     @CommandHook("mute")
     public void onMute(final CommandSender sender, final Player target) {
-
+        final VRNPlayer player = new VRNPlayer(target);
+        player.setMuted(!player.isMuted());
+        say(player, "You are " + (player.isMuted() ? "now" : "no longer") + " muted.");
+        say(sender, "&a" + player.getName() + " &7is " + (player.isMuted() ? "now" : "no longer") + " muted.");
     }
 
     @CommandHook("smite")
@@ -117,5 +124,188 @@ public class AdminCommands {
         say(healPlayer, "Your health and hunger are now full.");
         if (healPlayer == player) return;
         say(player, "&a" + healPlayer.getName() + "&7's health and hunger are now full.");
+    }
+
+    @CommandHook("invsee")
+    public void onInvsee(final Player player, final Player target) {
+        player.openInventory(target.getInventory());
+        say(player, "Now showing &a" + target.getName() + "&7's inventory.");
+        /*
+        Common.runAsync(() -> {
+            OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
+            File f;
+            if (p.hasPlayedBefore())
+                f = new File("world" + File.separator + "playerdata", p.getUniqueId().toString() + ".dat");
+            else {
+                say(getPlayer(), "&cno player data found for " + args[0] + ".");
+                return;
+            }
+            try {
+                NBTTagCompound nbt = NBTCompressedStreamTools.a(new FileInputStream(f));
+                NBTTagList list = (NBTTagList) nbt.get("Inventory");
+                if (list == null) {
+                    say(getPlayer(), "&cCould not read " + p.getName() + "'s inventory.");
+                    return;
+                }
+                List<NBTTagCompound> compoundlist = new ArrayList<>();
+                for (int i = 0; i < list.size() - 1; i++) {
+                    NBTTagCompound compound = (NBTTagCompound) list.get(i);
+                    if (!compound.isEmpty())
+                        compoundlist.add(compound);
+                }
+                Common.run(() -> new InvseeGUI(compoundlist, p));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+         */
+    }
+
+    @CommandHook("speed")
+    public void onSpeed(final Player player, final Player target, final int speed) {
+        final Player speedPlayer = target != null && target != player ? target : player;
+        if (speed == 1) {
+            if (speedPlayer.isFlying())
+                speedPlayer.setFlySpeed((float) 0.1);
+            else
+                speedPlayer.setWalkSpeed((float) 0.2);
+            say(speedPlayer, "Your " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been reset.");
+            if (speedPlayer == player) return;
+            say(player, "&a" + speedPlayer.getName() + "&7's " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been reset.");
+        } else {
+            float f = speed;
+            if (speedPlayer.isFlying()) {
+                if (speed > 10)
+                    f = 10;
+                if (speed < 0)
+                    f = 0;
+                speedPlayer.setFlySpeed(f / 10);
+            } else {
+                if (speed > 10)
+                    f = 10;
+                if (speed < 0)
+                    f = 0;
+                speedPlayer.setWalkSpeed(0.12f + (0.088f * f));
+            }
+            say(speedPlayer, "Your " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
+                    (speedPlayer.isFlying() ? f / 10 : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
+            if (speedPlayer == player) return;
+            say(player, "&a" + speedPlayer.getName() + "&7's " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
+                    (speedPlayer.isFlying() ? f / 10 : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
+        }
+    }
+
+    @CommandHook("timeplayedget")
+    public void onTimePlayedGet(final Player player, final Player target) {
+        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
+        say(player, (vrnPlayer.getPlayer() == player ? "Your" : "&a" + vrnPlayer.getName() + "&7's") +
+                " time played is &a" + timeToMessage(vrnPlayer.getTimePlayed()) + "&7.");
+    }
+
+    @CommandHook("timeplayedset")
+    public void onTimePlayedSet(final Player player, final Player target, final String time) {
+        final long totalsec;
+        try {
+            totalsec = parseTimeString(time);
+        } catch (final TimeUtil.TimeFormatException e) {
+            say(player, e.getMessage());
+            return;
+        }
+        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
+        vrnPlayer.setTimePlayed(totalsec);
+        say(player, "Time played set to &a" + timeToMessage(totalsec) + (vrnPlayer.getPlayer() == player ? "&7." : "&7 for &a" + vrnPlayer.getName() + "&7."));
+    }
+
+    @CommandHook("timeplayedadd")
+    public void onTimePlayedAdd(final Player player, final Player target, final String time) {
+        final long totalsec;
+        try {
+            totalsec = parseTimeString(time);
+        } catch (final TimeUtil.TimeFormatException e) {
+            say(player, e.getMessage());
+            return;
+        }
+        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
+        final long total = vrnPlayer.getTimePlayed() + totalsec;
+        vrnPlayer.setTimePlayed(total);
+        say(player, "Added &a" + timeToMessage(totalsec) + "&7 to " + (vrnPlayer.getPlayer() == player ? "your" : "&a" + vrnPlayer.getName() + "&7's") +
+                " time. " + (vrnPlayer.getPlayer() == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+    }
+
+    @CommandHook("timeplayedsubtract")
+    public void onTimePlayedSubtract(final Player player, final Player target, final String time) {
+        final long totalsec;
+        try {
+            totalsec = parseTimeString(time);
+        } catch (final TimeUtil.TimeFormatException e) {
+            say(player, e.getMessage());
+            return;
+        }
+        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
+        final long total = vrnPlayer.getTimePlayed() - totalsec;
+        if (total < 0) {
+            vrnPlayer.setTimePlayed(0);
+            say(player, "Time played set to &a0 seconds &7" + (vrnPlayer.getPlayer() == player ? "." : " for &a" + vrnPlayer.getName() + "&7."));
+            return;
+        }
+        vrnPlayer.setTimePlayed(total);
+        say(player, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (vrnPlayer.getPlayer() == player ? "your" : "&a" + vrnPlayer.getName() + "&7's") +
+                " time. " + (vrnPlayer.getPlayer() == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+    }
+
+    @CommandHook("fly")
+    public void onFly(final Player player, final Player target) {
+        final Player flyPlayer = target != null && target != player ? target : player;
+        flyPlayer.setAllowFlight(!flyPlayer.getAllowFlight());
+        say(flyPlayer, "Fly mode has been " + (flyPlayer.getAllowFlight() ? "enabled" : "disabled") + ".");
+        if (flyPlayer == player) return;
+        say(player, "&a" + flyPlayer.getName() + "&7's fly mode has been " + (flyPlayer.getAllowFlight() ? "enabled" : "disabled") + ".");
+    }
+
+    @CommandHook("gms")
+    public void onGmSurvival(final Player player, final Player target) {
+        final Player gmPlayer = target != null && target != player ? target : player;
+        gmPlayer.setGameMode(GameMode.SURVIVAL);
+        say(gmPlayer, "You are now in &asurvival&7 mode.");
+        if (gmPlayer == player) return;
+        say(player, "&a" + gmPlayer.getName() + " &7is now in &asurvival&7 mode.");
+    }
+
+    @CommandHook("gmc")
+    public void onGmCreative(final Player player, final Player target) {
+        final Player gmPlayer = target != null && target != player ? target : player;
+        gmPlayer.setGameMode(GameMode.CREATIVE);
+        say(gmPlayer, "You are now in &acreative&7 mode.");
+        if (gmPlayer == player) return;
+        say(player, "&a" + gmPlayer.getName() + " &7is now in &acreative&7 mode.");
+    }
+
+    @CommandHook("gma")
+    public void onGmAdventure(final Player player, final Player target) {
+        final Player gmPlayer = target != null && target != player ? target : player;
+        gmPlayer.setGameMode(GameMode.ADVENTURE);
+        say(gmPlayer, "You are now in &aadventure&7 mode.");
+        if (gmPlayer == player) return;
+        say(player, "&a" + gmPlayer.getName() + " &7is now in &aadventure&7 mode.");
+    }
+
+    @CommandHook("gmsp")
+    public void onGmSpectator(final Player player, final Player target) {
+        final Player gmPlayer = target != null && target != player ? target : player;
+        gmPlayer.setGameMode(GameMode.SPECTATOR);
+        say(gmPlayer, "You are now in &aspectator&7 mode.");
+        if (gmPlayer == player) return;
+        say(player, "&a" + gmPlayer.getName() + " &7is now in &aspectator&7 mode.");
+    }
+
+    @CommandHook("god")
+    public void onGod(final Player player, final Player target) {
+        final VRNPlayer godPlayer = new VRNPlayer(target != null && target != player ? target : player);
+        godPlayer.setGodmode(!godPlayer.isGodmode());
+        say(godPlayer, "You are " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        if (godPlayer.getPlayer() == player) return;
+        say(player, "&a" + godPlayer.getName() + " &7is " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
     }
 }

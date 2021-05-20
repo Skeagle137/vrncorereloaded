@@ -62,35 +62,36 @@ public class NPCResource {
         return false;
     }
 
-    public void updateNPCsForPlayer(final Player p) {
-        for (final NPCManager man : manData) {
-            final Location loc = man.getLoc();
-            if (loc.getWorld() == null) continue;
-            final MinecraftServer ms = ((CraftServer) Bukkit.getServer()).getServer();
-            final WorldServer ws = ((CraftWorld) loc.getWorld()).getHandle();
-            final GameProfile gp = new GameProfile(UUID.randomUUID(), (man.getDisplay() == null ? man.getName() : man.getDisplay()));
-            if (man.getSkin() != null) {
-                final SkinUtil skin = man.getSkin();
-                gp.getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
-            }
-            final EntityPlayer npc = new EntityPlayer(ms, ws, gp, new PlayerInteractManager(ws));
-            npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-            final DataWatcher watcher = npc.getDataWatcher();
-            watcher.set(new DataWatcherObject<>(16, DataWatcherRegistry.a), (byte) 127);
-            final EntityPlayer ep = ((CraftPlayer) p).getHandle();
-            Bukkit.getScheduler().runTask(VRNcore.getInstance(), () ->
-                    ep.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(npc.getId(), watcher, true)));
-            addNPC(p, npc);
-        }
+    public void LoadNPCsForPlayer(final Player p) {
+        for (final NPCManager man : manData)
+            makeNPC(p, man);
     }
 
-    public void addNPC(final Player p, final EntityPlayer npc) {
+    public void makeNPC(final Player p, final NPCManager man) {
+        final Location loc = man.getLoc();
+        if (loc.getWorld() == null) return;
+        final MinecraftServer ms = ((CraftServer) Bukkit.getServer()).getServer();
+        final WorldServer ws = ((CraftWorld) loc.getWorld()).getHandle();
+        final GameProfile gp = new GameProfile(UUID.randomUUID(), (man.getDisplay() == null ? man.getName() : man.getDisplay()));
+        final SkinUtil skin = man.getSkin() != null ? man.getSkin() : new SkinUtil(man.getName());
+        gp.getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
+        final EntityPlayer npc = new EntityPlayer(ms, ws, gp, new PlayerInteractManager(ws));
+        npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+        final DataWatcher watcher = npc.getDataWatcher();
+        watcher.set(new DataWatcherObject<>(16, DataWatcherRegistry.a), (byte) 127);
+        final EntityPlayer ep = ((CraftPlayer) p).getHandle();
+        Bukkit.getScheduler().runTask(VRNcore.getInstance(), () ->
+                ep.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(npc.getId(), watcher, true)));
+        sendNPCPackets(p, npc);
+    }
+
+    public void sendNPCPackets(final Player p, final EntityPlayer npc) {
         final EntityPlayer ep = ((CraftPlayer) p).getHandle();
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
         ep.playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
         ep.playerConnection.sendPacket(new PacketPlayOutEntityHeadRotation(npc, (byte) (npc.yaw * 256 / 360)));
-        Bukkit.getScheduler().runTaskLater(VRNcore.getInstance(), () ->
-                ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc)), 20);
+        Bukkit.getScheduler().runTask(VRNcore.getInstance(), () ->
+                ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc)));
     }
 
     public void loadAllNPCs() {
