@@ -8,7 +8,7 @@ import org.mineacademy.fo.RandomUtil;
 
 import java.util.ArrayList;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.color;
+import static net.skeagle.vrncore.utils.VRNUtil.color;
 
 public class ServerListListener implements Listener {
 

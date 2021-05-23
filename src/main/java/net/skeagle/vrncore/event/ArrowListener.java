@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.trail.VRNParticle;
-import net.skeagle.vrncore.utils.storage.player.PlayerManager;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;

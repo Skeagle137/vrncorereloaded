@@ -25,6 +25,18 @@ day {
     help Set the time to day.
     hook day
 }
+delhome home:home* {
+    optionalTarget
+    permission vrn.delhome
+    help Remove a home.
+    hook delhome
+}
+delwarp warp:warp* {
+    optionalTarget
+    permission vrn.delwarp
+    help Remove a warp.
+    hook delwarp
+}
 demo player:player* {
     permission vrn.clearchat
     help Shows the demo screen to a player.
@@ -98,6 +110,19 @@ heal player:player*? {
     permission vrn.heal
     help Heal another player or yourself.
     hook heal
+}
+home home:home* {
+    permission vrn.home
+    help Teleport to the specified home.
+    user player
+    hook home
+}
+homes player:player*? {
+    optionalTarget
+    permission vrn.homes
+    help List all available homes that a player has.
+    user player
+    hook homes
 }
 invsee player:player* {
     permission vrn.invsee
@@ -213,6 +238,18 @@ rtp {
     help Teleports to a randomly chosen area.
     user player
     hook rtp
+}
+sethome string:name* {
+    permission vrn.sethome
+    help Create a home.
+    user player
+    hook sethome
+}
+setwarp string:name* {
+    permission vrn.setwarp
+    help Create a warp.
+    user player
+    hook setwarp
 }
 sit {
     permission vrn.sit
@@ -341,11 +378,21 @@ vanish player:player*? {
     help Hide yourself or another player from other players.
     hook vanish
 }
+warp warp:warp* {
+    permission vrn.warp
+    help Teleport to the specified warp.
+    user player
+}
+warps {
+    permission vrn.warps
+    help List all available warps.
+    user player
+}
 vrn {
     help Display plugin information and admin options.
     hook vrn
     reload {
-        nohelp
+        help Reload all messages and configs.
         permission vrn.reload
         hook reload
     }

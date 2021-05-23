@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 class ExpTradeAmount extends CustomInventory {
 

@@ -1,80 +1,75 @@
 package net.skeagle.vrncore;
 
 import net.md_5.bungee.api.ChatColor;
-import net.skeagle.vrncore.api.hook.HookManager;
-import net.skeagle.vrncore.api.player.VRNPlayer;
-import net.skeagle.vrncore.api.sql.SQLConnection;
-import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.commands.*;
-import net.skeagle.vrncore.commands.homes.delhome;
-import net.skeagle.vrncore.commands.homes.home;
-import net.skeagle.vrncore.commands.homes.homes;
-import net.skeagle.vrncore.commands.homes.sethome;
-import net.skeagle.vrncore.commands.warps.delwarp;
-import net.skeagle.vrncore.commands.warps.setwarp;
-import net.skeagle.vrncore.commands.warps.warp;
-import net.skeagle.vrncore.commands.warps.warps;
 import net.skeagle.vrncore.event.*;
+import net.skeagle.vrncore.homes.HomeManager;
+import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.npc.Npc;
+import net.skeagle.vrncore.npc.NpcManager;
+import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.tasks.AutoSaveTask;
-import net.skeagle.vrncore.tasks.PlayerTrailTask;
-import net.skeagle.vrncore.tasks.PlayerUpdateTask;
-import net.skeagle.vrncore.utils.storage.npc.NPCResource;
-import net.skeagle.vrncore.utils.storage.timerewards.RewardManager;
+import net.skeagle.vrncore.timerewards.RewardManager;
+import net.skeagle.vrncore.utils.TaskSetup;
+import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.warps.Warp;
+import net.skeagle.vrncore.warps.WarpManager;
 import net.skeagle.vrnlib.commandmanager.ArgType;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.CommandParser;
 import net.skeagle.vrnlib.commandmanager.Messages;
-import org.bukkit.Bukkit;
+import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.YamlStaticConfig;
 
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
-import static net.skeagle.vrncore.api.util.VRNUtil.sayNoPrefix;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public final class VRNcore extends SimplePlugin {
 
-    private PlayerUpdateTask playerTask;
-    private PlayerTrailTask trailTask;
-    private AutoSaveTask saveTask;
+    private HomeManager homeManager;
+    private WarpManager warpManager;
+    private RewardManager rewardManager;
+    private NpcManager npcManager;
+    private Connection conn;
 
     @Override
     public void onPluginStart() {
-        //messages
+        //messages and config
         Messages.load(this);
-        //temp for compatibility, eventually called within api
-        HookManager.loadHooks();
-        new SQLConnection("");
-        //config stuff
         RewardManager.getInstance().loadRewards();
-        NPCResource.getInstance().loadAllNPCs();
-        //tasks
-        playerTask = new PlayerUpdateTask(this);
-        trailTask = new PlayerTrailTask(this);
-        saveTask = new AutoSaveTask(this);
+        //hooks
+        HookManager.loadHooks();
+        //database setup
+        conn = SQLHelper.openSQLite(this.getDataFolder().toPath().resolve("vrn_data.db"));
+        final SQLHelper sql = new SQLHelper(conn);
+        sql.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, arrowtrail STRING, playertrail STRING, " +
+                "vanished BOOLEAN, muted BOOLEAN, godmode BOOLEAN, lastOnline BIGINT, lastLocation STRING, timeplayed BIGINT);");
+        sql.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
+        sql.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
+        sql.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
+                "location STRING, skin STRING, rotateHead BOOLEAN);");
+        sql.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, type STRING, timeRequired BIGINT, cost BIGINT);");
+        //managers and tasks
+        homeManager = new HomeManager();
+        warpManager = new WarpManager();
+        rewardManager = new RewardManager();
+        npcManager = new NpcManager();
+        new TaskSetup();
         //commands
         new CommandParser(this.getResource("commands.txt"))
-                .setArgTypes(ArgType.of("entitytype", EntityType.class))
-                .parse()
-                .register("vrncore", this, new AdminCommands(), new TpCommands(),
-                        new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
-                        new NickCommands(), new NpcCommands());
-
-        registerCommand(new home()); //vrn.home
-        registerCommand(new homes()); //vrn.homes
-        registerCommand(new delhome()); //vrn.home
-        registerCommand(new sethome()); //vrn.sethome
-        registerCommand(new warp()); //vrn.warp
-        registerCommand(new warps()); //vrn.warps
-        registerCommand(new delwarp()); //vrn.delwarp
-        registerCommand(new setwarp()); //vrn.setwarp
+                .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
+                        new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::getName)),
+                        new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)))
+                .parse().register("vrncore", this, new AdminCommands(), new TpCommands(),
+                new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
+                new NickCommands(), new NpcCommands());
         //listeners
         registerEvents(new PlayerListener());
         registerEvents(new InvCloseListener());
@@ -82,7 +77,6 @@ public final class VRNcore extends SimplePlugin {
         registerEvents(new AFKListener());
         registerEvents(new ArrowListener());
         registerEvents(new ServerListListener());
-        registerEvents(new UpdateNPCsListener());
         //enabled
         VRNUtil.log(ChatColor.GREEN +
                         "-------------------------------",
@@ -99,36 +93,34 @@ public final class VRNcore extends SimplePlugin {
         return VRNcore.getPlugin(VRNcore.class);
     }
 
+    public SQLHelper getDB() {
+        return new SQLHelper(conn);
+    }
+
+    public HomeManager getHomeManager() {
+        return homeManager;
+    }
+
+    public WarpManager getWarpManager() {
+        return warpManager;
+    }
+
+    public RewardManager getRewardManager() {
+        return rewardManager;
+    }
+
+    public NpcManager getNpcManager() {
+        return npcManager;
+    }
+
     @Override
     public List<Class<? extends YamlStaticConfig>> getSettings() {
         return Collections.singletonList(Settings.class);
     }
 
-    private void cleanBeforeReload() {
-        stopTasks(playerTask);
-        stopTasks(trailTask);
-        stopTasks(saveTask);
-    }
-
-    private void stopTasks(final BukkitRunnable task) {
-        if (task != null) {
-            try {
-                task.cancel();
-            } catch (final IllegalStateException ignored) {
-            }
-        }
-    }
-
     @Override
     public void onPluginStop() {
-        cleanBeforeReload();
-        VRNPlayer p;
-        for (final Player pl : Bukkit.getOnlinePlayers()) {
-            p = new VRNPlayer(pl);
-            p.save();
-        }
-        //homes.saveAll();
-        //warps.saveAll();
+        PlayerManager.save();
     }
 
     @CommandHook("vrn")

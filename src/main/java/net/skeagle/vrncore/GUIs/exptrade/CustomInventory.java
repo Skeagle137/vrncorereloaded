@@ -1,14 +1,17 @@
 package net.skeagle.vrncore.GUIs.exptrade;
 
-import net.skeagle.vrncore.api.util.ItemUtil;
+import net.skeagle.vrncore.utils.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.color;
+import static net.skeagle.vrncore.utils.VRNUtil.color;
 
 public abstract class CustomInventory {
 
@@ -34,7 +37,7 @@ public abstract class CustomInventory {
     }
 
     protected void setItem(final int slot, final ItemStack stack, final InvAction action, final String name, final String... lore) {
-        ItemUtil.Builder item = ItemUtil.genItem(stack).name(name);
+        final ItemUtil.Builder item = ItemUtil.genItem(stack).name(name);
         if (lore.length > 0)
             item.lore(Arrays.asList(lore));
         inv.setItem(slot, item.build());

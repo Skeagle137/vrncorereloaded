@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class ExpTradeGUI extends CustomInventory {
 
@@ -35,7 +35,7 @@ public class ExpTradeGUI extends CustomInventory {
         }
         final int exp = p.getLevel();
         final float points = p.getExp();
-        DecimalFormat df = new DecimalFormat("##.00");
+        final DecimalFormat df = new DecimalFormat("##.00");
         setItem(17, new ItemStack(Material.MAP), player -> {}, "&l&oStats", "&9-----------------------------------------",
                 "&eCurrent Exp level: &6" + exp,
                 "&eCurrent next level progress: &6" + df.format(points) + "%",

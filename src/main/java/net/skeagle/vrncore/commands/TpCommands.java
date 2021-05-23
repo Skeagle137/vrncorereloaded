@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.api.util.VRNUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.misc.EventListener;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class TpCommands {
 
@@ -47,7 +47,7 @@ public class TpCommands {
     @CommandHook("top")
     public void onTop(final Player player) {
         final int y;
-        final Block b = VRNUtil.getBlockExact(player.getLocation());
+        final Block b = VRNUtil.getStandingBlock(player.getLocation());
         if (b != null)
             y = player.getWorld().getHighestBlockYAt(b.getLocation());
         else
@@ -147,7 +147,7 @@ public class TpCommands {
 
     }
 
-    public void sayTp(final Player player) {
+    private void sayTp(final Player player) {
         say(player, Messages.msg("teleporting"));
     }
 
@@ -212,7 +212,7 @@ public class TpCommands {
         }
 
         public void DelTPATimer(final Player player, final Player target) {
-            tasks.put(player.getUniqueId(), Task.syncDelayed(VRNcore.getInstance(), () -> DelRequest(player, target, true), 20 * 120));
+            tasks.put(player.getUniqueId(), Task.syncDelayed(() -> DelRequest(player, target, true), 20 * 120));
         }
 
         private static void DelTask(final Player p) {

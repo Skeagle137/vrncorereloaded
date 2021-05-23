@@ -3,10 +3,8 @@ package net.skeagle.vrncore.commands;
 import net.minecraft.server.v1_16_R3.EntityArmorStand;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
 import net.skeagle.vrncore.GUIs.exptrade.ExpTradeGUI;
-import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.api.util.VRNUtil;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.utils.storage.npc.NPCResource;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.itemutils.ItemUtils;
@@ -22,7 +20,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -30,8 +27,8 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.color;
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class MiscCommands {
 
@@ -43,7 +40,7 @@ public class MiscCommands {
                 if (!stand.getPassengers().isEmpty()) {
                     final EntityArmorStand entitystand = ((CraftArmorStand) stand).getHandle();
                     entitystand.yaw = stand.getPassengers().get(0).getLocation().getYaw();
-                    if (VRNUtil.getBlockExact(stand.getLocation().add(0, 1.7, 0)) == null) {
+                    if (VRNUtil.getStandingBlock(stand.getLocation().add(0, 1.7, 0)) == null) {
                         final PlayerSitUtil p = PlayerSitUtil.getPlayer((Player) stand.getPassengers().get(0));
                         p.setSitting(false);
                     }
@@ -51,22 +48,19 @@ public class MiscCommands {
             }
         }, 0, 1);
 
-        new EventListener<>(VRNcore.getInstance(), PlayerDeathEvent.class,
-                e -> handleSit(e.getEntity()));
+        new EventListener<>(PlayerDeathEvent.class, e ->
+                handleSit(e.getEntity()));
 
-        new EventListener<>(VRNcore.getInstance(), PlayerQuitEvent.class,
-                e -> handleSit(e.getPlayer()));
+        new EventListener<>(PlayerQuitEvent.class, e ->
+                handleSit(e.getPlayer()));
 
-        new EventListener<>(VRNcore.getInstance(), PlayerTeleportEvent.class,
-                e -> handleSit(e.getPlayer()));
+        new EventListener<>(PlayerTeleportEvent.class, e ->
+                handleSit(e.getPlayer()));
 
-        new EventListener<>(VRNcore.getInstance(), PlayerArmorStandManipulateEvent.class, e -> {
+        new EventListener<>(PlayerArmorStandManipulateEvent.class, e -> {
             if (PlayerSitUtil.containsStand(e.getRightClicked()))
                 e.setCancelled(true);
         });
-
-        new EventListener<>(VRNcore.getInstance(), PlayerJoinEvent.class,
-                e -> NPCResource.getInstance().LoadNPCsForPlayer(e.getPlayer()));
     }
 
     @CommandHook("craft")
@@ -88,7 +82,7 @@ public class MiscCommands {
         final PlayerSitUtil p = PlayerSitUtil.getPlayer(player);
         if (p.isSitting())
             p.setSitting(false);
-        else if (Math.abs(player.getVelocity().getY()) < 0.5 && VRNUtil.getBlockExact(player.getLocation()) != null)
+        else if (Math.abs(player.getVelocity().getY()) < 0.5 && VRNUtil.getStandingBlock(player.getLocation()) != null)
             p.setSitting(true);
         else
             say(player, Messages.msg("sitAir"));

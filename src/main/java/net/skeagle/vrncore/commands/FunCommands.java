@@ -3,7 +3,8 @@ package net.skeagle.vrncore.commands;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_16_R3.*;
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.api.util.VRNUtil;
+import net.skeagle.vrncore.utils.Skin;
+import net.skeagle.vrncore.utils.SkinUtil;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -14,7 +15,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.Collections;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class FunCommands {
 
@@ -62,7 +63,7 @@ public class FunCommands {
 
     @CommandHook("skin")
     public void onSkin(final Player player, final String name) {
-        final String[] skin = VRNUtil.getSkin(name);
+        final Skin skin = SkinUtil.getSkin(name);
         if (skin == null) {
             say(player, "&cThe skin could not be retrieved. Likely there is no player with this name.");
             return;
@@ -70,7 +71,7 @@ public class FunCommands {
         final EntityPlayer ep = ((CraftPlayer) player).getHandle();
         final Property property = ep.getProfile().getProperties().get("textures").iterator().next();
         ep.getProfile().getProperties().remove("textures", property);
-        ep.getProfile().getProperties().put("textures", new Property("textures", skin[0], skin[1]));
+        ep.getProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
 
         final EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
         final Location loc = player.getLocation().clone();

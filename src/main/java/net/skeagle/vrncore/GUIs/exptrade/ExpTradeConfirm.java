@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 class ExpTradeConfirm extends CustomInventory {
 

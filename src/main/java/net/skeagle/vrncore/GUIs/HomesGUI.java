@@ -1,8 +1,10 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.api.util.ItemUtil;
-import net.skeagle.vrncore.api.util.VRNUtil;
-import net.skeagle.vrncore.utils.storage.homes.HomeManager;
+import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.homes.Home;
+import net.skeagle.vrncore.utils.ItemUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.commandmanager.Messages;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,43 +17,41 @@ import org.mineacademy.fo.menu.button.ButtonMenu;
 import org.mineacademy.fo.remain.CompMaterial;
 import org.mineacademy.fo.remain.CompSound;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import java.util.stream.Collectors;
 
-public class HomesGUI extends MenuPagged<String> {
+import static net.skeagle.vrncore.utils.VRNUtil.say;
+
+public class HomesGUI extends MenuPagged<Home> {
 
     private final Player target;
 
     public HomesGUI(final Player target) {
-        super(HomeManager.getInstance().getHomeNames(target));
+        super(VRNcore.getInstance().getHomeManager().getHomes().stream().filter(h -> h.getOwner() == target.getUniqueId()).collect(Collectors.toList()));
         setTitle("Viewing " + target.getDisplayName() + "&r's " + "homes");
         this.target = target;
     }
 
     @Override
-    protected ItemStack convertToItemStack(final String s) {
-        return ItemUtil.genItem(getIcon(s)).name("&7" + s).build();
+    protected ItemStack convertToItemStack(final Home h) {
+        return ItemUtil.genItem(getIcon(h)).name("&7" + h.getName()).build();
     }
 
     @Override
-    protected void onPageClick(final Player p, final String s, final ClickType click) {
+    protected void onPageClick(final Player p, final Home h, final ClickType click) {
         if (click.isLeftClick()) {
             p.closeInventory();
-            say(p, "Teleporting...");
-            p.teleport(HomeManager.getInstance().getHome(s, target).getLocation());
+            say(p, Messages.msg("teleporting"));
+            p.teleport(h.getLocation());
         }
         if (click.isRightClick()) {
-            final String perm;
-            if (!HomeManager.getInstance().getHome(s, target).getOwner().equals(p.getUniqueId()))
-                perm = "vrn.delhome.others";
-            else
-                perm = "vrn.delhome.self";
+            final String perm = "vrn.delhome." + (h.getOwner() != target.getUniqueId() ? "others" : "self");
             if (!p.hasPermission(perm)) {
                 p.closeInventory();
                 say(p, VRNUtil.noperm);
                 return;
             }
             CompSound.NOTE_PLING.play(p.getLocation(), 5f, 0.5f);
-            new HomesGUI.DeleteConfirm(target, s).displayTo(p);
+            new HomesGUI.DeleteConfirm(target, h).displayTo(p);
         }
     }
 
@@ -66,7 +66,7 @@ public class HomesGUI extends MenuPagged<String> {
         private final Button confirm;
         private final Button info;
 
-        private DeleteConfirm(final Player target, final String s) {
+        private DeleteConfirm(final Player target, final Home h) {
             super(null);
             setSize(9);
             setTitle("&c&lConfirm delete?");
@@ -75,9 +75,9 @@ public class HomesGUI extends MenuPagged<String> {
             confirm = new Button() {
                 @Override
                 public void onClickedInMenu(final Player p, final Menu menu, final ClickType clickType) {
-                    HomeManager.getInstance().delHome(s, target);
+                    VRNcore.getInstance().getHomeManager().deleteHome(h);
                     p.closeInventory();
-                    say(p, "&7Home &a" + s + "&7 successfully deleted.");
+                    say(p, "&7Home &a" + h.getName() + "&7 successfully deleted.");
                 }
 
                 @Override
@@ -100,8 +100,6 @@ public class HomesGUI extends MenuPagged<String> {
                             "&eAre you sure you want to",
                             "&edelete this home?").build();
                 }
-
-
             };
         }
 
@@ -126,8 +124,8 @@ public class HomesGUI extends MenuPagged<String> {
         }
     }
 
-    private Material getIcon(final String s) {
-        final Block b = VRNUtil.getBlockExact(HomeManager.getInstance().getLocationFromName(target, s));
+    private Material getIcon(final Home h) {
+        final Block b = VRNUtil.getStandingBlock(h.getLocation());
         return b != null ? b.getType() : Material.BARRIER;
     }
 }

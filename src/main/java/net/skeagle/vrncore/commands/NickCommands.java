@@ -1,14 +1,14 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrncore.api.player.VRNPlayer;
+import net.skeagle.vrncore.utils.VRNPlayer;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.color;
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class NickCommands {
 

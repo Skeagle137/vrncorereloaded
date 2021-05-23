@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.api.util.ItemUtil;
+import net.skeagle.vrncore.utils.ItemUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -9,7 +9,7 @@ import org.mineacademy.fo.menu.MenuPagged;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class GivePlusGUI extends MenuPagged<GivePlusMaterial> {
 

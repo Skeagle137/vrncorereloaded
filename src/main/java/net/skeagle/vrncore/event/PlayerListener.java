@@ -1,9 +1,9 @@
 package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.api.hook.HookManager;
-import net.skeagle.vrncore.api.player.VRNPlayer;
+import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrncore.utils.VRNPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
 import org.mineacademy.fo.Common;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.*;
+import static net.skeagle.vrncore.utils.VRNUtil.*;
 
 public class PlayerListener implements Listener {
 

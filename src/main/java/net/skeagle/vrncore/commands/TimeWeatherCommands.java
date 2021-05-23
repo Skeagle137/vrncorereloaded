@@ -4,7 +4,7 @@ import net.skeagle.vrnlib.commandmanager.CommandHook;
 import org.bukkit.WeatherType;
 import org.bukkit.entity.Player;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class TimeWeatherCommands {
 

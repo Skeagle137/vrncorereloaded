@@ -1,9 +1,10 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.api.util.ItemUtil;
-import net.skeagle.vrncore.api.util.VRNUtil;
-import net.skeagle.vrncore.utils.storage.warps.Warp;
-import net.skeagle.vrncore.utils.storage.warps.WarpManager;
+import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.utils.ItemUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrncore.warps.Warp;
+import net.skeagle.vrnlib.commandmanager.Messages;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -16,40 +17,36 @@ import org.mineacademy.fo.menu.button.ButtonMenu;
 import org.mineacademy.fo.remain.CompMaterial;
 import org.mineacademy.fo.remain.CompSound;
 
-import static net.skeagle.vrncore.api.util.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.say;
 
-public class WarpsGUI extends MenuPagged<String> {
+public class WarpsGUI extends MenuPagged<Warp> {
 
     public WarpsGUI() {
-        super(WarpManager.getInstance().getWarpNames());
+        super(VRNcore.getInstance().getWarpManager().getWarps());
         setTitle("Global warps list");
     }
 
     @Override
-    protected ItemStack convertToItemStack(final String s) {
-        return ItemUtil.genItem(getIcon(s)).name("&7" + s).build();
+    protected ItemStack convertToItemStack(final Warp w) {
+        return ItemUtil.genItem(getIcon(w)).name("&7" + w.getName()).build();
     }
 
     @Override
-    protected void onPageClick(final Player p, final String s, final ClickType click) {
+    protected void onPageClick(final Player p, final Warp w, final ClickType click) {
         if (click.isLeftClick()) {
             p.closeInventory();
-            say(p, "Teleporting...");
-            p.teleport(WarpManager.getInstance().getWarp(s).getLocation());
+            say(p, Messages.msg("teleporting"));
+            p.teleport(w.getLocation());
         }
         if (click.isRightClick()) {
-            String perm;
-            if (!WarpManager.getInstance().getWarp(s).getOwner().equals(p.getUniqueId()))
-                perm = "vrn.delwarp.others";
-            else
-                perm = "vrn.delwarp.self";
+            final String perm = "vrn.delwarp." + (w.getOwner() != p.getUniqueId() ? "others" : "self");
             if (!p.hasPermission(perm)) {
                 getViewer().closeInventory();
                 say(getViewer(), VRNUtil.noperm);
                 return;
             }
             CompSound.NOTE_PLING.play(p.getLocation(), 5f, 0.5f);
-            new DeleteConfirm(WarpManager.getInstance().getWarp(s)).displayTo(getViewer());
+            new DeleteConfirm(w).displayTo(getViewer());
         }
     }
 
@@ -64,7 +61,7 @@ public class WarpsGUI extends MenuPagged<String> {
         private final Button confirm;
         private final Button info;
 
-        private DeleteConfirm(Warp w) {
+        private DeleteConfirm(final Warp w) {
             super(null);
             setSize(9);
             setTitle("&c&lConfirm delete?");
@@ -73,7 +70,7 @@ public class WarpsGUI extends MenuPagged<String> {
             confirm = new Button() {
                 @Override
                 public void onClickedInMenu(final Player player, final Menu menu, final ClickType clickType) {
-                    WarpManager.getInstance().delWarp(w.getName());
+                    VRNcore.getInstance().getWarpManager().deleteWarp(w);
                     getViewer().closeInventory();
                     say(getViewer(), "&7Warp &a" + w.getName() + "&7 successfully deleted.");
                 }
@@ -122,8 +119,8 @@ public class WarpsGUI extends MenuPagged<String> {
         }
     }
 
-    private Material getIcon(final String name) {
-        final Block b = VRNUtil.getBlockExact(WarpManager.getInstance().getLocationFromName(name));
+    private Material getIcon(final Warp w) {
+        final Block b = VRNUtil.getStandingBlock(w.getLocation());
         return b != null ? b.getType() : Material.BARRIER;
     }
 }
