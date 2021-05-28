@@ -1,11 +1,11 @@
 package net.skeagle.vrncore.utils;
 
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
-import net.skeagle.vrncore.playerdata.PlayerManager;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.UUID;
 
 import static net.skeagle.vrncore.utils.VRNUtil.color;
@@ -15,18 +15,18 @@ public class VRNPlayer {
     private final PlayerData data;
     private final UUID uuid;
     private Player player;
-    private List<String> homes;
-    private List<String> warps;
 
 
     public VRNPlayer(final Player player) {
-        this.data = PlayerManager.getData(player.getUniqueId());
+        this.data = VRNcore.getInstance().getPlayerManager().getData(player.getUniqueId());
         this.uuid = player.getUniqueId();
         this.player = player;
+        if (data.getLastLocation() == null)
+            data.setLastLocation(player.getLocation());
     }
 
     public VRNPlayer(final UUID uuid) {
-        this.data = PlayerManager.getData(uuid);
+        this.data = VRNcore.getInstance().getPlayerManager().getData(uuid);
         this.uuid = uuid;
     }
 
@@ -48,6 +48,22 @@ public class VRNPlayer {
             listname = HookManager.format(listname, player);
         }
         player.setPlayerListName(color(listname));
+    }
+
+    public Particle getArrowTrail() {
+        return data.getArrowtrail();
+    }
+
+    public void setArrowTrail(final Particle particle) {
+        data.setArrowtrail(particle);
+    }
+
+    public Particle getPlayerTrail() {
+        return data.getPlayertrail();
+    }
+
+    public void setPlayerTrail(final Particle particle) {
+        data.setPlayertrail(particle);
     }
 
     public boolean isGodmode() {

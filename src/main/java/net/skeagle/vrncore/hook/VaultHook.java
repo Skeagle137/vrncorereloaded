@@ -1,9 +1,8 @@
 package net.skeagle.vrncore.hook;
 
 import net.milkbowl.vault.chat.Chat;
-import net.skeagle.vrncore.playerdata.PlayerData;
-import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrncore.utils.VRNPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -54,10 +53,10 @@ public final class VaultHook {
     }
 
     public String format(final Player p) {
-        final PlayerData data = PlayerManager.getData(p.getUniqueId());
+        final VRNPlayer vrnPlayer = new VRNPlayer(p);
         String s = Settings.Chat.FORMAT;
         s = s.replaceAll("%prefix", getPrefix(p));
-        s = s.replaceAll("%player", data.getNickname() != null ? data.getNickname() + "&r" : p.getName());
+        s = s.replaceAll("%player", vrnPlayer.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
         s = s.replaceAll("%world", p.getWorld().getName());
         s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
@@ -65,9 +64,9 @@ public final class VaultHook {
     }
 
     public String format(String s, final Player p) {
-        final PlayerData data = PlayerManager.getData(p.getUniqueId());
+        final VRNPlayer vrnPlayer = new VRNPlayer(p);
         s = s.replaceAll("%prefix", getPrefix(p));
-        s = s.replaceAll("%player", data.getNickname() != null ? data.getNickname() + "&r" : p.getName());
+        s = s.replaceAll("%player", vrnPlayer.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
         s = s.replaceAll("%world", p.getWorld().getName());
         s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");

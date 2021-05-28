@@ -1,6 +1,5 @@
 package net.skeagle.vrncore;
 
-import net.md_5.bungee.api.ChatColor;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.event.*;
 import net.skeagle.vrncore.homes.HomeManager;
@@ -10,8 +9,6 @@ import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.timerewards.RewardManager;
-import net.skeagle.vrncore.utils.TaskSetup;
-import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
 import net.skeagle.vrnlib.commandmanager.ArgType;
@@ -24,7 +21,6 @@ import org.bukkit.entity.EntityType;
 import org.mineacademy.fo.plugin.SimplePlugin;
 import org.mineacademy.fo.settings.YamlStaticConfig;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,11 +29,12 @@ import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public final class VRNcore extends SimplePlugin {
 
+    private PlayerManager playerManager;
     private HomeManager homeManager;
     private WarpManager warpManager;
     private RewardManager rewardManager;
     private NpcManager npcManager;
-    private Connection conn;
+    private SQLHelper db;
 
     @Override
     public void onPluginStart() {
@@ -47,21 +44,21 @@ public final class VRNcore extends SimplePlugin {
         //hooks
         HookManager.loadHooks();
         //database setup
-        conn = SQLHelper.openSQLite(this.getDataFolder().toPath().resolve("vrn_data.db"));
-        final SQLHelper sql = new SQLHelper(conn);
-        sql.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, arrowtrail STRING, playertrail STRING, " +
+        db = new SQLHelper(SQLHelper.openSQLite(this.getDataFolder().toPath().resolve("vrn_data.db")));
+        db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, arrowtrail STRING, playertrail STRING, " +
                 "vanished BOOLEAN, muted BOOLEAN, godmode BOOLEAN, lastOnline BIGINT, lastLocation STRING, timeplayed BIGINT);");
-        sql.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
-        sql.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
-        sql.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
+        db.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
+        db.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
+        db.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
                 "location STRING, skin STRING, rotateHead BOOLEAN);");
-        sql.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, type STRING, timeRequired BIGINT, cost BIGINT);");
+        db.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, type STRING, timeRequired BIGINT, cost BIGINT);");
         //managers and tasks
+        playerManager = new PlayerManager();
         homeManager = new HomeManager();
         warpManager = new WarpManager();
         rewardManager = new RewardManager();
         npcManager = new NpcManager();
-        new TaskSetup();
+        new Tasks();
         //commands
         new CommandParser(this.getResource("commands.txt"))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
@@ -77,16 +74,6 @@ public final class VRNcore extends SimplePlugin {
         registerEvents(new AFKListener());
         registerEvents(new ArrowListener());
         registerEvents(new ServerListListener());
-        //enabled
-        VRNUtil.log(ChatColor.GREEN +
-                        "-------------------------------",
-                ChatColor.GREEN + "\t\t  -***************-",
-                ChatColor.GREEN + "\t\t  | VRNcore " + this.getDescription().getVersion() + " |",
-                ChatColor.GREEN + "\t\t  |***************|",
-                ChatColor.GREEN + "\t\t  |   by Skeagle  |",
-                ChatColor.GREEN + "\t\t  -***************-",
-                ChatColor.GREEN +
-                        "-------------------------------");
     }
 
     public static VRNcore getInstance() {
@@ -94,7 +81,11 @@ public final class VRNcore extends SimplePlugin {
     }
 
     public SQLHelper getDB() {
-        return new SQLHelper(conn);
+        return db;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
     }
 
     public HomeManager getHomeManager() {
@@ -120,7 +111,7 @@ public final class VRNcore extends SimplePlugin {
 
     @Override
     public void onPluginStop() {
-        PlayerManager.save();
+        playerManager.save();
     }
 
     @CommandHook("vrn")

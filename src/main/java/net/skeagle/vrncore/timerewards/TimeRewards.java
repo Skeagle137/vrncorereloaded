@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.timerewards;
 
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -8,15 +9,12 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftFirework;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.mineacademy.fo.Common;
-import org.mineacademy.fo.remain.Remain;
 import org.mineacademy.fo.settings.YamlConfig;
 
 import java.util.List;
 import java.util.Random;
 
-import static net.skeagle.vrncore.utils.VRNUtil.sayActionBar;
-import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
+import static net.skeagle.vrncore.utils.VRNUtil.*;
 
 public class TimeRewards extends YamlConfig {
     private String permission;
@@ -57,17 +55,17 @@ public class TimeRewards extends YamlConfig {
         if (use_actionbar)
             sayActionBar(p, actionmessage);
         if (enable_title)
-            Remain.sendTitle(p, 0, 6 * 20, 2 * 20, title, subtitle);
+            p.sendTitle(color(title), color(subtitle), 5, 120, 40);
         for (String command : commands) {
             command = command.replaceAll("%player%", p.getName());
             final String finalCommand = command;
-            Common.runLater(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand));
+            Task.syncDelayed(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand));
         }
         if (fireworks) {
-            Common.runLater(() -> {
+            Task.syncDelayed(() -> {
                 p.setInvulnerable(true);
                 sendFirework(p.getLocation().add(0, 1, 0), buildFireworkEffect());
-                Common.runLater(1, () -> p.setInvulnerable(false));
+                Task.syncDelayed(() -> p.setInvulnerable(false), 1);
             });
         }
     }

@@ -4,6 +4,7 @@ import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.VRNPlayer;
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -12,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
-import org.mineacademy.fo.Common;
 
 import static net.skeagle.vrncore.utils.VRNUtil.*;
 
@@ -51,7 +51,7 @@ public class PlayerListener implements Listener {
         e.getPlayer().setPlayerListName(color(listname != null ? listname : name));
         if (Settings.Joining.ENABLED) {
             e.setJoinMessage(color(Settings.Joining.JOIN.replaceAll("%player%", name)));
-            Common.runLater(() -> say(e.getPlayer(), Settings.Joining.RETURN.replaceAll("%player%", name)));
+            Task.syncDelayed(() -> say(e.getPlayer(), Settings.Joining.RETURN.replaceAll("%player%", name)));
         }
     }
 

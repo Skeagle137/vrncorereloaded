@@ -1,9 +1,8 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.playerdata.PlayerData;
-import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.trail.VRNParticle;
 import net.skeagle.vrncore.utils.ItemUtil;
+import net.skeagle.vrncore.utils.VRNPlayer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -34,32 +33,32 @@ public class TrailsGUI extends Menu {
         ResetButton = new Button() {
             @Override
             public void onClickedInMenu(final Player p, final Menu menu, final ClickType click) {
-                final PlayerData data = PlayerManager.getData(player.getUniqueId());
+                final VRNPlayer player = new VRNPlayer(p);
                 if (click.isLeftClick()) {
-                    if (data.getPlayertrail() == null) {
+                    if (player.getPlayerTrail() == null) {
                         animateTitle("&cNo trail to reset");
                         return;
                     }
                     animateTitle("&5Player trail reset");
-                    data.setPlayertrail(null);
+                    player.setPlayerTrail(null);
                 }
                 if (click.isRightClick()) {
-                    if (data.getArrowtrail() == null) {
+                    if (player.getArrowTrail() == null) {
                         animateTitle("&cNo trail to reset");
                         return;
                     }
                     animateTitle("&5Arrow trail reset");
-                    data.setArrowtrail(null);
+                    player.setArrowTrail(null);
                 }
                 if (click.isShiftClick() && click.isLeftClick()) {
-                    if (data.getPlayertrail() == null) {
+                    if (player.getPlayerTrail() == null) {
                         animateTitle("&cNo player trail active to configure");
                         return;
                     }
                     //new TrailsGUI.OptionsMenu(false).displayTo(p);
                 }
                 if (click.isShiftClick() && click.isRightClick()) {
-                    if (data.getArrowtrail() == null) {
+                    if (player.getArrowTrail() == null) {
                         animateTitle("&cNo arrow trail active to configure");
                         return;
                     }
@@ -70,17 +69,17 @@ public class TrailsGUI extends Menu {
 
             @Override
             public ItemStack getItem() {
-                final PlayerData data = PlayerManager.getData(player.getUniqueId());
+                final VRNPlayer player = new VRNPlayer(p);
                 return ItemUtil.genItem(Material.REDSTONE,
                         "&6&lReset trails",
                         "",
-                        "&7Player trail: " + (data.getPlayertrail() != null ? "&a" + data.getPlayertrail() : "&cnone"),
-                        "&7Arrow trail: " + (data.getArrowtrail() != null ? "&a" + data.getArrowtrail() : "&cnone"),
+                        "&7Player trail: " + (player.getPlayerTrail() != null ? "&a" + player.getPlayerTrail() : "&cnone"),
+                        "&7Arrow trail: " + (player.getArrowTrail() != null ? "&a" + player.getArrowTrail() : "&cnone"),
                         "&bLeft click &7to reset player trail.",
                         "&aShift left click &7to edit player trail.",
                         "&dRight click &7to reset arrow trail.",
                         "&9Shift right click &7to edit arrow trail.")
-                        .glint(data.getArrowtrail() != null || data.getPlayertrail() != null).build();
+                        .glint(player.getArrowTrail() != null || player.getPlayerTrail() != null).build();
             }
         };
         ArrowButton = new ButtonMenu(new ArrowTrailSelection(player), CompMaterial.ARROW,
@@ -156,14 +155,14 @@ public class TrailsGUI extends Menu {
 
         @Override
         protected ItemStack convertToItemStack(final VRNParticle particle) {
-            final PlayerData data = PlayerManager.getData(player.getUniqueId());
+            final VRNPlayer vrnPlayer = new VRNPlayer(player);
 
             if (getViewer().hasPermission("vrn.arrowtrails." + particle.name().toLowerCase())) {
                 return ItemUtil.genItem(particle.getMaterial(),
                         "&6" + particle.getParticleName(),
                         "", "&7Click to select",
                         "&r&7this arrow trail.")
-                        .glint(data.getArrowtrail() != null && data.getArrowtrail() == particle.getParticle()).build();
+                        .glint(vrnPlayer.getArrowTrail() != null && vrnPlayer.getArrowTrail() == particle.getParticle()).build();
             }
             return ItemUtil.genItem(Material.GRAY_DYE,
                     "&4???",
@@ -175,8 +174,8 @@ public class TrailsGUI extends Menu {
         protected void onPageClick(final Player p, final VRNParticle particle, final ClickType click) {
             if (getViewer().hasPermission("vrn.arrowtrails." + particle.name().toLowerCase())) {
                 animateTitle("&2Arrow trail successfully set.");
-                final PlayerData data = PlayerManager.getData(player.getUniqueId());
-                data.setArrowtrail(particle.getParticle());
+                final VRNPlayer vrnPlayer = new VRNPlayer(player);
+                vrnPlayer.setArrowTrail(particle.getParticle());
             } else
                 animateTitle("&4You cannot use this trail.");
             restartMenu();
@@ -246,14 +245,14 @@ public class TrailsGUI extends Menu {
 
         @Override
         protected ItemStack convertToItemStack(final VRNParticle particle) {
-            final PlayerData data = PlayerManager.getData(player.getUniqueId());
+            final VRNPlayer vrnPlayer = new VRNPlayer(player);
 
             if (getViewer().hasPermission("vrn.playertrails." + particle.name().toLowerCase())) {
                 return ItemUtil.genItem(particle.getMaterial(),
                         "&6" + particle.getParticleName(),
                         "", "&7Click to select",
                         "&r&7this player trail.")
-                        .glint(data.getPlayertrail() != null && data.getPlayertrail() == particle.getParticle()).build();
+                        .glint(vrnPlayer.getPlayerTrail() != null && vrnPlayer.getPlayerTrail() == particle.getParticle()).build();
             }
             return ItemUtil.genItem(Material.GRAY_DYE,
                     "&4???",
@@ -265,8 +264,8 @@ public class TrailsGUI extends Menu {
         protected void onPageClick(final Player p, final VRNParticle particle, final ClickType click) {
             if (getViewer().hasPermission("vrn.playertrails." + particle.name().toLowerCase())) {
                 animateTitle("&2Player trail successfully set.");
-                final PlayerData data = PlayerManager.getData(player.getUniqueId());
-                data.setPlayertrail(particle.getParticle());
+                final VRNPlayer vrnPlayer = new VRNPlayer(player);
+                vrnPlayer.setPlayerTrail(particle.getParticle());
             } else
                 animateTitle("&4You cannot use this trail.");
             restartMenu();

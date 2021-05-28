@@ -116,7 +116,7 @@ public class PlayerData {
             db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
             db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, vanished, muted, godmode, " +
                             "lastOnline, lastLocation, timeplayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    uuid.toString(), nickname, arrowtrail.toString(), playertrail.toString(), vanished, muted, godmode,
+                    uuid.toString(), nickname, arrowtrail, playertrail, vanished, muted, godmode,
                     last_online, VRNUtil.LocationSerialization.serialize(last_location), timeplayed);
         });
     }

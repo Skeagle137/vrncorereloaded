@@ -40,12 +40,6 @@ public class WarpManager {
         return warps.stream().filter(w -> w.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
-    public List<String> getWarpNames() {
-        final List<String> names = new ArrayList<>();
-        warps.forEach(w -> names.add(w.getName()));
-        return names;
-    }
-
     public void deleteWarp(final Warp warp) {
         final SQLHelper db = VRNcore.getInstance().getDB();
         db.execute("DELETE FROM warps WHERE name = ? AND owner = ?", warp.getName(), warp.getOwner());

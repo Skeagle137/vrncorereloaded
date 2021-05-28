@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.trail.VRNParticle;
+import net.skeagle.vrncore.utils.VRNPlayer;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -17,8 +17,10 @@ public class ArrowListener implements Listener {
 
     @EventHandler
     public void onArrowShot(final ProjectileLaunchEvent e) {
+        final VRNPlayer vrnPlayer;
         if (e.getEntity().getShooter() instanceof Player && e.getEntity() instanceof Arrow) {
-            final Particle particle = PlayerManager.getData(((Player) e.getEntity().getShooter()).getUniqueId()).getArrowtrail();
+            vrnPlayer = new VRNPlayer((Player) e.getEntity());
+            final Particle particle = vrnPlayer.getArrowTrail();
             if (particle != null) {
                 final String perm = VRNParticle.getNameFromParticle(particle);
                 if (perm != null) {
@@ -31,13 +33,14 @@ public class ArrowListener implements Listener {
                                     return;
                                 }
                                 if (particle != Particle.REDSTONE)
-                                    ((Player) e.getEntity().getShooter()).getWorld().spawnParticle(particle, e.getEntity().getLocation(),1);
+                                    ((Player) e.getEntity().getShooter()).getWorld().spawnParticle(particle, e.getEntity().getLocation(), 1);
                                 else
                                     spawnRedstone(e.getEntity().getLocation());
                             }
                         }.runTaskTimer(VRNcore.getInstance(), 0, 1);
-                    } else
-                        PlayerManager.getData(((Player) e.getEntity().getShooter()).getUniqueId()).setArrowtrail(null);
+                    } else {
+                        vrnPlayer.setArrowTrail(null);
+                    }
                 }
             }
         }
