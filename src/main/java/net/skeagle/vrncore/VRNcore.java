@@ -1,14 +1,17 @@
 package net.skeagle.vrncore;
 
 import net.skeagle.vrncore.commands.*;
-import net.skeagle.vrncore.event.*;
+import net.skeagle.vrncore.event.AFKListener;
+import net.skeagle.vrncore.event.ArrowListener;
+import net.skeagle.vrncore.event.PlayerListener;
+import net.skeagle.vrncore.event.ServerListListener;
 import net.skeagle.vrncore.homes.HomeManager;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.npc.Npc;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerManager;
+import net.skeagle.vrncore.rewards.RewardManager;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.timerewards.RewardManager;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
 import net.skeagle.vrnlib.commandmanager.ArgType;
@@ -69,8 +72,6 @@ public final class VRNcore extends SimplePlugin {
                 new NickCommands(), new NpcCommands());
         //listeners
         registerEvents(new PlayerListener());
-        registerEvents(new InvCloseListener());
-        registerEvents(new InvClickListener());
         registerEvents(new AFKListener());
         registerEvents(new ArrowListener());
         registerEvents(new ServerListListener());

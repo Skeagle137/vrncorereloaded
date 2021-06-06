@@ -58,7 +58,7 @@ public class AdminCommands {
 
     @CommandHook("giveplus")
     public void onGivePlus(final Player player) {
-        new GivePlusGUI().displayTo(player);
+        new GivePlusGUI(player);
     }
 
     @CommandHook("ban")

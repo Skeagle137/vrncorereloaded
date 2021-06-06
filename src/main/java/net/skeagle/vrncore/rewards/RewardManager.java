@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.timerewards;
+package net.skeagle.vrncore.rewards;
 
 import org.mineacademy.fo.FileUtil;
 
@@ -14,10 +14,10 @@ public class RewardManager {
         return instance;
     }
 
-    private final List<TimeRewards> rewards = new ArrayList<>();
+    private final List<TimedRewards> rewards = new ArrayList<>();
 
-    public TimeRewards getReward(final String time) {
-        for (final TimeRewards reward : rewards)
+    public TimedRewards getReward(final String time) {
+        for (final TimedRewards reward : rewards)
             if (reward.getName().equals(time))
                 return reward;
         return null;
@@ -27,7 +27,7 @@ public class RewardManager {
         rewards.clear();
 
         for (final File file : FileUtil.getFiles("rewards", "yml")) {
-            final TimeRewards reward = new TimeRewards(file.getName().replace(".yml", ""));
+            final TimedRewards reward = new TimedRewards(file.getName().replace(".yml", ""));
             rewards.add(reward);
         }
     }

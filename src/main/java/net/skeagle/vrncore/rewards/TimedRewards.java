@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.timerewards;
+package net.skeagle.vrncore.rewards;
 
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
@@ -16,7 +16,7 @@ import java.util.Random;
 
 import static net.skeagle.vrncore.utils.VRNUtil.*;
 
-public class TimeRewards extends YamlConfig {
+public class TimedRewards extends YamlConfig {
     private String permission;
     private Boolean use_permission;
     private List<String> commands;
@@ -28,7 +28,7 @@ public class TimeRewards extends YamlConfig {
     private String title;
     private String subtitle;
 
-    TimeRewards(final String rewardTime) {
+    TimedRewards(final String rewardTime) {
         setHeader("This is the time rewards file.",
                 "Here you can set what events happen on each reward to make each one feel like a true accomplishment.\n\n");
         loadConfiguration("reward-template.yml", "rewards/" + rewardTime + (!rewardTime.endsWith(".yml") ? ".yml" : ""));

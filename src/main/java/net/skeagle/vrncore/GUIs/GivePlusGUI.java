@@ -1,38 +1,45 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.utils.ItemUtil;
+import net.skeagle.vrnlib.inventorygui.InventoryGUI;
+import net.skeagle.vrnlib.inventorygui.ItemButton;
+import net.skeagle.vrnlib.itemutils.ItemBuilder;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.mineacademy.fo.menu.MenuPagged;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
-public class GivePlusGUI extends MenuPagged<GivePlusMaterial> {
+public class GivePlusGUI {
 
-    public GivePlusGUI() {
-        super(null, new ArrayList<>(Arrays.asList(GivePlusMaterial.values())));
-        setSize(9);
-        setTitle("&9&l/give+");
+    public GivePlusGUI(final Player player) {
+        final InventoryGUI gui = new InventoryGUI(9, "&9&l/give+");
+        for (int i = 0; i < GivePlusMaterial.values().length; i++) {
+            final GivePlusMaterial value = GivePlusMaterial.values()[i];
+            gui.addButton(ItemButton.create(new ItemBuilder(value.mat).setName("&7" + value.name), e -> {
+                player.closeInventory();
+                player.getInventory().addItem(new ItemStack(value.mat));
+                say(player, "You have received your item(s)");
+            }), i);
+        }
+        gui.open(player);
     }
 
-    @Override
-    protected ItemStack convertToItemStack(final GivePlusMaterial mat) {
-        return ItemUtil.genItem(mat.getMaterial()).name("&7" + mat.getName()).build();
-    }
+    private enum GivePlusMaterial {
+        BARRIER(Material.BARRIER, "Barrier"),
+        CMDBLOCK(Material.COMMAND_BLOCK, "Command Block (Normal)"),
+        CMD_CHAIN(Material.CHAIN_COMMAND_BLOCK, "Command Block (Chain)"),
+        CMD_REPEAT(Material.REPEATING_COMMAND_BLOCK, "Command Block (Repeat)"),
+        SPAWNER(Material.SPAWNER, "Spawner"),
+        STRUCT_VOID(Material.STRUCTURE_VOID, "Structure Void"),
+        STRUCT_BLOCK(Material.STRUCTURE_BLOCK, "Structure Block"),
+        DEBUG_STICK(Material.DEBUG_STICK, "Debug Stick");
 
-    @Override
-    protected void onPageClick(final Player p, final GivePlusMaterial mat, final ClickType click) {
-        p.closeInventory();
-        p.getInventory().addItem(ItemUtil.genItem(mat.getMaterial()).build());
-        say(p, "You have received your item(s)");
-    }
+        private final Material mat;
+        private final String name;
 
-    @Override
-    protected String[] getInfo() {
-        return null;
+        GivePlusMaterial(final Material mat, final String name) {
+            this.mat = mat;
+            this.name = name;
+        }
     }
 }

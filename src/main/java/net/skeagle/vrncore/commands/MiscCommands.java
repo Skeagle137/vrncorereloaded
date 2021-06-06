@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.commands;
 
 import net.minecraft.server.v1_16_R3.EntityArmorStand;
+import net.skeagle.vrncore.GUIs.ExpTradeGUI;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
-import net.skeagle.vrncore.GUIs.exptrade.ExpTradeGUI;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
@@ -70,11 +70,8 @@ public class MiscCommands {
 
     @CommandHook("trails")
     public void onTrails(final Player player, final Player target) {
-        if (target != null) {
-            new TrailsGUI(target).displayTo(player);
-            return;
-        }
-        new TrailsGUI(player).displayTo(player);
+        final Player trailsPlayer = target != null && target != player ? target : player;
+        new TrailsGUI(player, trailsPlayer);
     }
 
     @CommandHook("sit")
@@ -90,8 +87,7 @@ public class MiscCommands {
 
     @CommandHook("exptrade")
     public void onExpTrade(final Player player) {
-        final ExpTradeGUI exp = new ExpTradeGUI(player);
-        exp.open(player);
+        new ExpTradeGUI(player);
     }
 
     @CommandHook("rename")

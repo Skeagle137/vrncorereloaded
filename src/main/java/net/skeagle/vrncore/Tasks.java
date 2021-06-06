@@ -1,8 +1,8 @@
 package net.skeagle.vrncore;
 
+import net.skeagle.vrncore.rewards.RewardManager;
+import net.skeagle.vrncore.rewards.TimedRewards;
 import net.skeagle.vrncore.settings.Settings;
-import net.skeagle.vrncore.timerewards.RewardManager;
-import net.skeagle.vrncore.timerewards.TimeRewards;
 import net.skeagle.vrncore.trail.VRNParticle;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrncore.utils.VRNPlayer;
@@ -50,7 +50,7 @@ public class Tasks {
             for (final Player pl : Bukkit.getOnlinePlayers()) {
                 final AFKManager manager = AFKManager.getAfkManager(pl);
                 final VRNPlayer p = new VRNPlayer(pl);
-                final TimeRewards reward;
+                final TimedRewards reward;
                 long time = p.getTimePlayed();
                 if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                     time += 1;

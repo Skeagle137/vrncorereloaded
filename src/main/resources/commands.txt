@@ -382,11 +382,13 @@ warp warp:warp* {
     permission vrn.warp
     help Teleport to the specified warp.
     user player
+    hook warp
 }
 warps {
     permission vrn.warps
     help List all available warps.
     user player
+    hook warps
 }
 vrn {
     help Display plugin information and admin options.

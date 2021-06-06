@@ -44,12 +44,12 @@ public class HomeManager {
     }
 
     public Home getHome(final String name, final Player p) {
-        return homes.stream().filter(h -> h.getName().equalsIgnoreCase(name) && h.getOwner() == p.getUniqueId()).findFirst().orElse(null);
+        return homes.stream().filter(h -> h.getName().equalsIgnoreCase(name) && h.getOwner().equals(p.getUniqueId())).findFirst().orElse(null);
     }
 
     public List<String> getHomeNames(final Player p) {
         final List<String> names = new ArrayList<>();
-        homes.stream().filter(h -> h.getOwner() == p.getUniqueId()).forEach(h -> names.add(h.getName()));
+        homes.stream().filter(h -> h.getOwner().equals(p.getUniqueId())).forEach(h -> names.add(h.getName()));
         return names;
     }
 

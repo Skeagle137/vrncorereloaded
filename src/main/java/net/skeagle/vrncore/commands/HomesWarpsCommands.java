@@ -47,7 +47,7 @@ public class HomesWarpsCommands {
     public void onHomes(final Player player, final Player target) {
         final Player homesPlayer = target != null && target != player ? target : player;
         if (VRNcore.getInstance().getHomeManager().getHomeNames(player).size() >= 1) {
-            new HomesGUI(homesPlayer).displayTo(player);
+            new HomesGUI(homesPlayer).open(player);
             return;
         }
         say(player, "&c" + (player != homesPlayer ? homesPlayer.getName() + " does" : "You do") + " not have any homes available.");
@@ -85,7 +85,7 @@ public class HomesWarpsCommands {
     @CommandHook("warps")
     public void onWarps(final Player player) {
         if (VRNcore.getInstance().getWarpManager().getWarps().size() >= 1) {
-            new WarpsGUI().displayTo(player);
+            new WarpsGUI().open(player);
             return;
         }
         say(player, "&cThere are no warps available.");
