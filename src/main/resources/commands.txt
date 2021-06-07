@@ -353,6 +353,12 @@ tpall {
     user player
     hook tpall
 }
+tpcancel {
+    permission vrn.tpcancel
+    help Cancel a teleport request that you have sent.
+    user player
+    hook tpcancel
+}
 tpdeny {
     permission vrn.tpdeny
     help Deny a pending teleport request from another player.

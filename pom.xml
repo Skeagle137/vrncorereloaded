@@ -75,7 +75,7 @@
         <dependency>
             <groupId>net.skeagle</groupId>
             <artifactId>VRNLib</artifactId>
-            <version>1.1b</version>
+            <version>1.1c</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
