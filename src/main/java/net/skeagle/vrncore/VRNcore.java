@@ -3,8 +3,8 @@ package net.skeagle.vrncore;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.event.AFKListener;
 import net.skeagle.vrncore.event.ArrowListener;
+import net.skeagle.vrncore.event.MotdListener;
 import net.skeagle.vrncore.event.PlayerListener;
-import net.skeagle.vrncore.event.ServerListListener;
 import net.skeagle.vrncore.homes.HomeManager;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.npc.Npc;
@@ -14,10 +14,7 @@ import net.skeagle.vrncore.rewards.RewardManager;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
-import net.skeagle.vrnlib.commandmanager.ArgType;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
-import net.skeagle.vrnlib.commandmanager.CommandParser;
-import net.skeagle.vrnlib.commandmanager.Messages;
+import net.skeagle.vrnlib.commandmanager.*;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -71,10 +68,14 @@ public final class VRNcore extends SimplePlugin {
                 new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
                 new NickCommands(), new NpcCommands());
         //listeners
+        if (Settings.Motd.ENABLED) {
+            final List<String> motds = TextResource.load(this, "motds.txt");
+            if (!motds.isEmpty())
+                registerEvents(new MotdListener(motds));
+        }
         registerEvents(new PlayerListener());
         registerEvents(new AFKListener());
         registerEvents(new ArrowListener());
-        registerEvents(new ServerListListener());
     }
 
     public static VRNcore getInstance() {

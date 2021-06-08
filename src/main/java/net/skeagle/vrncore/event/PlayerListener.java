@@ -4,6 +4,7 @@ import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.utils.VRNPlayer;
+import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Mob;
@@ -40,7 +41,7 @@ public class PlayerListener implements Listener {
         final String name = p.getName();
         e.getPlayer().setDisplayName(name);
         if (!e.getPlayer().hasPlayedBefore() && Settings.Joining.ENABLED) {
-            e.setJoinMessage(color(Settings.Joining.WELCOME.replaceAll("%player%", name)));
+            e.setJoinMessage(Messages.msg("welcomeMsg").replaceAll("%player%", name));
             return;
         }
         String listname = null;
@@ -50,8 +51,8 @@ public class PlayerListener implements Listener {
         }
         e.getPlayer().setPlayerListName(color(listname != null ? listname : name));
         if (Settings.Joining.ENABLED) {
-            e.setJoinMessage(color(Settings.Joining.JOIN.replaceAll("%player%", name)));
-            Task.syncDelayed(() -> say(e.getPlayer(), Settings.Joining.RETURN.replaceAll("%player%", name)));
+            e.setJoinMessage(Messages.msg("joinMsg").replaceAll("%player%", name));
+            Task.syncDelayed(() -> say(e.getPlayer(), Messages.msg("returnMsg").replaceAll("%player%", name)));
         }
     }
 
@@ -63,7 +64,7 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent e) {
         final VRNPlayer p = new VRNPlayer(e.getPlayer());
         if (Settings.Joining.ENABLED)
-            e.setQuitMessage(color(Settings.Joining.QUIT.replaceAll("%player%", p.getName())));
+            e.setQuitMessage(Messages.msg("leaveMsg").replaceAll("%player%", p.getName()));
         p.save();
     }
 
@@ -84,7 +85,7 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
             say(p, "&cYou do not have permission to use the chat.");
         }
-        if (hasPerm(p, "vrn.chat.color"))
+        if (!hasPerm(p, "vrn.chat.color") && Settings.Chat.ALL_MAY_COLOR || hasPerm(p, "vrn.chat.color"))
             e.setMessage(color(e.getMessage()));
         if (!HookManager.isVaultLoaded())
             return;
@@ -114,10 +115,8 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
             e.setTarget(null);
         }
-        if (e.getEntity() instanceof Mob) {
-            final Mob mob = (Mob) e.getEntity();
-            mob.setTarget(null);
-        }
+        if (e.getEntity() instanceof Mob)
+            ((Mob) e.getEntity()).setTarget(null);
 
     }
 
@@ -138,7 +137,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void WorldChange(final PlayerChangedWorldEvent e) {
-        hasPerm(e.getPlayer(), "vrn.worldchange");
-        sayActionBar(e.getPlayer(), "&a&lCurrently in world: \"" + e.getPlayer().getWorld().getName() + ".\"");
+        if (e.getPlayer().hasPermission("vrn.worldnotify"))
+            sayActionBar(e.getPlayer(), "&a&lCurrently in world: \"" + e.getPlayer().getWorld().getName() + ".\"");
     }
 }

@@ -1,0 +1,2 @@
+this is an example motd line.
+this is a second example motd line.

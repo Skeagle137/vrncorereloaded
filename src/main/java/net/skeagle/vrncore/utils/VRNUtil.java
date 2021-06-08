@@ -3,7 +3,6 @@ package net.skeagle.vrncore.utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrnlib.VRNLib;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import org.bukkit.Bukkit;
@@ -17,7 +16,6 @@ import java.util.logging.Level;
 public final class VRNUtil {
 
     public static String noperm = color(Messages.getLoaded(VRNLib.getInstance()).get("noPermission"));
-    public static String noton = color(Settings.PREFIX + " &cThat player is not online.");
 
     public static void say(final CommandSender cs, final String... message) {
         if (cs == null) return;

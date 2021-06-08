@@ -3,3 +3,7 @@ broadcastPrefix: &8[&3&lVRN Broadcast&r&8]&b
 teleporting: Teleporting...
 teleportedAll: Teleported all players.
 sitAir: &cYou cannot sit while in the air.
+welcomeMsg: &e%player% &6has joined for the first time. Welcome, &e%player%&6!
+joinMsg: &7[&b+&7] &5%player% &dhas joined.
+leaveMsg: &7[&c-&7] &5%player% &dhas left.
+returnMsg: &dWelcome back, &5%player%&d!

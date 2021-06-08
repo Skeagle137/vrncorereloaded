@@ -2,10 +2,6 @@ Motd:
   Enabled: true
   First_Line_Static: true
   First_Line_Text: "My server"
-  Messages:
-    - "Check out our website! http://example.com"
-    - "Join the discord! http://discord.gg/example"
-    - "Now supporting the latest mc version!"
 Afk:
   Stop_Counting_Playtime: 60
   Kick_Time_In_Seconds: 3600
@@ -24,9 +20,4 @@ Rtp:
   z_origin: 0.0
 Joining:
   custom_join_leave_enabled: true
-  welcome_message: "&e%player% &6has joined for the first time. Welcome, &e%player%&6!"
-  join_message: "&7[&b+&7] &5%player% &dhas joined."
-  leave_message: "&7[&c-&7] &5%player% &dhas left."
-  return_message: "&dWelcome back, &5%player%&d!"
-Prefix: "&8[&9&lServer&8] &7"
 Version: 4
