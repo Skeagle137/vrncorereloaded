@@ -1,8 +1,8 @@
 package net.skeagle.vrncore;
 
+import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.rewards.RewardManager;
 import net.skeagle.vrncore.rewards.TimedRewards;
-import net.skeagle.vrncore.settings.Settings;
 import net.skeagle.vrncore.trail.VRNParticle;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrncore.utils.VRNPlayer;
@@ -26,11 +26,11 @@ public class Tasks {
 
         Task.syncRepeating(() -> {
             VRNPlayer vrnPlayer;
-            for (final Player pl : Bukkit.getOnlinePlayers()) {
+            for (Player pl : Bukkit.getOnlinePlayers()) {
                 vrnPlayer = new VRNPlayer(pl);
                 if (vrnPlayer.getPlayerTrail() != null) {
-                    final Particle particle = vrnPlayer.getPlayerTrail();
-                    final String perm = VRNParticle.getNameFromParticle(particle);
+                    Particle particle = vrnPlayer.getPlayerTrail();
+                    String perm = VRNParticle.getNameFromParticle(particle);
                     if (perm != null) {
                         if (pl.hasPermission("vrn.playertrails." + perm)) {
                             if (vrnPlayer.isVanished())
@@ -47,10 +47,10 @@ public class Tasks {
         }, 0, 3);
 
         Task.asyncRepeating(() -> {
-            for (final Player pl : Bukkit.getOnlinePlayers()) {
-                final AFKManager manager = AFKManager.getAfkManager(pl);
-                final VRNPlayer p = new VRNPlayer(pl);
-                final TimedRewards reward;
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                AFKManager manager = AFKManager.getAfkManager(pl);
+                VRNPlayer p = new VRNPlayer(pl);
+                TimedRewards reward;
                 long time = p.getTimePlayed();
                 if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                     time += 1;
@@ -60,18 +60,18 @@ public class Tasks {
                         if (reward.checkPerm(pl))
                             Task.asyncDelayed(() -> reward.doReward(pl));
                     }
-                    if (manager.getTimeAfk() > Settings.Afk.STOP_COUNTING)
+                    if (manager.getTimeAfk() > Settings.Afk.afktime)
                         manager.setAfk(true);
-                } else if (manager.getTimeAfk() >= Settings.Afk.KICK_TIME_IN_SECONDS)
-                    Task.syncDelayed(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.Afk.KICK_TIME_IN_SECONDS))));
+                } else if (manager.getTimeAfk() >= Settings.Afk.kickTime)
+                    Task.syncDelayed(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.Afk.kickTime))));
             }
         }, 0, 20);
     }
 
-    private boolean updateAFKPlayer(final Player p) {
-        final AFKManager manager = AFKManager.getAfkManager(p);
-        final AFKManager.SavedLocation oldLoc = manager.getSavedLocation();
-        final AFKManager.SavedLocation loc = new AFKManager.SavedLocation(p);
+    private boolean updateAFKPlayer(Player p) {
+        AFKManager manager = AFKManager.getAfkManager(p);
+        AFKManager.SavedLocation oldLoc = manager.getSavedLocation();
+        AFKManager.SavedLocation loc = new AFKManager.SavedLocation(p);
         manager.setSavedLocation(loc);
         if (oldLoc == null || !manager.isYawEqual(oldLoc) && !manager.isPitchEqual(oldLoc)) {
             manager.setTimeAfk(0);

@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.hook;
 
 import net.milkbowl.vault.chat.Chat;
-import net.skeagle.vrncore.settings.Settings;
+import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.utils.VRNPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,35 +16,35 @@ public final class VaultHook {
     private final Chat chat;
 
     VaultHook() {
-        final RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
-        this.chat = rsp.getProvider();
+        RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+        chat = rsp.getProvider();
     }
 
-    private String getPrefix(final Player p) {
-        if (!Settings.Chat.MULTIPLE_PREFIX)
+    private String getPrefix(Player p) {
+        if (!Settings.Chat.multiplePrefix)
             return chat.getPlayerPrefix(p.getWorld().getName(), p);
-        final List<String> prefixes = new ArrayList<>();
+        List<String> prefixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
-            final String prefix = chat.getGroupPrefix(p.getWorld(), group);
+            String prefix = chat.getGroupPrefix(p.getWorld(), group);
             if (prefix != null && !prefix.isEmpty())
                 prefixes.add(prefix);
         });
         return String.join(" ", prefixes);
     }
 
-    private String getSuffix(final Player p) {
-        if (!Settings.Chat.MULTIPLE_SUFFIX)
+    private String getSuffix(Player p) {
+        if (!Settings.Chat.multipleSuffix)
             return chat.getPlayerSuffix(p.getWorld().getName(), p);
-        final List<String> suffixes = new ArrayList<>();
+        List<String> suffixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
-            final String suffix = chat.getGroupSuffix(p.getWorld(), group);
+            String suffix = chat.getGroupSuffix(p.getWorld(), group);
             if (suffix != null && !suffix.isEmpty())
                 suffixes.add(suffix);
         });
         return String.join(" ", suffixes);
     }
 
-    private String[] getGroups(final Player p) {
+    private String[] getGroups(Player p) {
         return chat.getPlayerGroups(p);
     }
 
@@ -52,9 +52,9 @@ public final class VaultHook {
         return chat.getName();
     }
 
-    public String format(final Player p) {
-        final VRNPlayer vrnPlayer = new VRNPlayer(p);
-        String s = Settings.Chat.FORMAT;
+    public String format(Player p) {
+        VRNPlayer vrnPlayer = new VRNPlayer(p);
+        String s = Settings.Chat.format;
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", vrnPlayer.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
@@ -63,8 +63,8 @@ public final class VaultHook {
         return s;
     }
 
-    public String format(String s, final Player p) {
-        final VRNPlayer vrnPlayer = new VRNPlayer(p);
+    public String format(String s, Player p) {
+        VRNPlayer vrnPlayer = new VRNPlayer(p);
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", vrnPlayer.getName());
         s = s.replaceAll("%suffix", getSuffix(p));
