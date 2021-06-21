@@ -83,7 +83,7 @@ public final class VRNcore extends JavaPlugin {
     public void onDisable() {
         settings.get().save();
         playerManager.save();
-        VRNcore.getInstance().getRewardManager().getRewards().forEach(Reward::save);
+        rewardManager.getRewards().forEach(Reward::save);
     }
 
     public static VRNcore getInstance() {

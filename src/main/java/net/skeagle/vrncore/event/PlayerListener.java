@@ -73,7 +73,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent e) {
-        System.out.println("bruh?");
         final VRNPlayer p = new VRNPlayer(e.getPlayer());
         if (p.isMuted()) {
             e.setCancelled(true);
@@ -92,7 +91,6 @@ public class PlayerListener implements Listener {
         String msg = HookManager.format(p.getPlayer());
         msg = msg.replaceAll("%", "%%");
         msg = msg.replace("%%message", "%2$s");
-        System.out.println("bruh?");
         e.setFormat(color(msg));
     }
 

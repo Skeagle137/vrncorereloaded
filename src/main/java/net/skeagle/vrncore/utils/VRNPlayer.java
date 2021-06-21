@@ -36,7 +36,7 @@ public class VRNPlayer {
     }
 
     public String getName() {
-        return data.getNickname() != null ? color(data.getNickname()) + "&r" : getPlayer().getName();
+        return data.getNickname() != null ? color(data.getNickname() + "&r") : getPlayer().getName();
     }
 
     public void setName(final String nickname) {
