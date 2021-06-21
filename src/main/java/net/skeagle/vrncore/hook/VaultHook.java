@@ -16,35 +16,35 @@ public final class VaultHook {
     private final Chat chat;
 
     VaultHook() {
-        RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+        final RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
         chat = rsp.getProvider();
     }
 
-    private String getPrefix(Player p) {
+    private String getPrefix(final Player p) {
         if (!Settings.Chat.multiplePrefix)
             return chat.getPlayerPrefix(p.getWorld().getName(), p);
-        List<String> prefixes = new ArrayList<>();
+        final List<String> prefixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
-            String prefix = chat.getGroupPrefix(p.getWorld(), group);
+            final String prefix = chat.getGroupPrefix(p.getWorld(), group);
             if (prefix != null && !prefix.isEmpty())
                 prefixes.add(prefix);
         });
         return String.join(" ", prefixes);
     }
 
-    private String getSuffix(Player p) {
+    private String getSuffix(final Player p) {
         if (!Settings.Chat.multipleSuffix)
             return chat.getPlayerSuffix(p.getWorld().getName(), p);
-        List<String> suffixes = new ArrayList<>();
+        final List<String> suffixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
-            String suffix = chat.getGroupSuffix(p.getWorld(), group);
+            final String suffix = chat.getGroupSuffix(p.getWorld(), group);
             if (suffix != null && !suffix.isEmpty())
                 suffixes.add(suffix);
         });
         return String.join(" ", suffixes);
     }
 
-    private String[] getGroups(Player p) {
+    private String[] getGroups(final Player p) {
         return chat.getPlayerGroups(p);
     }
 
@@ -52,8 +52,8 @@ public final class VaultHook {
         return chat.getName();
     }
 
-    public String format(Player p) {
-        VRNPlayer vrnPlayer = new VRNPlayer(p);
+    public String format(final Player p) {
+        final VRNPlayer vrnPlayer = new VRNPlayer(p);
         String s = Settings.Chat.format;
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", vrnPlayer.getName());
@@ -63,8 +63,8 @@ public final class VaultHook {
         return s;
     }
 
-    public String format(String s, Player p) {
-        VRNPlayer vrnPlayer = new VRNPlayer(p);
+    public String format(String s, final Player p) {
+        final VRNPlayer vrnPlayer = new VRNPlayer(p);
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", vrnPlayer.getName());
         s = s.replaceAll("%suffix", getSuffix(p));

@@ -11,6 +11,7 @@ import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.npc.Npc;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerManager;
+import net.skeagle.vrncore.rewards.Reward;
 import net.skeagle.vrncore.rewards.RewardManager;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
@@ -42,7 +43,6 @@ public final class VRNcore extends JavaPlugin {
         //messages and config
         Messages.load(this);
         settings = new Settings(this);
-        RewardManager.getInstance().loadRewards();
         //hooks
         HookManager.loadHooks();
         //database setup
@@ -53,7 +53,8 @@ public final class VRNcore extends JavaPlugin {
         db.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
                 "location STRING, skin STRING, rotateHead BOOLEAN);");
-        db.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, type STRING, timeRequired BIGINT, cost BIGINT);");
+        db.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, permission STRING, message STRING, " +
+                "firework BOOLEAN, title STRING, subtitle STRING, type STRING, action STRING, groupname STRING, cost BIGINT, time BIGINT);");
         //managers and tasks
         playerManager = new PlayerManager();
         homeManager = new HomeManager();
@@ -64,11 +65,12 @@ public final class VRNcore extends JavaPlugin {
         //commands
         new CommandParser(getResource("commands.txt"))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
-                        new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::getName)),
+                        new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
+                        new ArgType<>("reward", rewardManager::getReward).tabStream(s -> rewardManager.getRewards().stream().map(Reward::getName)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)))
                 .parse().register("vrncore", this, new AdminCommands(), new TpCommands(),
                 new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
-                new NickCommands(), new NpcCommands());
+                new NickCommands(), new NpcCommands(), new RewardCommands());
         //listeners
         if (Settings.Motd.motdEnabled)
             Bukkit.getPluginManager().registerEvents(new MotdListener(this), this);
@@ -81,6 +83,7 @@ public final class VRNcore extends JavaPlugin {
     public void onDisable() {
         settings.get().save();
         playerManager.save();
+        VRNcore.getInstance().getRewardManager().getRewards().forEach(Reward::save);
     }
 
     public static VRNcore getInstance() {
@@ -112,7 +115,7 @@ public final class VRNcore extends JavaPlugin {
     }
 
     @CommandHook("vrn")
-    public void onVRN(CommandSender sender) {
+    public void onVRN(final CommandSender sender) {
         sayNoPrefix(sender,
                 "&9-----------------------------------------------",
                 "&aVRNcore &7is developed and maintained by &dSkeagle&7.",
@@ -123,7 +126,7 @@ public final class VRNcore extends JavaPlugin {
     }
 
     @CommandHook("reload")
-    public void onReload(CommandSender sender) {
+    public void onReload(final CommandSender sender) {
         Messages.load(this);
         settings.get().load();
         say(sender, "&aConfigs and messages reloaded.");

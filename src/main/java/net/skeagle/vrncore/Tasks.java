@@ -1,9 +1,8 @@
 package net.skeagle.vrncore;
 
 import net.skeagle.vrncore.config.Settings;
-import net.skeagle.vrncore.rewards.RewardManager;
-import net.skeagle.vrncore.rewards.TimedRewards;
-import net.skeagle.vrncore.trail.VRNParticle;
+import net.skeagle.vrncore.rewards.Reward;
+import net.skeagle.vrncore.trail.Trails;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrncore.utils.VRNPlayer;
 import net.skeagle.vrnlib.misc.Task;
@@ -22,43 +21,48 @@ public class Tasks {
     }
 
     public void loadTasks() {
-        Task.asyncRepeating(() -> VRNcore.getInstance().getPlayerManager().save(), 0, 20 * (60 * 10));
+        Task.asyncRepeating(() -> {
+            VRNcore.getInstance().getPlayerManager().save();
+            VRNcore.getInstance().getRewardManager().getRewards().forEach(Reward::save);
+        }, 0, 20L * (Settings.autoSaveInterval * 60L));
 
         Task.syncRepeating(() -> {
             VRNPlayer vrnPlayer;
-            for (Player pl : Bukkit.getOnlinePlayers()) {
+            for (final Player pl : Bukkit.getOnlinePlayers()) {
                 vrnPlayer = new VRNPlayer(pl);
-                if (vrnPlayer.getPlayerTrail() != null) {
-                    Particle particle = vrnPlayer.getPlayerTrail();
-                    String perm = VRNParticle.getNameFromParticle(particle);
-                    if (perm != null) {
-                        if (pl.hasPermission("vrn.playertrails." + perm)) {
-                            if (vrnPlayer.isVanished())
-                                pl.spawnParticle(particle, pl.getLocation().clone().add(0, 0.35, 0),
-                                        3, 0.3D, 0.3D, 0.3D, 0, particle == Particle.REDSTONE ? new Particle.DustOptions(Color.RED, 1.0f) : null);
-                            else
-                                pl.getLocation().getWorld().spawnParticle(particle, pl.getLocation().clone().add(0, 0.35, 0),
-                                        3, 0.3D, 0.3D, 0.3D, 0, particle == Particle.REDSTONE ? new Particle.DustOptions(Color.RED, 1.0f) : null);
-                        } else
-                            vrnPlayer.setPlayerTrail(null);
-                    }
+                if (vrnPlayer.getPlayerTrail() == null) {
+                    continue;
                 }
+                final Particle particle = vrnPlayer.getPlayerTrail();
+                final String perm = Trails.getNameFromParticle(particle);
+                if (perm != null) {
+                    continue;
+                }
+                if (pl.hasPermission("vrn.playertrails." + perm)) {
+                    if (vrnPlayer.isVanished())
+                        pl.spawnParticle(particle, pl.getLocation().clone().add(0, 0.35, 0),
+                                3, 0.3D, 0.3D, 0.3D, 0, particle == Particle.REDSTONE ? new Particle.DustOptions(Color.RED, 1.0f) : null);
+                    else
+                        pl.getLocation().getWorld().spawnParticle(particle, pl.getLocation().clone().add(0, 0.35, 0),
+                                3, 0.3D, 0.3D, 0.3D, 0, particle == Particle.REDSTONE ? new Particle.DustOptions(Color.RED, 1.0f) : null);
+                } else
+                    vrnPlayer.setPlayerTrail(null);
             }
         }, 0, 3);
 
         Task.asyncRepeating(() -> {
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                AFKManager manager = AFKManager.getAfkManager(pl);
-                VRNPlayer p = new VRNPlayer(pl);
-                TimedRewards reward;
+            for (final Player pl : Bukkit.getOnlinePlayers()) {
+                final AFKManager manager = AFKManager.getAfkManager(pl);
+                final VRNPlayer p = new VRNPlayer(pl);
+                final Reward reward;
                 long time = p.getTimePlayed();
                 if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                     time += 1;
                     p.setTimePlayed(time);
-                    reward = RewardManager.getInstance().getReward(String.valueOf(time));
+                    reward = VRNcore.getInstance().getRewardManager().getRewardByTime(time);
                     if (reward != null) {
                         if (reward.checkPerm(pl))
-                            Task.asyncDelayed(() -> reward.doReward(pl));
+                            Task.asyncDelayed(() -> reward.run(pl));
                     }
                     if (manager.getTimeAfk() > Settings.Afk.afktime)
                         manager.setAfk(true);
@@ -68,10 +72,10 @@ public class Tasks {
         }, 0, 20);
     }
 
-    private boolean updateAFKPlayer(Player p) {
-        AFKManager manager = AFKManager.getAfkManager(p);
-        AFKManager.SavedLocation oldLoc = manager.getSavedLocation();
-        AFKManager.SavedLocation loc = new AFKManager.SavedLocation(p);
+    private boolean updateAFKPlayer(final Player p) {
+        final AFKManager manager = AFKManager.getAfkManager(p);
+        final AFKManager.SavedLocation oldLoc = manager.getSavedLocation();
+        final AFKManager.SavedLocation loc = new AFKManager.SavedLocation(p);
         manager.setSavedLocation(loc);
         if (oldLoc == null || !manager.isYawEqual(oldLoc) && !manager.isPitchEqual(oldLoc)) {
             manager.setTimeAfk(0);

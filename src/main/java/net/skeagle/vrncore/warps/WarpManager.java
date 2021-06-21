@@ -20,29 +20,29 @@ public class WarpManager {
     }
 
     public void load() {
-        final SQLHelper db = VRNcore.getInstance().getDB();
-        final SQLHelper.Results res = db.queryResults("SELECT * FROM warps");
+        SQLHelper db = VRNcore.getInstance().getDB();
+        SQLHelper.Results res = db.queryResults("SELECT * FROM warps");
         res.forEach(warp -> {
-            final String name = warp.getString(2);
-            final UUID owner = UUID.fromString(warp.getString(3));
-            final Location loc = VRNUtil.LocationSerialization.deserialize(warp.getString(4));
+            String name = warp.getString(2);
+            UUID owner = UUID.fromString(warp.getString(3));
+            Location loc = VRNUtil.LocationSerialization.deserialize(warp.getString(4));
             warps.add(new Warp(name, owner, loc));
         });
     }
 
-    public void createWarp(final Player p, final String name) {
-        final Warp warp = new Warp(name, p.getUniqueId(), p.getLocation());
+    public void createWarp(Player p, String name) {
+        Warp warp = new Warp(name, p.getUniqueId(), p.getLocation());
         warps.add(warp);
-        warp.save(name, p);
+        warp.save(p);
     }
 
-    public Warp getWarp(final String name) {
-        return warps.stream().filter(w -> w.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    public Warp getWarp(String name) {
+        return warps.stream().filter(w -> w.name().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
-    public void deleteWarp(final Warp warp) {
-        final SQLHelper db = VRNcore.getInstance().getDB();
-        db.execute("DELETE FROM warps WHERE name = ? AND owner = ?", warp.getName(), warp.getOwner());
+    public void deleteWarp(Warp warp) {
+        SQLHelper db = VRNcore.getInstance().getDB();
+        db.execute("DELETE FROM warps WHERE name = ? AND owner = ?", warp.name(), warp.owner());
         warps.remove(warp);
     }
 

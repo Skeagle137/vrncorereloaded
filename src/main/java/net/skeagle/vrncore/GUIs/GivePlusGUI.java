@@ -11,35 +11,20 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class GivePlusGUI {
 
-    public GivePlusGUI(final Player player) {
-        final InventoryGUI gui = new InventoryGUI(9, "&9&l/give+");
+    public GivePlusGUI(Player player) {
+        enum GivePlusMaterial {
+            BARRIER, COMMAND_BLOCK, CHAIN_COMMAND_BLOCK, REPEATING_COMMAND_BLOCK,
+            SPAWNER, STRUCTURE_VOID, STRUCTURE_BLOCK, DEBUG_STICK
+        }
+        InventoryGUI gui = new InventoryGUI(9, "&9&l/give+");
         for (int i = 0; i < GivePlusMaterial.values().length; i++) {
-            final GivePlusMaterial value = GivePlusMaterial.values()[i];
-            gui.addButton(ItemButton.create(new ItemBuilder(value.mat).setName("&7" + value.name), e -> {
+            ItemStack item = new ItemStack(Material.valueOf(GivePlusMaterial.values()[i].toString()));
+            gui.addButton(ItemButton.create(new ItemBuilder(item).setName("&7" + item.getItemMeta().getDisplayName()), e -> {
                 player.closeInventory();
-                player.getInventory().addItem(new ItemStack(value.mat));
+                player.getInventory().addItem(new ItemBuilder(item).setCount(64));
                 say(player, "You have received your item(s)");
             }), i);
         }
         gui.open(player);
-    }
-
-    private enum GivePlusMaterial {
-        BARRIER(Material.BARRIER, "Barrier"),
-        CMDBLOCK(Material.COMMAND_BLOCK, "Command Block (Normal)"),
-        CMD_CHAIN(Material.CHAIN_COMMAND_BLOCK, "Command Block (Chain)"),
-        CMD_REPEAT(Material.REPEATING_COMMAND_BLOCK, "Command Block (Repeat)"),
-        SPAWNER(Material.SPAWNER, "Spawner"),
-        STRUCT_VOID(Material.STRUCTURE_VOID, "Structure Void"),
-        STRUCT_BLOCK(Material.STRUCTURE_BLOCK, "Structure Block"),
-        DEBUG_STICK(Material.DEBUG_STICK, "Debug Stick");
-
-        private final Material mat;
-        private final String name;
-
-        GivePlusMaterial(final Material mat, final String name) {
-            this.mat = mat;
-            this.name = name;
-        }
     }
 }

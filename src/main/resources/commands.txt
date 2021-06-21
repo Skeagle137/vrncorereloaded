@@ -233,6 +233,24 @@ removenick player:player*? {
     help Remove a nickname from a player.
     hook removenick
 }
+reward {
+    create string:name* {
+        permission vrn.reward.create
+        help Create a reward.
+        hook createreward
+    }
+    delete reward:reward* {
+        permission vrn.reward.delete
+        help Delete a reward.
+        hook delreward
+    }
+    edit reward:reward* {
+        permission vrn.reward.edit
+        help Edit a reward.
+        user player
+        hook editreward
+    }
+}
 rtp {
     permission vrn.rtp
     help Teleports to a randomly chosen area.

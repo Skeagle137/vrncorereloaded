@@ -3,6 +3,7 @@ package net.skeagle.vrncore.utils;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
@@ -99,6 +100,6 @@ public class VRNPlayer {
     }
 
     public void save() {
-        data.save();
+        Task.asyncDelayed(data::save);
     }
 }

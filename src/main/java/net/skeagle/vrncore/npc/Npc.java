@@ -2,7 +2,11 @@ package net.skeagle.vrncore.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.VRNUtil;
@@ -10,9 +14,9 @@ import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -37,33 +41,31 @@ public class Npc {
     }
 
     public void createNPCForPlayer(final Player p) {
-        final MinecraftServer ms = ((CraftServer) Bukkit.getServer()).getServer();
-        final WorldServer ws = ((CraftWorld) location.getWorld()).getHandle();
-        final GameProfile gp = new GameProfile(UUID.randomUUID(), (display.equals(name) ? name : display));
+        final GameProfile profile = new GameProfile(UUID.randomUUID(), (display.equals(name) ? name : display));
         if (skin != null)
-            gp.getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
-        final EntityPlayer npc = new EntityPlayer(ms, ws, gp, new PlayerInteractManager(ws));
-        npc.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        final DataWatcher watcher = npc.getDataWatcher();
-        watcher.set(new DataWatcherObject<>(16, DataWatcherRegistry.a), (byte) 127);
-        Task.syncDelayed(() ->
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(npc.getId(), watcher, true)));
+            profile.getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
+        final ServerPlayer npc = new ServerPlayer(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), profile);
+        npc.moveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        final SynchedEntityData data = npc.getEntityData();
+        data.set(new EntityDataAccessor<>(16, EntityDataSerializers.BYTE), (byte) 127);
         sendNPCPackets(p, npc);
+        Task.syncDelayed(() ->
+                ((CraftPlayer) p).getHandle().connection.send(new ClientboundSetEntityDataPacket(npc.getId(), data, true)), 1);
     }
 
-    public void sendNPCPackets(final Player p, final EntityPlayer npc) {
-        final EntityPlayer nmsPlayer = ((CraftPlayer) p).getHandle();
-        nmsPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
-        nmsPlayer.playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
-        nmsPlayer.playerConnection.sendPacket(new PacketPlayOutEntityHeadRotation(npc, (byte) (npc.yaw * 256 / 360)));
+    public void sendNPCPackets(final Player p, final ServerPlayer npc) {
+        final ServerPlayer nmsPlayer = ((CraftPlayer) p).getHandle();
+        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, npc));
+        nmsPlayer.connection.send(new ClientboundAddEntityPacket(npc));
+        nmsPlayer.connection.send(new ClientboundRotateHeadPacket(npc, (byte) (npc.yHeadRot * 256 / 360)));
         Task.syncDelayed(() ->
-                nmsPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc)));
+                nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc)));
     }
 
     public void delete() {
-        final PacketPlayOutEntityDestroy destroy = new PacketPlayOutEntityDestroy(entityId);
+        final ClientboundRemoveEntityPacket destroy = new ClientboundRemoveEntityPacket(entityId);
         for (final Player pl : Bukkit.getOnlinePlayers())
-            ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(destroy);
+            ((CraftPlayer) pl).getHandle().connection.send(destroy);
     }
 
     public void save() {

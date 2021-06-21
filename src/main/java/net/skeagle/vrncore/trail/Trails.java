@@ -3,7 +3,7 @@ package net.skeagle.vrncore.trail;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 
-public enum VRNParticle {
+public enum Trails {
     FIREWORKS_SPARK("Spark", Particle.FIREWORKS_SPARK, Material.FIREWORK_ROCKET),
     WATER_SPLASH("Water Splash", Particle.WATER_SPLASH, Material.FISHING_ROD),
     VOID("Void", Particle.TOWN_AURA, Material.BEDROCK),
@@ -36,7 +36,7 @@ public enum VRNParticle {
     private final Particle particle;
     private final Material mat;
 
-    VRNParticle(final String name, final Particle particle, final Material mat) {
+    Trails(String name, Particle particle, Material mat) {
         this.name = name;
         this.particle = particle;
         this.mat = mat;
@@ -52,8 +52,8 @@ public enum VRNParticle {
         return mat;
     }
 
-    public static String getNameFromParticle(final Particle particle) {
-        for (final VRNParticle vrn : VRNParticle.values())
+    public static String getNameFromParticle(Particle particle) {
+        for (Trails vrn : Trails.values())
             if (vrn.getParticle() == particle)
                 return vrn.name().toLowerCase();
         return null;

@@ -25,32 +25,32 @@ public class HomesGUI extends PageableGUI<Home> {
 
     private final Player target;
 
-    public HomesGUI(final Player target) {
+    public HomesGUI(Player target) {
         super("Viewing " + target.getDisplayName() + "&r's " + "homes");
         this.target = target;
     }
 
     @Override
     protected List<Home> getContents() {
-        return VRNcore.getInstance().getHomeManager().getHomes().stream().filter(h -> h.getOwner().equals(target.getUniqueId())).collect(Collectors.toList());
+        return VRNcore.getInstance().getHomeManager().getHomes().stream().filter(h -> h.owner().equals(target.getUniqueId())).collect(Collectors.toList());
     }
 
     @Override
-    protected ItemStack convertToItem(final Home h) {
-        final Block b = VRNUtil.getStandingBlock(h.getLocation());
-        return ItemUtil.genItem(b != null ? b.getType() : Material.BARRIER).name("&7" + h.getName()).build();
+    protected ItemStack convertToItem(Home h) {
+        Block b = VRNUtil.getStandingBlock(h.location());
+        return ItemUtil.genItem(b != null ? b.getType() : Material.BARRIER).name("&7" + h.name()).build();
     }
 
     @Override
-    protected void onClickItem(final Home h, final InventoryClickEvent e) {
-        final Player player = getViewer();
+    protected void onClickItem(Home h, InventoryClickEvent e) {
+        Player player = getViewer();
         if (e.getClick().isLeftClick()) {
             player.closeInventory();
             say(player, Messages.msg("teleporting"));
-            player.teleport(h.getLocation());
+            player.teleport(h.location());
         }
         if (e.getClick().isRightClick()) {
-            final String perm = "vrn.delhome." + (h.getOwner() != target.getUniqueId() ? "others" : "self");
+            String perm = "vrn.delhome." + (h.owner() != target.getUniqueId() ? "others" : "self");
             if (!player.hasPermission(perm)) {
                 player.closeInventory();
                 say(player, VRNUtil.noperm);
@@ -68,14 +68,14 @@ public class HomesGUI extends PageableGUI<Home> {
 
     private static class DeleteConfirm {
 
-        private DeleteConfirm(final Player player, final Player target, final Home h) {
-            final InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
+        private DeleteConfirm(Player player, Player target, Home h) {
+            InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
             gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new HomesGUI(target).open(player)), 2);
             gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
             gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
                 VRNcore.getInstance().getHomeManager().deleteHome(h);
                 player.closeInventory();
-                say(player, "&7Home &a" + h.getName() + "&7 successfully deleted.");
+                say(player, "&7Home &a" + h.name() + "&7 successfully deleted.");
             }), 6);
             gui.open(player);
         }

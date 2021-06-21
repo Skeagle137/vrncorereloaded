@@ -15,13 +15,13 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 public class HomesWarpsCommands {
 
     @CommandHook("home")
-    public void onHome(final Player player, final Home h) {
+    public void onHome(Player player, Home h) {
         sayTp(player);
-        player.teleport(h.getLocation());
+        player.teleport(h.location());
     }
 
     @CommandHook("sethome")
-    public void onSetHome(final Player player, final String name) {
+    public void onSetHome(Player player, String name) {
         if (!player.hasPermission("vrn.homelimit.*")) {
             for (int i = 0; i == VRNcore.getInstance().getHomeManager().getHomeNames(player).size(); i++)
                 if (player.hasPermission("vrn.homelimit." + i)) {
@@ -38,14 +38,14 @@ public class HomesWarpsCommands {
     }
 
     @CommandHook("delhome")
-    public void onDelHome(final CommandSender sender, final Home h) {
-        say(sender, "&7Home &a" + h.getName() + "&7 successfully deleted.");
+    public void onDelHome(CommandSender sender, Home h) {
+        say(sender, "&7Home &a" + h.name() + "&7 successfully deleted.");
         VRNcore.getInstance().getHomeManager().deleteHome(h);
     }
 
     @CommandHook("homes")
-    public void onHomes(final Player player, final Player target) {
-        final Player homesPlayer = target != null && target != player ? target : player;
+    public void onHomes(Player player, Player target) {
+        Player homesPlayer = target != null && target != player ? target : player;
         if (VRNcore.getInstance().getHomeManager().getHomeNames(player).size() >= 1) {
             new HomesGUI(homesPlayer).open(player);
             return;
@@ -54,13 +54,13 @@ public class HomesWarpsCommands {
     }
 
     @CommandHook("warp")
-    public void onWarp(final Player player, final Warp w) {
+    public void onWarp(Player player, Warp w) {
         sayTp(player);
-        player.teleport(w.getLocation());
+        player.teleport(w.location());
     }
 
     @CommandHook("setwarp")
-    public void onSetWarp(final Player player, final String name) {
+    public void onSetWarp(Player player, String name) {
         if (!player.hasPermission("vrn.warplimit.*")) {
             for (int i = 0; i == VRNcore.getInstance().getHomeManager().getHomeNames(player).size(); i++)
                 if (player.hasPermission("vrn.warplimit." + i)) {
@@ -77,13 +77,13 @@ public class HomesWarpsCommands {
     }
 
     @CommandHook("delwarp")
-    public void onDelWarp(final CommandSender sender, final Warp w) {
-        say(sender, "&7Home &a" + w.getName() + "&7 successfully deleted.");
+    public void onDelWarp(CommandSender sender, Warp w) {
+        say(sender, "&7Home &a" + w.name() + "&7 successfully deleted.");
         VRNcore.getInstance().getWarpManager().deleteWarp(w);
     }
 
     @CommandHook("warps")
-    public void onWarps(final Player player) {
+    public void onWarps(Player player) {
         if (VRNcore.getInstance().getWarpManager().getWarps().size() >= 1) {
             new WarpsGUI().open(player);
             return;
@@ -91,7 +91,7 @@ public class HomesWarpsCommands {
         say(player, "&cThere are no warps available.");
     }
 
-    private void sayTp(final Player player) {
+    private void sayTp(Player player) {
         say(player, Messages.msg("teleporting"));
     }
 }

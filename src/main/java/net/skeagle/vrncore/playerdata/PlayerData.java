@@ -2,7 +2,6 @@ package net.skeagle.vrncore.playerdata;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -112,12 +111,10 @@ public class PlayerData {
 
     public void save() {
         final SQLHelper db = VRNcore.getInstance().getDB();
-        Task.asyncDelayed(() -> {
-            db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
-            db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, vanished, muted, godmode, " +
-                            "lastOnline, lastLocation, timeplayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    uuid.toString(), nickname, arrowtrail, playertrail, vanished, muted, godmode,
-                    last_online, VRNUtil.LocationSerialization.serialize(last_location), timeplayed);
-        });
+        db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
+        db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, vanished, muted, godmode, " +
+                        "lastOnline, lastLocation, timeplayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                uuid.toString(), nickname, arrowtrail, playertrail, vanished, muted, godmode,
+                last_online, VRNUtil.LocationSerialization.serialize(last_location), timeplayed);
     }
 }

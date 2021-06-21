@@ -4,5 +4,5 @@ main: net.skeagle.vrncore.VRNcore
 author: Skeagle
 description: ${project.description}
 depend: [ VRNLib ]
-softdepend: [ Vault ]
-api-version: 1.16
+softdepend: [ Vault, LuckPerms ]
+api-version: 1.17

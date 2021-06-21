@@ -8,17 +8,17 @@ import static org.bukkit.Bukkit.getServer;
 public final class HookManager {
 
     private static VaultHook vault;
-
-    private HookManager() {
-    }
+    private static LuckPermsHook luckperms;
 
     public static void loadHooks() {
         if (checkPlugin("Vault"))
             vault = new VaultHook();
+        if (checkPlugin("LuckPerms"))
+            luckperms = new LuckPermsHook();
     }
 
-    private static boolean checkPlugin(final String s) {
-        final Plugin p = getServer().getPluginManager().getPlugin(s);
+    private static boolean checkPlugin(String s) {
+        Plugin p = getServer().getPluginManager().getPlugin(s);
         return p != null && p.isEnabled();
     }
 
@@ -26,11 +26,15 @@ public final class HookManager {
         return vault != null;
     }
 
-    public static String format(final Player p) {
+    public static boolean isLuckPermsLoaded() {
+        return luckperms != null;
+    }
+
+    public static String format(Player p) {
         return isVaultLoaded() ? vault.format(p) : "";
     }
 
-    public static String format(final String s, final Player p) {
+    public static String format(String s, Player p) {
         return isVaultLoaded() ? vault.format(s, p) : "";
     }
 }

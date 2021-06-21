@@ -8,10 +8,12 @@ public class Settings {
 
     @ConfigValue("join-leave-messages-enabled")
     public static boolean joinLeaveEnabled = true;
+    @ConfigValue("auto-save-interval")
+    public static int autoSaveInterval = 15;
 
     private ConfigManager config;
 
-    public Settings(VRNcore plugin) {
+    public Settings(final VRNcore plugin) {
         config = new ConfigManager(plugin).register(this, new Motd(), new Afk(), new Chat(), new Rtp()).saveDefaults().load();
     }
 

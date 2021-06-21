@@ -21,35 +21,35 @@ public class HomeManager {
     }
 
     public void load() {
-        final SQLHelper db = VRNcore.getInstance().getDB();
-        final SQLHelper.Results res = db.queryResults("SELECT * FROM homes");
+        SQLHelper db = VRNcore.getInstance().getDB();
+        SQLHelper.Results res = db.queryResults("SELECT * FROM homes");
         res.forEach(home -> {
-            final String name = home.getString(2);
-            final UUID owner = UUID.fromString(home.getString(3));
-            final Location loc = VRNUtil.LocationSerialization.deserialize(home.getString(4));
+            String name = home.getString(2);
+            UUID owner = UUID.fromString(home.getString(3));
+            Location loc = VRNUtil.LocationSerialization.deserialize(home.getString(4));
             homes.add(new Home(name, owner, loc));
         });
     }
 
-    public void createHome(final String name, final Player p) {
-        final Home home = new Home(name, p.getUniqueId(), p.getLocation());
+    public void createHome(String name, Player p) {
+        Home home = new Home(name, p.getUniqueId(), p.getLocation());
         homes.add(home);
-        home.save(name, p);
+        home.save(p);
     }
 
-    public void deleteHome(final Home home) {
-        final SQLHelper db = VRNcore.getInstance().getDB();
-        db.execute("DELETE FROM homes WHERE name = ? AND owner = ?", home.getName(), home.getOwner());
+    public void deleteHome(Home home) {
+        SQLHelper db = VRNcore.getInstance().getDB();
+        db.execute("DELETE FROM homes WHERE name = ? AND owner = ?", home.name(), home.owner());
         homes.remove(home);
     }
 
-    public Home getHome(final String name, final Player p) {
-        return homes.stream().filter(h -> h.getName().equalsIgnoreCase(name) && h.getOwner().equals(p.getUniqueId())).findFirst().orElse(null);
+    public Home getHome(String name, Player p) {
+        return homes.stream().filter(h -> h.name().equalsIgnoreCase(name) && h.owner().equals(p.getUniqueId())).findFirst().orElse(null);
     }
 
-    public List<String> getHomeNames(final Player p) {
-        final List<String> names = new ArrayList<>();
-        homes.stream().filter(h -> h.getOwner().equals(p.getUniqueId())).forEach(h -> names.add(h.getName()));
+    public List<String> getHomeNames(Player p) {
+        List<String> names = new ArrayList<>();
+        homes.stream().filter(h -> h.owner().equals(p.getUniqueId())).forEach(h -> names.add(h.name()));
         return names;
     }
 
@@ -58,6 +58,6 @@ public class HomeManager {
     }
 
     public ArgType<Home> getArgType() {
-        return new ArgType<>("home", (s, c) -> this.getHome(c, (Player) s)).setTab((s, c) -> getHomeNames((Player) s));
+        return new ArgType<>("home", (s, c) -> getHome(c, (Player) s)).setTab((s, c) -> getHomeNames((Player) s));
     }
 }

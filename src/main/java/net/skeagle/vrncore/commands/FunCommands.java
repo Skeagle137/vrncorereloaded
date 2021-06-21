@@ -1,7 +1,11 @@
 package net.skeagle.vrncore.commands;
 
 import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.SkinUtil;
@@ -9,7 +13,7 @@ import net.skeagle.vrnlib.commandmanager.CommandHook;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -21,10 +25,8 @@ public class FunCommands {
 
     @CommandHook("demo")
     public void onDemo(final CommandSender sender, final Player target) {
-        final CraftPlayer craftPlayer = (CraftPlayer) target;
-        final PacketPlayOutGameStateChange gamestate = new PacketPlayOutGameStateChange(new PacketPlayOutGameStateChange.a(5), 0);
-        craftPlayer.getHandle().playerConnection.sendPacket(gamestate);
-        say(sender, "Now showing &a" + craftPlayer.getName() + " &7the demo menu.");
+        ((CraftPlayer) target).getHandle().connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.DEMO_EVENT, 0));
+        say(sender, "Now showing &a" + target.getName() + " &7the demo menu.");
     }
 
     @CommandHook("sudo")
@@ -40,12 +42,12 @@ public class FunCommands {
     @CommandHook("hallucinate")
     public void onHallucinate(final Player player, final Player target) {
         final Player halluPlayer = target != null && target != player ? target : player;
-        final EntityPlayer entityPlayer = ((CraftPlayer) halluPlayer).getHandle();
-        final EntityEnderDragon dragon = new EntityEnderDragon(EntityTypes.ENDER_DRAGON, entityPlayer.world);
-        dragon.u(entityPlayer); //shorthand setPositionRotation
+        final ServerPlayer entityPlayer = ((CraftPlayer) halluPlayer).getHandle();
+        final EnderDragon dragon = new EnderDragon(EntityType.ENDER_DRAGON, entityPlayer.level);
+        dragon.copyPosition(entityPlayer);
         dragon.setInvulnerable(true);
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(dragon));
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(dragon.getId(), dragon.getDataWatcher(), true));
+        entityPlayer.connection.send(new ClientboundAddMobPacket(dragon));
+        //entityPlayer.connection.send(new ClientboundSetEntityDataPacket(dragon.getId(), dragon.getEntityData(), true));
         say(halluPlayer, halluPlayer == player ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
                 "Sent &a" + halluPlayer.getName() + "&7 a hallucination.");
     }
@@ -68,21 +70,20 @@ public class FunCommands {
             say(player, "&cThe skin could not be retrieved. Likely there is no player with this name.");
             return;
         }
-        final EntityPlayer ep = ((CraftPlayer) player).getHandle();
-        final Property property = ep.getProfile().getProperties().get("textures").iterator().next();
-        ep.getProfile().getProperties().remove("textures", property);
-        ep.getProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
+        final ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+        final Property property = nmsPlayer.getGameProfile().getProperties().get("textures").iterator().next();
+        nmsPlayer.getGameProfile().getProperties().remove("textures", property);
+        nmsPlayer.getGameProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
 
-        final EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
         final Location loc = player.getLocation().clone();
-        final WorldServer ws = entityPlayer.getWorldServer();
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(ws.getDimensionManager(), ws.getDimensionKey(), ws.getSeed(),
-                entityPlayer.playerInteractManager.getGameMode(), entityPlayer.playerInteractManager.getGameMode(), ws.isDebugWorld(), ws.isFlatWorld(), true));
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPosition(loc.getX(), loc.getY(), loc.getZ(),
-                player.getLocation().getYaw(), player.getLocation().getPitch(), Collections.emptySet(), -1337));
-        ((CraftPlayer) player).updateScaledHealth(true);
+        final ServerLevel level = (ServerLevel) nmsPlayer.level;
+        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, nmsPlayer));
+        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, nmsPlayer));
+        nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionType(), level.dimension(), level.getSeed(),
+                nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(), level.isDebug(), level.isFlat(), true));
+        nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), player.getLocation().getPitch(),
+                player.getLocation().getYaw(), Collections.emptySet(), -1337, false));
+        nmsPlayer.getBukkitEntity().updateScaledHealth(true);
 
         player.updateInventory();
         final PlayerInventory inventory = player.getInventory();

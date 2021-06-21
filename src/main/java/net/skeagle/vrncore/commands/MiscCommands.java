@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.commands;
 
-import net.minecraft.server.v1_16_R3.EntityArmorStand;
 import net.skeagle.vrncore.GUIs.ExpTradeGUI;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
 import net.skeagle.vrncore.config.Settings;
@@ -15,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -38,8 +36,7 @@ public class MiscCommands {
             for (UUID uuid : PlayerSitUtil.getSitMap().values()) {
                 stand = (ArmorStand) Bukkit.getEntity(uuid);
                 if (!stand.getPassengers().isEmpty()) {
-                    EntityArmorStand entitystand = ((CraftArmorStand) stand).getHandle();
-                    entitystand.yaw = stand.getPassengers().get(0).getLocation().getYaw();
+                    stand.setRotation(stand.getPassengers().get(0).getLocation().getYaw(), stand.getPassengers().get(0).getLocation().getPitch());
                     if (VRNUtil.getStandingBlock(stand.getLocation().add(0, 1.7, 0)) == null) {
                         PlayerSitUtil p = PlayerSitUtil.getPlayer((Player) stand.getPassengers().get(0));
                         p.setSitting(false);
