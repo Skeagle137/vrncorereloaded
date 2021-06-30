@@ -146,10 +146,10 @@ public class RewardsGUI {
                 final ItemBuilder builder = new ItemBuilder(Material.BEACON).setName("&6Trigger Action").setLore("", !b ? "&cYour server must have Luckperms to set trigger actions."
                         : action != null ? action.getName() : "&8Left click to cycle through trigger actions.").glint(action != null && b);
                 if (action == null && b) {
-                    builder.addLore("&8Right click to reset and have no trigger action.");
+                    builder.addLore("&8Right click to set the target group/track name.");
                 }
                 if (action != null && reward.getGroup() != null && b) {
-                    builder.addLore("&8Shift click to change the group or track used by the trigger action.");
+                    builder.addLore("&8Shift click to reset and have no trigger action.");
                 }
                 return builder;
             }
@@ -162,21 +162,22 @@ public class RewardsGUI {
                     reward.setGroup(null);
                     gui.update();
                 } else {
-                    RewardAction action = reward.getAction();
+                    final RewardAction action = reward.getAction();
                     if (e.isLeftClick()) {
-                        action = reward.getAction() == null ? RewardAction.values()[0] : reward.getAction().next();
-                        if (reward.getGroup() != null) return;
+                        reward.setAction(reward.getAction() == null ? RewardAction.values()[0] : reward.getAction().next());
+                        gui.update();
+                    } else {
+                        player.closeInventory();
+                        final String s = action.appliesToTrack() ? "track" : "group";
+                        final RewardAction finalAction = action;
+                        ChatPrompt.prompt(player, "&aType the " + s + " that you would like this trigger action to apply to in the chat.",
+                                (c) -> {
+                                    sayNoPrefix(player, "&aUpdated the reward's trigger action.");
+                                    reward.setAction(finalAction);
+                                    reward.setGroup(c);
+                                    Task.syncDelayed(() -> new RewardsGUI(reward, player));
+                                });
                     }
-                    player.closeInventory();
-                    final String s = action.appliesToTrack() ? "track" : "group";
-                    final RewardAction finalAction = action;
-                    ChatPrompt.prompt(player, "&aType the " + s + " that you would like this trigger action to apply to in the chat.",
-                            (c) -> {
-                                sayNoPrefix(player, "&aUpdated the reward's trigger action.");
-                                reward.setAction(finalAction);
-                                reward.setGroup(c);
-                                Task.syncDelayed(() -> new RewardsGUI(reward, player));
-                            });
                 }
             }
         });
