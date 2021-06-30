@@ -15,16 +15,16 @@ public class PlayerData {
     private String nickname;
     private Particle arrowtrail;
     private Particle playertrail;
-    private Boolean vanished;
-    private Boolean muted;
-    private Boolean godmode;
-    private Long last_online;
+    private boolean vanished;
+    private boolean muted;
+    private boolean godmode;
+    private long last_online;
     private Location last_location;
-    private Long timeplayed;
+    private long timeplayed;
 
     PlayerData(final UUID uuid, final String nickname, final Particle arrowtrail, final Particle playertrail,
-               final Boolean vanished, final Boolean muted, final Boolean godmode, final Long last_online,
-               final Location last_location, final Long timeplayed) {
+               final boolean vanished, final boolean muted, final boolean godmode, final long last_online,
+               final Location last_location, final long timeplayed) {
         this.uuid = uuid;
         this.nickname = nickname;
         this.arrowtrail = arrowtrail;
@@ -89,7 +89,7 @@ public class PlayerData {
         return last_online;
     }
 
-    public void setLastOnline(final Long last_online) {
+    public void setLastOnline(final long last_online) {
         this.last_online = last_online;
     }
 
@@ -101,11 +101,11 @@ public class PlayerData {
         this.last_location = last_location;
     }
 
-    public long getTimeplayed() {
+    public long getTimePlayed() {
         return timeplayed;
     }
 
-    public void setTimeplayed(final Long timeplayed) {
+    public void setTimePlayed(final long timeplayed) {
         this.timeplayed = timeplayed;
     }
 
