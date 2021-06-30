@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.trail.Trails;
+import net.skeagle.vrncore.trail.Trail;
 import net.skeagle.vrncore.utils.VRNPlayer;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 
 public class TrailsGUI extends InventoryGUI {
 
-    public TrailsGUI(Player player, Player target) {
+    public TrailsGUI(final Player player, final Player target) {
         super(27, "Trail Selection for " + target.getName());
-        VRNPlayer vrnPlayer = new VRNPlayer(target);
+        final VRNPlayer vrnPlayer = new VRNPlayer(target);
         addButton(ItemButton.create(new ItemBuilder(Material.BLAZE_POWDER).setName("&b&lPlayer trail selection menu")
                 .setLore("", "&7Click to open the player", "&7trail selection menu."), e -> new TrailSelection(target, TrailType.PLAYER).open(player)), 10);
 
@@ -37,7 +37,7 @@ public class TrailsGUI extends InventoryGUI {
             }
 
             @Override
-            public void onClick(InventoryClickEvent e) {
+            public void onClick(final InventoryClickEvent e) {
                 if (e.getClick().isShiftClick() && e.getClick().isLeftClick())
                     vrnPlayer.setPlayerTrail(null);
                 if (e.getClick().isShiftClick() && e.getClick().isRightClick()) {
@@ -59,26 +59,26 @@ public class TrailsGUI extends InventoryGUI {
         open(player);
     }
 
-    private static class TrailSelection extends PageableGUI<Trails> {
+    private static class TrailSelection extends PageableGUI<Trail> {
 
         private final VRNPlayer target;
         private final TrailType type;
 
-        private TrailSelection(Player target, TrailType type) {
+        private TrailSelection(final Player target, final TrailType type) {
             super(type.title);
             this.target = new VRNPlayer(target);
             this.type = type;
         }
 
         @Override
-        protected List<Trails> getContents() {
-            return Arrays.stream(Trails.values()).collect(Collectors.toList());
+        protected List<Trail> getContents() {
+            return Arrays.stream(Trail.values()).collect(Collectors.toList());
         }
 
         @Override
-        protected ItemStack convertToItem(Trails particle) {
-            if (getViewer().hasPermission(type.permission + particle.name().toLowerCase())) {
-                boolean b = (type == TrailType.ARROW ? target.getArrowTrail() : target.getPlayerTrail()) != null &&
+        protected ItemStack convertToItem(final Trail particle) {
+            if (getViewer().hasPermission(type.permission + particle.toString().toLowerCase())) {
+                final boolean b = (type == TrailType.ARROW ? target.getArrowTrail() : target.getPlayerTrail()) != null &&
                         (type == TrailType.ARROW ? target.getArrowTrail() : target.getPlayerTrail()) == particle.getParticle();
                 return new ItemBuilder(particle.getMaterial()).setName("&6" + particle.getParticleName())
                         .setLore("", "&7Click to select", "&r&7this " + type.name + " trail.").glint(b);
@@ -88,8 +88,8 @@ public class TrailsGUI extends InventoryGUI {
         }
 
         @Override
-        protected void onClickItem(Trails particle, InventoryClickEvent inventoryClickEvent) {
-            if (getViewer().hasPermission(type.permission + particle.name().toLowerCase())) {
+        protected void onClickItem(final Trail particle, final InventoryClickEvent inventoryClickEvent) {
+            if (getViewer().hasPermission(type.permission + particle.toString().toLowerCase())) {
                 if (type == TrailType.ARROW)
                     target.setArrowTrail(particle.getParticle());
                 else
@@ -115,7 +115,7 @@ public class TrailsGUI extends InventoryGUI {
         private final String title;
         private final String name;
 
-        TrailType(String permission, String title, String name) {
+        TrailType(final String permission, final String title, final String name) {
             this.permission = permission;
             this.title = title;
             this.name = name;

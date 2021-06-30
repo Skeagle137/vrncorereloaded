@@ -2,14 +2,14 @@ package net.skeagle.vrncore;
 
 import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.rewards.Reward;
-import net.skeagle.vrncore.trail.Trails;
+import net.skeagle.vrncore.trail.Trail;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrncore.utils.VRNPlayer;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
+
+import java.util.Locale;
 
 import static net.skeagle.vrncore.utils.VRNUtil.color;
 import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
@@ -33,20 +33,13 @@ public class Tasks {
                 if (vrnPlayer.getPlayerTrail() == null) {
                     continue;
                 }
-                final Particle particle = vrnPlayer.getPlayerTrail();
-                final String perm = Trails.getNameFromParticle(particle);
-                if (perm != null) {
-                    continue;
-                }
-                if (pl.hasPermission("vrn.playertrails." + perm)) {
-                    if (vrnPlayer.isVanished())
-                        pl.spawnParticle(particle, pl.getLocation().clone().add(0, 0.35, 0),
-                                3, 0.3D, 0.3D, 0.3D, 0, particle == Particle.REDSTONE ? new Particle.DustOptions(Color.RED, 1.0f) : null);
+                final Trail trail = Trail.getFromParticle(vrnPlayer.getPlayerTrail());
+                if (trail != null) {
+                    if (pl.hasPermission("vrn.playertrails." + trail.toString().toLowerCase(Locale.ROOT)))
+                        trail.run(pl, pl.getLocation().clone().add(0, 0.35, 0), 3, 0.2D, 0, vrnPlayer.isVanished());
                     else
-                        pl.getLocation().getWorld().spawnParticle(particle, pl.getLocation().clone().add(0, 0.35, 0),
-                                3, 0.3D, 0.3D, 0.3D, 0, particle == Particle.REDSTONE ? new Particle.DustOptions(Color.RED, 1.0f) : null);
-                } else
-                    vrnPlayer.setPlayerTrail(null);
+                        vrnPlayer.setPlayerTrail(null);
+                }
             }
         }, 0, 3);
 
