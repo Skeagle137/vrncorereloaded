@@ -25,14 +25,12 @@ public class TpCommands {
     private final BackCache backCache;
 
     public TpCommands() {
-        new EventListener<>(VRNcore.getInstance(), PlayerTeleportEvent.class, e -> {
-            if (e.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND || e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN) {
-                final BackCache back = new BackCache();
-                back.setBackLoc(e.getPlayer().getUniqueId(), e.getFrom());
-            }
-        });
         tpaUtil = new TpaUtil();
         backCache = new BackCache();
+        new EventListener<>(VRNcore.getInstance(), PlayerTeleportEvent.class, e -> {
+            if (e.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND || e.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN)
+                backCache.setBackLoc(e.getPlayer().getUniqueId(), e.getFrom());
+        });
     }
 
     @CommandHook("tpall")
