@@ -31,6 +31,10 @@ public class VRNPlayer {
         this.uuid = uuid;
     }
 
+    public UUID getUniqueId() {
+        return uuid;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -92,11 +96,11 @@ public class VRNPlayer {
     }
 
     public long getTimePlayed() {
-        return data.getTimeplayed();
+        return data.getTimePlayed();
     }
 
     public void setTimePlayed(final long timePlayed) {
-        data.setTimeplayed(timePlayed);
+        data.setTimePlayed(timePlayed);
     }
 
     public void save() {

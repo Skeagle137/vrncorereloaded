@@ -158,7 +158,7 @@ npc {
         user player
         hook createnpc
     }
-    delete string:name* {
+    delete npc:npc* {
         permission vrn.npc
         help Remove an existing npc.
         user player
@@ -221,7 +221,7 @@ realname string:nick* {
     help Find out a player's real name from their nick name.
     hook realname
 }
-rename string:name* {
+rename string...:name* {
     permission vrn.rename
     help Renames an item in your hand.
     user player
@@ -310,25 +310,25 @@ sun {
     hook sun
 }
 timeplayed {
-    get player:player*? {
+    get offlineplayer:offlineplayer*? {
         optionalTarget
         permission vrn.timeplayed.get
         help Check the time that a player has been on the server.
         hook timeplayedget
     }
-    set player:player*? string:time* {
+    set offlineplayer:offlineplayer*? string:time* {
         optionalTarget
         permission vrn.timeplayed.set
         help Set the time that a player has been on the server.
         hook timeplayedset
     }
-    add player:player*? string:time* {
+    add offlineplayer:offlineplayer*? string:time* {
         optionalTarget
         permission vrn.timeplayed.add
         help Add to the time that a player has been on the server.
         hook timeplayedadd
     }
-    subtract player:player*? string:time* {
+    subtract offlineplayer:offlineplayer*? string:time* {
         optionalTarget
         permission vrn.timeplayed.subtract
         help Subtract from the time that a player has been on the server.

@@ -3,6 +3,7 @@ package net.skeagle.vrncore.commands;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.skeagle.vrncore.GUIs.GivePlusGUI;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.utils.VRNPlayer;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.Messages;
@@ -11,6 +12,7 @@ import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.misc.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -268,14 +270,15 @@ public class AdminCommands {
     }
 
     @CommandHook("timeplayedget")
-    public void onTimePlayedGet(final Player player, final Player target) {
-        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
-        say(player, (vrnPlayer.getPlayer() == player ? "Your" : "&a" + vrnPlayer.getName() + "&7's") +
-                " time played is &a" + timeToMessage(vrnPlayer.getTimePlayed()) + "&7.");
+    public void onTimePlayedGet(final Player player, final OfflinePlayer target) {
+        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
+        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        say(player, (offPlayer == player ? "Your" : "&a" + offPlayer.getName() + "&7's") +
+                " time played is &a" + timeToMessage(data.getTimePlayed()) + "&7.");
     }
 
     @CommandHook("timeplayedset")
-    public void onTimePlayedSet(final Player player, final Player target, final String time) {
+    public void onTimePlayedSet(final Player player, final OfflinePlayer target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
@@ -283,9 +286,10 @@ public class AdminCommands {
             say(player, e.getMessage());
             return;
         }
-        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
-        vrnPlayer.setTimePlayed(totalsec);
-        say(player, "Time played set to &a" + timeToMessage(totalsec) + (vrnPlayer.getPlayer() == player ? "&7." : "&7 for &a" + vrnPlayer.getName() + "&7."));
+        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
+        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        data.setTimePlayed(totalsec);
+        say(player, "Time played set to &a" + timeToMessage(totalsec) + (offPlayer == player ? "&7." : "&7 for &a" + offPlayer.getName() + "&7."));
     }
 
     @CommandHook("timeplayedadd")
@@ -297,11 +301,12 @@ public class AdminCommands {
             say(player, e.getMessage());
             return;
         }
-        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
-        final long total = vrnPlayer.getTimePlayed() + totalsec;
-        vrnPlayer.setTimePlayed(total);
-        say(player, "Added &a" + timeToMessage(totalsec) + "&7 to " + (vrnPlayer.getPlayer() == player ? "your" : "&a" + vrnPlayer.getName() + "&7's") +
-                " time. " + (vrnPlayer.getPlayer() == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
+        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        final long total = data.getTimePlayed() + totalsec;
+        data.setTimePlayed(total);
+        say(player, "Added &a" + timeToMessage(totalsec) + "&7 to " + (offPlayer == player ? "your" : "&a" + offPlayer.getName() + "&7's") +
+                " time. " + (offPlayer == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
     }
 
     @CommandHook("timeplayedsubtract")
@@ -313,16 +318,17 @@ public class AdminCommands {
             say(player, e.getMessage());
             return;
         }
-        final VRNPlayer vrnPlayer = new VRNPlayer(target != null && target != player ? target : player);
-        final long total = vrnPlayer.getTimePlayed() - totalsec;
+        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
+        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        final long total = data.getTimePlayed() - totalsec;
         if (total < 0) {
-            vrnPlayer.setTimePlayed(0);
-            say(player, "Time played set to &a0 seconds &7" + (vrnPlayer.getPlayer() == player ? "." : " for &a" + vrnPlayer.getName() + "&7."));
+            data.setTimePlayed(0L);
+            say(player, "Time played set to &a0 seconds &7" + (offPlayer == player ? "." : " for &a" + offPlayer.getName() + "&7."));
             return;
         }
-        vrnPlayer.setTimePlayed(total);
-        say(player, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (vrnPlayer.getPlayer() == player ? "your" : "&a" + vrnPlayer.getName() + "&7's") +
-                " time. " + (vrnPlayer.getPlayer() == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        data.setTimePlayed(total);
+        say(player, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (offPlayer == player ? "your" : "&a" + offPlayer.getName() + "&7's") +
+                " time. " + (offPlayer == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
     }
 
     @CommandHook("fly")
@@ -377,5 +383,10 @@ public class AdminCommands {
         say(godPlayer, "You are " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
         if (godPlayer.getPlayer() == player) return;
         say(player, "&a" + godPlayer.getName() + " &7is " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
+    }
+
+    @CommandHook("check")
+    public void onCheck(final Player player, final String target) {
+
     }
 }

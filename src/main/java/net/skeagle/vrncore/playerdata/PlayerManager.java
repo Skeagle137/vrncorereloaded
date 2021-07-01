@@ -2,10 +2,15 @@ package net.skeagle.vrncore.playerdata;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.misc.UserCache;
 import net.skeagle.vrnlib.sql.SQLHelper;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,6 +40,17 @@ public class PlayerManager {
         }
         return new PlayerData(uuid, null, null, null,
                 false, false, false, 0L, null, 0L);
+    }
+
+    public OfflinePlayer getOfflinePlayer(final String name) {
+        final Player player = Bukkit.getPlayer(name);
+        if (player != null)
+            return player;
+        final OfflinePlayer offPlayer = UserCache.getOfflinePlayer(name);
+        if (offPlayer != null)
+            return offPlayer;
+        final String s = VRNcore.getInstance().getDB().querySingleResult("SELECT id FROM playerdata WHERE name = (?)", name.toLowerCase(Locale.ROOT));
+        return s != null ? Bukkit.getOfflinePlayer(UUID.fromString(s)) : null;
     }
 
     public void save() {

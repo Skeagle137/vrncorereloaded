@@ -19,10 +19,12 @@ import net.skeagle.vrnlib.commandmanager.ArgType;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.CommandParser;
 import net.skeagle.vrnlib.commandmanager.Messages;
+import net.skeagle.vrnlib.misc.UserCache;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -61,13 +63,15 @@ public final class VRNcore extends JavaPlugin {
         warpManager = new WarpManager();
         rewardManager = new RewardManager();
         npcManager = new NpcManager();
+        UserCache.asyncInit();
         new Tasks();
         //commands
         new CommandParser(getResource("commands.txt"))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
                         new ArgType<>("reward", rewardManager::getReward).tabStream(s -> rewardManager.getRewards().stream().map(Reward::getName)),
-                        new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)))
+                        new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
+                        new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
                 .parse().register("vrncore", this, new AdminCommands(), new TpCommands(),
                 new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
                 new NickCommands(), new NpcCommands(), new RewardCommands());
