@@ -14,7 +14,7 @@ public final class SkinUtil {
     private static final Map<String, Skin> skinCache = new HashMap<>();
 
     public static Skin getSkin(final String name) {
-        if (skinCache.keySet().stream().anyMatch(skinCache::containsKey))
+        if (skinCache.keySet().stream().anyMatch(s -> s.equalsIgnoreCase(name)))
             return skinCache.get(name);
         final String[] skinStrings = obtainSkinFromName(name);
         if (skinStrings == null)

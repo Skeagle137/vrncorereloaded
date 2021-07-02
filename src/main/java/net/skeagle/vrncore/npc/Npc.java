@@ -22,8 +22,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class Npc {
-
-    private final int id;
     private final String name;
     private final String display;
     private final Location location;
@@ -31,8 +29,7 @@ public class Npc {
     private final boolean rotateHead;
     private int entityId;
 
-    public Npc(final int id, final String name, final String display, final Location location, final Skin skin, final boolean rotateHead) {
-        this.id = id;
+    public Npc(final String name, final String display, final Location location, final Skin skin, final boolean rotateHead) {
         this.name = name;
         this.display = display;
         this.location = location;
@@ -42,43 +39,41 @@ public class Npc {
 
     public void createNPCForPlayer(final Player p) {
         final GameProfile profile = new GameProfile(UUID.randomUUID(), (display.equals(name) ? name : display));
-        if (skin != null)
-            profile.getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
         final ServerPlayer npc = new ServerPlayer(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), profile);
-        npc.moveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        final SynchedEntityData data = npc.getEntityData();
-        data.set(new EntityDataAccessor<>(16, EntityDataSerializers.BYTE), (byte) 127);
+        entityId = npc.getId();
+        npc.setXRot(location.getYaw());
+        npc.setYRot(location.getPitch());
+        npc.setPos(location.getX(), location.getY(), location.getZ());
         sendNPCPackets(p, npc);
-        Task.syncDelayed(() ->
-                ((CraftPlayer) p).getHandle().connection.send(new ClientboundSetEntityDataPacket(npc.getId(), data, true)), 1);
     }
 
     public void sendNPCPackets(final Player p, final ServerPlayer npc) {
         final ServerPlayer nmsPlayer = ((CraftPlayer) p).getHandle();
         nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, npc));
-        nmsPlayer.connection.send(new ClientboundAddEntityPacket(npc));
-        nmsPlayer.connection.send(new ClientboundRotateHeadPacket(npc, (byte) (npc.yHeadRot * 256 / 360)));
-        Task.syncDelayed(() ->
-                nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc)));
+        if (skin != null) {
+            npc.getGameProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
+            final SynchedEntityData data = npc.getEntityData();
+            data.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
+            ((CraftPlayer) p).getHandle().connection.send(new ClientboundSetEntityDataPacket(entityId, data, true));
+        }
+        nmsPlayer.connection.send(new ClientboundRotateHeadPacket(npc, (byte) (location.getYaw() * 256 / 360)));
+        nmsPlayer.connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte) (location.getYaw() * 256 / 360), (byte) (location.getPitch() * 256 / 360), true));
+        nmsPlayer.connection.send(new ClientboundAddPlayerPacket(npc));
+        Task.syncDelayed(() -> nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc)), 30);
     }
 
     public void delete() {
         final ClientboundRemoveEntityPacket destroy = new ClientboundRemoveEntityPacket(entityId);
-        for (final Player pl : Bukkit.getOnlinePlayers())
-            ((CraftPlayer) pl).getHandle().connection.send(destroy);
+        Bukkit.getOnlinePlayers().forEach(pl -> ((CraftPlayer) pl).getHandle().connection.send(destroy));
     }
 
     public void save() {
         final SQLHelper db = VRNcore.getInstance().getDB();
         Task.asyncDelayed(() -> {
-            db.execute("DELETE FROM npc WHERE id = (?)", getId());
-            db.execute("INSERT INTO npc (id, name, display, location, skin, rotatehead) VALUES (?, ?, ?, ?, ?, ?)",
-                    id, name, display, VRNUtil.LocationSerialization.serialize(location), skin.serialize(), rotateHead);
+            db.execute("DELETE FROM npc WHERE name = (?)", name);
+            db.execute("INSERT INTO npc (name, display, location, skin, rotatehead) VALUES (?, ?, ?, ?, ?)",
+                    name, display, VRNUtil.LocationSerialization.serialize(location), skin != null ? skin.serialize() : null, rotateHead);
         });
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getName() {

@@ -32,13 +32,12 @@ public class NpcManager {
         final SQLHelper db = VRNcore.getInstance().getDB();
         final SQLHelper.Results res = db.queryResults("SELECT * FROM npc");
         res.forEach(npc -> {
-            final int id = npc.get(1);
             final String name = npc.getString(2);
             final String display = npc.getString(3);
             final Location loc = VRNUtil.LocationSerialization.deserialize(npc.getString(4));
-            final Skin skin = gson.fromJson(npc.getString(5), Skin.class);
+            final Skin skin = npc.getString(5) != null ? gson.fromJson(npc.getString(5), Skin.class) : null;
             final boolean rotateHead = npc.getBoolean(6);
-            npcList.add(new Npc(id, name, display, loc, skin, rotateHead));
+            npcList.add(new Npc(name, display, loc, skin, rotateHead));
         });
     }
 
@@ -48,15 +47,16 @@ public class NpcManager {
 
     public void deleteNpc(final Npc npc) {
         final SQLHelper db = VRNcore.getInstance().getDB();
-        db.execute("DELETE FROM npc WHERE id = (?)", npc.getId());
+        db.execute("DELETE FROM npc WHERE name = (?)", npc.getName());
         npcList.remove(npc);
         npc.delete();
     }
 
-    public void createNPC(final String name, final Player p) {
-        final Npc npc = new Npc(this.npcList.size(), name, name, p.getLocation(), SkinUtil.getSkin(name), false);
+    public Npc createNPC(final String name, final Player p) {
+        final Npc npc = new Npc(name, name, p.getLocation().clone(), SkinUtil.getSkin(name), false);
         npcList.add(npc);
         npc.save();
+        return npc;
     }
 
     public Npc getNpc(final String s) {

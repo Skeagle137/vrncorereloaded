@@ -81,8 +81,8 @@ public class FunCommands {
         nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, nmsPlayer));
         nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionType(), level.dimension(), level.getSeed(),
                 nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(), level.isDebug(), level.isFlat(), true));
-        nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), player.getLocation().getPitch(),
-                player.getLocation().getYaw(), Collections.emptySet(), -1337, false));
+        nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), nmsPlayer.getYRot(),
+                nmsPlayer.getXRot(), Collections.emptySet(), -1337, false));
         nmsPlayer.getBukkitEntity().updateScaledHealth(true);
 
         player.updateInventory();
