@@ -56,9 +56,9 @@ public class Npc {
             data.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
             ((CraftPlayer) p).getHandle().connection.send(new ClientboundSetEntityDataPacket(entityId, data, true));
         }
+        nmsPlayer.connection.send(new ClientboundAddPlayerPacket(npc));
         nmsPlayer.connection.send(new ClientboundRotateHeadPacket(npc, (byte) (location.getYaw() * 256 / 360)));
         nmsPlayer.connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte) (location.getYaw() * 256 / 360), (byte) (location.getPitch() * 256 / 360), true));
-        nmsPlayer.connection.send(new ClientboundAddPlayerPacket(npc));
         Task.syncDelayed(() -> nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc)), 30);
     }
 

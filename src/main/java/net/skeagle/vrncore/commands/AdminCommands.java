@@ -384,9 +384,4 @@ public class AdminCommands {
         if (godPlayer.getPlayer() == player) return;
         say(player, "&a" + godPlayer.getName() + " &7is " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
     }
-
-    @CommandHook("check")
-    public void onCheck(final Player player, final String target) {
-
-    }
 }

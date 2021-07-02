@@ -47,7 +47,6 @@ public class FunCommands {
         dragon.copyPosition(entityPlayer);
         dragon.setInvulnerable(true);
         entityPlayer.connection.send(new ClientboundAddMobPacket(dragon));
-        //entityPlayer.connection.send(new ClientboundSetEntityDataPacket(dragon.getId(), dragon.getEntityData(), true));
         say(halluPlayer, halluPlayer == player ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
                 "Sent &a" + halluPlayer.getName() + "&7 a hallucination.");
     }
