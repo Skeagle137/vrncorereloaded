@@ -6,7 +6,7 @@
     <groupId>net.skeagle</groupId>
     <artifactId>vrncore</artifactId>
     <name>VRNcore</name>
-    <version>5.0.0-pre16</version>
+    <version>5.0.0-pre17</version>
 
     <description>The core plugin for VRN Network.</description>
 
