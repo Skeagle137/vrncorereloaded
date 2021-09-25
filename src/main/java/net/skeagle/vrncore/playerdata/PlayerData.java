@@ -1,13 +1,19 @@
 package net.skeagle.vrncore.playerdata;
 
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.trail.style.TrailStyle;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.sql.SQLHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+
+import static net.skeagle.vrncore.utils.VRNUtil.color;
 
 public class PlayerData {
 
@@ -15,50 +21,75 @@ public class PlayerData {
     private String nickname;
     private Particle arrowtrail;
     private Particle playertrail;
+    private TrailStyle trailStyle;
     private boolean vanished;
     private boolean muted;
     private boolean godmode;
-    private long last_online;
-    private Location last_location;
-    private long timeplayed;
+    private Location lastLocation;
+    private long timePlayed;
 
     PlayerData(final UUID uuid, final String nickname, final Particle arrowtrail, final Particle playertrail,
-               final boolean vanished, final boolean muted, final boolean godmode, final long last_online,
-               final Location last_location, final long timeplayed) {
+               final TrailStyle trailStyle, final boolean vanished, final boolean muted, final boolean godmode,
+               final Location lastLocation, final long timePlayed) {
         this.uuid = uuid;
         this.nickname = nickname;
         this.arrowtrail = arrowtrail;
         this.playertrail = playertrail;
+        this.trailStyle = trailStyle;
         this.vanished = vanished;
         this.muted = muted;
         this.godmode = godmode;
-        this.last_online = last_online;
-        this.last_location = last_location;
-        this.timeplayed = timeplayed;
+        this.lastLocation = lastLocation;
+        this.timePlayed = timePlayed;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getNick() {
+        return nickname == null ? getName() : null;
     }
 
-    public void setNickname(final String nickname) {
-        this.nickname = nickname;
+    public void setNick(final String nickname) {
+        this.nickname = color(nickname + "&r");;
+        updateName();
     }
 
-    public Particle getArrowtrail() {
+    public String getName() {
+        return getPlayer() != null ? color(getPlayer().getName() + "&r") : getPlayer().getName();
+    }
+
+    public void updateName() {
+        if (getPlayer() != null) {
+            getPlayer().setDisplayName(nickname);
+            String listname = nickname;
+            if (HookManager.isVaultLoaded()) {
+                listname = "%prefix" + nickname + "%suffix";
+                listname = HookManager.format(listname, getPlayer());
+            }
+            getPlayer().setPlayerListName(color(listname));
+        }
+    }
+
+    public Particle getArrowTrail() {
         return arrowtrail;
     }
 
-    public void setArrowtrail(@Nullable final Particle arrowtrail) {
+    public void setArrowTrail(@Nullable final Particle arrowtrail) {
         this.arrowtrail = arrowtrail;
     }
 
-    public Particle getPlayertrail() {
+    public Particle getPlayerTrail() {
         return playertrail;
     }
 
-    public void setPlayertrail(@Nullable final Particle playertrail) {
+    public void setPlayerTrail(@Nullable final Particle playertrail) {
         this.playertrail = playertrail;
+    }
+
+    public TrailStyle getTrailStyle() {
+        return trailStyle;
+    }
+
+    public void setTrailStyle(TrailStyle trailStyle) {
+        this.trailStyle = trailStyle;
     }
 
     public boolean isVanished() {
@@ -85,36 +116,32 @@ public class PlayerData {
         this.godmode = godmode;
     }
 
-    public long getLastOnline() {
-        return last_online;
-    }
-
-    public void setLastOnline(final long last_online) {
-        this.last_online = last_online;
-    }
-
     public Location getLastLocation() {
-        return last_location;
+        return lastLocation;
     }
 
     public void setLastLocation(final Location last_location) {
-        this.last_location = last_location;
+        this.lastLocation = last_location;
     }
 
     public long getTimePlayed() {
-        return timeplayed;
+        return timePlayed;
     }
 
     public void setTimePlayed(final long timeplayed) {
-        this.timeplayed = timeplayed;
+        this.timePlayed = timeplayed;
+    }
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(uuid);
     }
 
     public void save() {
         final SQLHelper db = VRNcore.getInstance().getDB();
         db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
-        db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, vanished, muted, godmode, " +
-                        "lastOnline, lastLocation, timeplayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                uuid.toString(), nickname, arrowtrail, playertrail, vanished, muted, godmode,
-                last_online, VRNUtil.LocationSerialization.serialize(last_location), timeplayed);
+        db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, trailStyle, vanished, muted, " +
+                        "godmode, lastLocation, timePlayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                uuid.toString(), nickname, arrowtrail, playertrail, trailStyle, vanished, muted,
+                godmode, VRNUtil.LocationSerialization.serialize(lastLocation), timePlayed);
     }
 }

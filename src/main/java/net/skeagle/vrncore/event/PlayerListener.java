@@ -2,7 +2,8 @@ package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.hook.HookManager;
-import net.skeagle.vrncore.utils.VRNPlayer;
+import net.skeagle.vrncore.playerdata.PlayerData;
+import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent e) {
-        final VRNPlayer p = new VRNPlayer(e.getUniqueId());
+        PlayerManager.getData(e.getUniqueId());
         /*
         if (p.getBannedTime < System.currentTimeMillis() && p.getBannedTime != 0) {
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, color("&cYou are banned from this server."));
@@ -36,22 +37,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        final VRNPlayer p = new VRNPlayer(e.getPlayer());
-        final String name = p.getName();
-        e.getPlayer().setDisplayName(name);
+        final PlayerData data = PlayerManager.getData(e.getPlayer().getUniqueId());
         if (!e.getPlayer().hasPlayedBefore() && Settings.joinLeaveEnabled) {
-            e.setJoinMessage(Messages.msg("welcomeMsg").replaceAll("%player%", name));
+            e.setJoinMessage(Messages.msg("welcomeMsg").replaceAll("%player%", data.getName()));
             return;
         }
-        String listname = null;
-        if (HookManager.isVaultLoaded()) {
-            listname = "%prefix" + name + "%suffix";
-            listname = HookManager.format(listname, e.getPlayer());
+        if (data.getNick() != null) {
+            data.updateName();
         }
-        e.getPlayer().setPlayerListName(color(listname != null ? listname : name));
         if (Settings.joinLeaveEnabled) {
-            e.setJoinMessage(Messages.msg("joinMsg").replaceAll("%player%", name));
-            Task.syncDelayed(() -> say(e.getPlayer(), Messages.msg("returnMsg").replaceAll("%player%", name)));
+            e.setJoinMessage(Messages.msg("joinMsg").replaceAll("%player%", data.getName()));
+            Task.syncDelayed(() -> say(e.getPlayer(), Messages.msg("returnMsg").replaceAll("%player%", data.getName())));
         }
     }
 
@@ -61,10 +57,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent e) {
-        final VRNPlayer p = new VRNPlayer(e.getPlayer());
         if (Settings.joinLeaveEnabled)
-            e.setQuitMessage(Messages.msg("leaveMsg").replaceAll("%player%", p.getName()));
-        p.save();
+            e.setQuitMessage(Messages.msg("leaveMsg").replaceAll("%player%", PlayerManager.getData(e.getPlayer().getUniqueId()).getName()));
     }
 
     /************************
@@ -73,22 +67,22 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent e) {
-        final VRNPlayer p = new VRNPlayer(e.getPlayer());
-        if (p.isMuted()) {
-            e.setCancelled(true);
-            say(p, "&cYou are muted. You cannot chat.");
-        }
         if (!Settings.Chat.enabled)
             return;
-        if (!hasPerm(p, "vrn.chat.allow") && Settings.Chat.chatPermission) {
+        if (!e.getPlayer().hasPermission("vrn.chat.allow") && Settings.Chat.chatPermission) {
             e.setCancelled(true);
-            say(p, "&cYou do not have permission to use the chat.");
+            say(e.getPlayer(), "&cYou do not have permission to use the chat.");
         }
-        if (hasPerm(p, "vrn.chat.color") || !Settings.Chat.colorPermission)
+        final PlayerData data = PlayerManager.getData(e.getPlayer().getUniqueId());
+        if (data.isMuted()) {
+            e.setCancelled(true);
+            say(e.getPlayer(), "&cYou are muted. You cannot chat.");
+        }
+        if (e.getPlayer().hasPermission("vrn.chat.color") || !Settings.Chat.colorPermission)
             e.setMessage(color(e.getMessage()));
         if (!HookManager.isVaultLoaded())
             return;
-        String msg = HookManager.format(p.getPlayer());
+        String msg = HookManager.format(e.getPlayer());
         msg = msg.replaceAll("%", "%%");
         msg = msg.replace("%%message", "%2$s");
         e.setFormat(color(msg));
@@ -100,8 +94,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onGodDamage(final EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        if (new VRNPlayer((Player) e.getEntity()).isGodmode())
+        if (!(e.getEntity() instanceof Player player)) return;
+        if (PlayerManager.getData(player.getUniqueId()).isGodmode())
             e.setCancelled(true);
     }
 }

@@ -4,7 +4,7 @@ import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.skeagle.vrncore.GUIs.GivePlusGUI;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.playerdata.PlayerData;
-import net.skeagle.vrncore.utils.VRNPlayer;
+import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrnlib.commandmanager.CommandHook;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.misc.EventListener;
@@ -25,9 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.TabCompleteEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static net.skeagle.vrncore.utils.VRNUtil.color;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -44,11 +42,11 @@ public class AdminCommands {
                 vanished.remove(e.getPlayer().getUniqueId()));
 
         new EventListener<>(PlayerJoinEvent.class, e -> {
-            final VRNPlayer vrnPlayer = new VRNPlayer(e.getPlayer());
-            if (vrnPlayer.isVanished()) {
+            final PlayerData data = PlayerManager.getData(e.getPlayer().getUniqueId());
+            if (data.isVanished()) {
                 for (final Player pl : Bukkit.getOnlinePlayers()) {
                     if (pl == e.getPlayer()) continue;
-                    vanished.add(vrnPlayer.getPlayer().getUniqueId());
+                    vanished.add(data.getPlayer().getUniqueId());
                     Task.syncDelayed(() -> {
                         ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
                                 ((CraftPlayer) e.getPlayer()).getHandle()));
@@ -59,14 +57,14 @@ public class AdminCommands {
         });
 
         new EventListener<>(EntityTargetEvent.class, e -> {
-            if (!(e.getTarget() instanceof Player)) return;
-            final VRNPlayer p = new VRNPlayer((Player) e.getTarget());
-            if (p.isVanished()) {
-                e.setCancelled(true);
-                e.setTarget(null);
+            if (!(e.getTarget() instanceof Player player)) return;
+            final PlayerData data = PlayerManager.getData(player.getUniqueId());
+            if (data.isVanished()) {
+                if (e.getEntity() instanceof Mob mob) {
+                    mob.setTarget(null);
+                    e.setCancelled(true);
+                }
             }
-            if (e.getEntity() instanceof Mob)
-                ((Mob) e.getEntity()).setTarget(null);
         });
 
         new EventListener<>(TabCompleteEvent.class, e -> {
@@ -106,26 +104,26 @@ public class AdminCommands {
 
     @CommandHook("vanish")
     public void onVanish(final Player player, final Player target) {
-        final VRNPlayer vrnPlayer = new VRNPlayer(target != null ? target : player);
-        if (!vrnPlayer.isVanished()) {
-            this.vanished.add(vrnPlayer.getPlayer().getUniqueId());
+        final PlayerData data = PlayerManager.getData(target != null ? target.getUniqueId() : player.getUniqueId());
+        if (!data.isVanished()) {
+            this.vanished.add(data.getPlayer().getUniqueId());
             for (final Player pl : Bukkit.getOnlinePlayers()) {
-                if (pl == vrnPlayer.getPlayer()) continue;
-                pl.hidePlayer(VRNcore.getInstance(), vrnPlayer.getPlayer());
-                ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, ((CraftPlayer) vrnPlayer.getPlayer()).getHandle()));
+                if (pl == data.getPlayer()) continue;
+                pl.hidePlayer(VRNcore.getInstance(), data.getPlayer());
+                ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, ((CraftPlayer) data.getPlayer()).getHandle()));
             }
         } else {
-            this.vanished.remove(vrnPlayer.getPlayer().getUniqueId());
+            this.vanished.remove(data.getPlayer().getUniqueId());
             for (final Player pl : Bukkit.getOnlinePlayers()) {
-                if (pl == vrnPlayer.getPlayer()) continue;
-                pl.showPlayer(VRNcore.getInstance(), vrnPlayer.getPlayer());
-                ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, ((CraftPlayer) vrnPlayer.getPlayer()).getHandle()));
+                if (pl == data.getPlayer()) continue;
+                pl.showPlayer(VRNcore.getInstance(), data.getPlayer());
+                ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, ((CraftPlayer) data.getPlayer()).getHandle()));
             }
         }
-        vrnPlayer.setVanished(!vrnPlayer.isVanished());
-        say(vrnPlayer, "Vanish " + (vrnPlayer.isVanished() ? "enabled." : "disabled."));
-        if (vrnPlayer.getPlayer() == player) return;
-        say(player, "Vanish " + (vrnPlayer.isVanished() ? "enabled" : "disabled") + " for &a" + vrnPlayer.getName() + "&7.");
+        data.setVanished(!data.isVanished());
+        say(target, "Vanish " + (data.isVanished() ? "enabled." : "disabled."));
+        if (data.getPlayer() == player) return;
+        say(player, "Vanish " + (data.isVanished() ? "enabled" : "disabled") + " for &a" + data.getName() + "&7.");
     }
 
     @CommandHook("giveplus")
@@ -149,10 +147,10 @@ public class AdminCommands {
 
     @CommandHook("mute")
     public void onMute(final CommandSender sender, final Player target) {
-        final VRNPlayer player = new VRNPlayer(target);
-        player.setMuted(!player.isMuted());
-        say(player, "You are " + (player.isMuted() ? "now" : "no longer") + " muted.");
-        say(sender, "&a" + player.getName() + " &7is " + (player.isMuted() ? "now" : "no longer") + " muted.");
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
+        data.setMuted(!data.isMuted());
+        say(target, "You are " + (data.isMuted() ? "now" : "no longer") + " muted.");
+        say(sender, "&a" + data.getName() + " &7is " + (data.isMuted() ? "now" : "no longer") + " muted.");
     }
 
     @CommandHook("smite")
@@ -262,17 +260,17 @@ public class AdminCommands {
                 speedPlayer.setWalkSpeed(0.12f + (0.088f * f));
             }
             say(speedPlayer, "Your " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
-                    (speedPlayer.isFlying() ? f / 10 : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
+                    (speedPlayer.isFlying() ? f : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
             if (speedPlayer == player) return;
             say(player, "&a" + speedPlayer.getName() + "&7's " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
-                    (speedPlayer.isFlying() ? f / 10 : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
+                    (speedPlayer.isFlying() ? f : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
         }
     }
 
     @CommandHook("timeplayedget")
     public void onTimePlayedGet(final Player player, final OfflinePlayer target) {
         final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
         say(player, (offPlayer == player ? "Your" : "&a" + offPlayer.getName() + "&7's") +
                 " time played is &a" + timeToMessage(data.getTimePlayed()) + "&7.");
     }
@@ -287,7 +285,7 @@ public class AdminCommands {
             return;
         }
         final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
         data.setTimePlayed(totalsec);
         say(player, "Time played set to &a" + timeToMessage(totalsec) + (offPlayer == player ? "&7." : "&7 for &a" + offPlayer.getName() + "&7."));
     }
@@ -302,7 +300,7 @@ public class AdminCommands {
             return;
         }
         final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
         final long total = data.getTimePlayed() + totalsec;
         data.setTimePlayed(total);
         say(player, "Added &a" + timeToMessage(totalsec) + "&7 to " + (offPlayer == player ? "your" : "&a" + offPlayer.getName() + "&7's") +
@@ -319,7 +317,7 @@ public class AdminCommands {
             return;
         }
         final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = VRNcore.getInstance().getPlayerManager().getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
         final long total = data.getTimePlayed() - totalsec;
         if (total < 0) {
             data.setTimePlayed(0L);
@@ -378,10 +376,10 @@ public class AdminCommands {
 
     @CommandHook("god")
     public void onGod(final Player player, final Player target) {
-        final VRNPlayer godPlayer = new VRNPlayer(target != null && target != player ? target : player);
-        godPlayer.setGodmode(!godPlayer.isGodmode());
-        say(godPlayer, "You are " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
-        if (godPlayer.getPlayer() == player) return;
-        say(player, "&a" + godPlayer.getName() + " &7is " + (godPlayer.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        final PlayerData data = PlayerManager.getData(target != null ? target.getUniqueId() : player.getUniqueId());
+        data.setGodmode(!data.isGodmode());
+        say(target, "You are " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        if (data.getPlayer() == player) return;
+        say(player, "&a" + data.getName() + " &7is " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
     }
 }

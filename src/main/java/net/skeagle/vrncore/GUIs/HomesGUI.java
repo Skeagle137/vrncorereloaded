@@ -4,6 +4,7 @@ import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.homes.Home;
 import net.skeagle.vrncore.utils.ItemUtil;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.VRNLib;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
@@ -53,7 +54,7 @@ public class HomesGUI extends PageableGUI<Home> {
             String perm = "vrn.delhome." + (h.owner() != target.getUniqueId() ? "others" : "self");
             if (!player.hasPermission(perm)) {
                 player.closeInventory();
-                say(player, VRNUtil.noperm);
+                say(player, Messages.getLoaded(VRNLib.getInstance()).get("noPermission"));
                 return;
             }
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);

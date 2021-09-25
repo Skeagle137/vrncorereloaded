@@ -4,10 +4,11 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public final class AFKManager {
 
-    private static final Map<Player, AFKManager> afkPlayers = new HashMap<>();
+    private static final Map<UUID, AFKManager> afkPlayers = new HashMap<>();
 
     private boolean afk;
     private int timeAfk;
@@ -24,12 +25,12 @@ public final class AFKManager {
 
     public static AFKManager getAfkManager(final Player p) {
 
-        AFKManager manager = afkPlayers.get(p);
+        AFKManager manager = afkPlayers.get(p.getUniqueId());
 
         if (manager == null) {
             manager = new AFKManager();
 
-            afkPlayers.put(p, manager);
+            afkPlayers.put(p.getUniqueId(), manager);
         }
 
         return manager;

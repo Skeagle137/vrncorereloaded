@@ -3,7 +3,7 @@ package net.skeagle.vrncore;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.event.AFKListener;
-import net.skeagle.vrncore.event.ArrowListener;
+import net.skeagle.vrncore.event.TrailListener;
 import net.skeagle.vrncore.event.MotdListener;
 import net.skeagle.vrncore.event.PlayerListener;
 import net.skeagle.vrncore.homes.HomeManager;
@@ -13,6 +13,7 @@ import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.rewards.Reward;
 import net.skeagle.vrncore.rewards.RewardManager;
+import net.skeagle.vrncore.trail.style.StyleRegistry;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
 import net.skeagle.vrnlib.commandmanager.ArgType;
@@ -38,6 +39,7 @@ public final class VRNcore extends JavaPlugin {
     private WarpManager warpManager;
     private RewardManager rewardManager;
     private NpcManager npcManager;
+    private StyleRegistry styleRegistry;
     private SQLHelper db;
 
     @Override
@@ -50,7 +52,7 @@ public final class VRNcore extends JavaPlugin {
         //database setup
         db = new SQLHelper(SQLHelper.openSQLite(getDataFolder().toPath().resolve("vrn_data.db")));
         db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, arrowtrail STRING, playertrail STRING, " +
-                "vanished BOOLEAN, muted BOOLEAN, godmode BOOLEAN, lastOnline BIGINT, lastLocation STRING, timeplayed BIGINT);");
+                "trailStyle STRING, vanished BOOLEAN, muted BOOLEAN, godmode BOOLEAN, lastOnline BIGINT, lastLocation STRING, timePlayed BIGINT);");
         db.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
@@ -58,29 +60,29 @@ public final class VRNcore extends JavaPlugin {
         db.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, permission STRING, message STRING, " +
                 "firework BOOLEAN, title STRING, subtitle STRING, type STRING, action STRING, groupname STRING, cost BIGINT, time BIGINT);");
         //managers and tasks
+        UserCache.asyncInit();
         playerManager = new PlayerManager();
+        styleRegistry = new StyleRegistry(this);
         homeManager = new HomeManager();
         warpManager = new WarpManager();
         rewardManager = new RewardManager();
         npcManager = new NpcManager();
-        UserCache.asyncInit();
         new Tasks();
         //commands
         new CommandParser(getResource("commands.txt"))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
-                        new ArgType<>("reward", rewardManager::getReward).tabStream(s -> rewardManager.getRewards().stream().map(Reward::getName)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
                         new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
                 .parse().register("vrncore", this, new AdminCommands(), new TpCommands(),
                 new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
-                new NickCommands(), new NpcCommands(), new RewardCommands());
+                new NickCommands(), new NpcCommands());
         //listeners
         if (Settings.Motd.motdEnabled)
             Bukkit.getPluginManager().registerEvents(new MotdListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Bukkit.getPluginManager().registerEvents(new AFKListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ArrowListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TrailListener(), this);
     }
 
     @Override
@@ -100,6 +102,10 @@ public final class VRNcore extends JavaPlugin {
 
     public PlayerManager getPlayerManager() {
         return playerManager;
+    }
+
+    public StyleRegistry getStyleRegistry() {
+        return styleRegistry;
     }
 
     public HomeManager getHomeManager() {

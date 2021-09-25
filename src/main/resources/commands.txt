@@ -38,7 +38,7 @@ delwarp warp:warp* {
     hook delwarp
 }
 demo player:player* {
-    permission vrn.clearchat
+    permission vrn.demo
     help Shows the demo screen to a player.
     hook demo
 }
@@ -232,24 +232,6 @@ removenick player:player*? {
     permission vrn.nick
     help Remove a nickname from a player.
     hook removenick
-}
-reward {
-    create string:name* {
-        permission vrn.reward.create
-        help Create a reward.
-        hook createreward
-    }
-    delete reward:reward* {
-        permission vrn.reward.delete
-        help Delete a reward.
-        hook delreward
-    }
-    edit reward:reward* {
-        permission vrn.reward.edit
-        help Edit a reward.
-        user player
-        hook editreward
-    }
 }
 rtp {
     permission vrn.rtp

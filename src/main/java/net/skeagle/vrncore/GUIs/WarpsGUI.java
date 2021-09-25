@@ -3,6 +3,7 @@ package net.skeagle.vrncore.GUIs;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
+import net.skeagle.vrnlib.VRNLib;
 import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
@@ -48,7 +49,7 @@ public class WarpsGUI extends PageableGUI<Warp> {
             String perm = "vrn.delwarp." + (!w.owner().equals(player.getUniqueId()) ? "others" : "self");
             if (!player.hasPermission(perm)) {
                 getViewer().closeInventory();
-                say(getViewer(), VRNUtil.noperm);
+                say(getViewer(), Messages.getLoaded(VRNLib.getInstance()).get("noPermission"));
                 return;
             }
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);

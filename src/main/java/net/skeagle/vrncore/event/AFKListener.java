@@ -10,6 +10,8 @@ public class AFKListener implements Listener {
     @EventHandler
     public void onLeave(final PlayerQuitEvent e) {
         final AFKManager manager = AFKManager.getAfkManager(e.getPlayer());
-        if (manager.isAfk()) manager.setAfk(false);
+        if (manager.isAfk()) {
+            manager.setAfk(false);
+        }
     }
 }

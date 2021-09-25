@@ -1,11 +1,10 @@
 package net.skeagle.vrncore.trail;
 
-public enum TrailStyle {
+public enum Style {
     DEFAULT,
     CIRCLE,
     HELIX,
     ORBIT,
-    DOUBLEHELIX,
-    TRIORBIT,
-    TRICIRCLE;
+    AURA,
+    SPREAD
 }

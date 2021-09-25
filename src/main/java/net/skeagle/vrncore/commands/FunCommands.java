@@ -18,10 +18,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class FunCommands {
+
+    private final Map<UUID, Skin> skinCache;
+
+    public FunCommands() {
+        skinCache = new HashMap<>();
+    }
 
     @CommandHook("demo")
     public void onDemo(final CommandSender sender, final Player target) {
