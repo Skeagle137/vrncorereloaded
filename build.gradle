@@ -1,0 +1,90 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'xyz.jpenilla.special-gradle' version '1.0.0-SNAPSHOT'
+}
+
+specialGradle {
+    minecraftVersion = "1.17"
+    specialSourceVersion = "1.10.0"
+}
+
+group = 'net.skeagle'
+version = '5.0.0-pre17'
+java.sourceCompatibility = JavaVersion.VERSION_16
+String mc = '1.17'
+
+repositories {
+    mavenCentral()
+    maven { url = uri('https://oss.sonatype.org/content/repositories/snapshots') }
+    maven { url = uri('https://jitpack.io') }
+    gradlePluginPortal()
+    mavenLocal()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
+tasks {
+    build {
+        dependsOn(productionMappedJar)
+    }
+}
+
+dependencies {
+    implementation 'org.xerial:sqlite-jdbc:3.36.0.2'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'net.skeagle:VRNLib:1.3a'
+    compileOnly "org.spigotmc:spigot:${mc}-R0.1-SNAPSHOT"
+    compileOnly 'net.luckperms:api:5.3'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+}
+
+task updatePlugins {
+    doLast {
+        copy {
+            from 'build/libs/'
+            exclude '*obf.jar'
+            exclude '*dev.jar'
+            into 'C:/Users/Skeagle/Documents/VRN Stuff/Dev 1.17/plugins'
+            rename { "${rootProject.name} ${version}.jar" }
+        }
+    }
+}
+
+task deploy(dependsOn: ["jar", "updatePlugins"]) {
+    updatePlugins.mustRunAfter jar
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}

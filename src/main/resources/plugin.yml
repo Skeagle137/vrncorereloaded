@@ -1,8 +1,8 @@
 name: VRNcore
-version: ${project.version}
+version: @version@
 main: net.skeagle.vrncore.VRNcore
 author: Skeagle
-description: ${project.description}
+description: "The core plugin for VRN Network, containing many essentials-inspired commands and features, admin tools, cosmetics, and other helpful utilities."
 depend: [ VRNLib ]
 softdepend: [ Vault, LuckPerms ]
 api-version: 1.17
