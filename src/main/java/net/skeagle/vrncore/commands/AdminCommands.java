@@ -98,13 +98,13 @@ public class AdminCommands {
 
     @CommandHook("echest")
     public void onEchest(final Player player, final Player target) {
-        player.openInventory(target != null ? target.getEnderChest() : player.getEnderChest());
-        say(player, target != null && target != player ? "Now showing &a" + target.getName() + "&7's ender chest." : "Now showing your ender chest.");
+        player.openInventory(target.getEnderChest());
+        say(player, target != player ? "Now showing &a" + target.getName() + "&7's ender chest." : "Now showing your ender chest.");
     }
 
     @CommandHook("vanish")
-    public void onVanish(final Player player, final Player target) {
-        final PlayerData data = PlayerManager.getData(target != null ? target.getUniqueId() : player.getUniqueId());
+    public void onVanish(final CommandSender sender, final Player target) {
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
         if (!data.isVanished()) {
             this.vanished.add(data.getPlayer().getUniqueId());
             for (final Player pl : Bukkit.getOnlinePlayers()) {
@@ -121,9 +121,9 @@ public class AdminCommands {
             }
         }
         data.setVanished(!data.isVanished());
-        say(target, "Vanish " + (data.isVanished() ? "enabled." : "disabled."));
-        if (data.getPlayer() == player) return;
-        say(player, "Vanish " + (data.isVanished() ? "enabled" : "disabled") + " for &a" + data.getName() + "&7.");
+        say(data.getPlayer(), "Vanish " + (data.isVanished() ? "enabled." : "disabled."));
+        if (data.getPlayer() == sender) return;
+        say(sender, "Vanish " + (data.isVanished() ? "enabled" : "disabled") + " for &a" + data.getName() + "&7.");
     }
 
     @CommandHook("giveplus")
@@ -149,7 +149,7 @@ public class AdminCommands {
     public void onMute(final CommandSender sender, final Player target) {
         final PlayerData data = PlayerManager.getData(target.getUniqueId());
         data.setMuted(!data.isMuted());
-        say(target, "You are " + (data.isMuted() ? "now" : "no longer") + " muted.");
+        say(data.getPlayer(), "You are " + (data.isMuted() ? "now" : "no longer") + " muted.");
         say(sender, "&a" + data.getName() + " &7is " + (data.isMuted() ? "now" : "no longer") + " muted.");
     }
 
@@ -186,14 +186,13 @@ public class AdminCommands {
     }
 
     @CommandHook("heal")
-    public void onHeal(final Player player, final Player target) {
-        final Player healPlayer = target != null && target != player ? target : player;
-        healPlayer.setHealth(healPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        healPlayer.setFoodLevel(20);
-        healPlayer.setFireTicks(0);
-        say(healPlayer, "Your health and hunger are now full.");
-        if (healPlayer == player) return;
-        say(player, "&a" + healPlayer.getName() + "&7's health and hunger are now full.");
+    public void onHeal(final CommandSender sender, final Player target) {
+        target.setHealth(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        target.setFoodLevel(20);
+        target.setFireTicks(0);
+        say(target, "Your health and hunger are now full.");
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + "&7's health and hunger are now full.");
     }
 
     @CommandHook("invsee")
@@ -234,152 +233,142 @@ public class AdminCommands {
     }
 
     @CommandHook("speed")
-    public void onSpeed(final Player player, final Player target, final int speed) {
-        final Player speedPlayer = target != null && target != player ? target : player;
+    public void onSpeed(final CommandSender sender, final Player target, final int speed) {
         if (speed == 1) {
-            if (speedPlayer.isFlying())
-                speedPlayer.setFlySpeed((float) 0.1);
+            if (target.isFlying())
+                target.setFlySpeed((float) 0.1);
             else
-                speedPlayer.setWalkSpeed((float) 0.2);
-            say(speedPlayer, "Your " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been reset.");
-            if (speedPlayer == player) return;
-            say(player, "&a" + speedPlayer.getName() + "&7's " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been reset.");
+                target.setWalkSpeed((float) 0.2);
+            say(target, "Your " + (target.isFlying() ? "flying" : "walking") + " speed has been reset.");
+            if (target == sender) return;
+            say(sender, "&a" + target.getName() + "&7's " + (target.isFlying() ? "flying" : "walking") + " speed has been reset.");
         } else {
             float f = speed;
-            if (speedPlayer.isFlying()) {
+            if (target.isFlying()) {
                 if (speed > 10)
                     f = 10;
                 if (speed < 0)
                     f = 0;
-                speedPlayer.setFlySpeed(f / 10);
+                target.setFlySpeed(f / 10);
             } else {
                 if (speed > 10)
                     f = 10;
                 if (speed < 0)
                     f = 0;
-                speedPlayer.setWalkSpeed(0.12f + (0.088f * f));
+                target.setWalkSpeed(0.12f + (0.088f * f));
             }
-            say(speedPlayer, "Your " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
-                    (speedPlayer.isFlying() ? f : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
-            if (speedPlayer == player) return;
-            say(player, "&a" + speedPlayer.getName() + "&7's " + (speedPlayer.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
-                    (speedPlayer.isFlying() ? f : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
+            say(target, "Your " + (target.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
+                    (target.isFlying() ? f : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
+            if (target == sender) return;
+            say(sender, "&a" + target.getName() + "&7's " + (target.isFlying() ? "flying" : "walking") + " speed has been set to &a" +
+                    (target.isFlying() ? f : (int) ((0.12f + (0.088f * f)) * 10)) + "&7.");
         }
     }
 
     @CommandHook("timeplayedget")
-    public void onTimePlayedGet(final Player player, final OfflinePlayer target) {
-        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
-        say(player, (offPlayer == player ? "Your" : "&a" + offPlayer.getName() + "&7's") +
+    public void onTimePlayedGet(final CommandSender sender, final OfflinePlayer target) {
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
+        say(sender, (target == sender ? "Your" : "&a" + target.getName() + "&7's") +
                 " time played is &a" + timeToMessage(data.getTimePlayed()) + "&7.");
     }
 
     @CommandHook("timeplayedset")
-    public void onTimePlayedSet(final Player player, final OfflinePlayer target, final String time) {
+    public void onTimePlayedSet(final CommandSender sender, final OfflinePlayer target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
         } catch (final TimeUtil.TimeFormatException e) {
-            say(player, e.getMessage());
+            say(sender, e.getMessage());
             return;
         }
-        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
         data.setTimePlayed(totalsec);
-        say(player, "Time played set to &a" + timeToMessage(totalsec) + (offPlayer == player ? "&7." : "&7 for &a" + offPlayer.getName() + "&7."));
+        say(sender, "Time played set to &a" + timeToMessage(totalsec) + (target == sender ? "&7." : "&7 for &a" + target.getName() + "&7."));
     }
 
     @CommandHook("timeplayedadd")
-    public void onTimePlayedAdd(final Player player, final Player target, final String time) {
+    public void onTimePlayedAdd(final CommandSender sender, final OfflinePlayer target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
         } catch (final TimeUtil.TimeFormatException e) {
-            say(player, e.getMessage());
+            say(sender, e.getMessage());
             return;
         }
-        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
         final long total = data.getTimePlayed() + totalsec;
         data.setTimePlayed(total);
-        say(player, "Added &a" + timeToMessage(totalsec) + "&7 to " + (offPlayer == player ? "your" : "&a" + offPlayer.getName() + "&7's") +
-                " time. " + (offPlayer == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        say(sender, "Added &a" + timeToMessage(totalsec) + "&7 to " + (target == sender ? "your" : "&a" + target.getName() + "&7's") +
+                " time. " + (target == sender ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
     }
 
     @CommandHook("timeplayedsubtract")
-    public void onTimePlayedSubtract(final Player player, final Player target, final String time) {
+    public void onTimePlayedSubtract(final CommandSender sender, final OfflinePlayer target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
         } catch (final TimeUtil.TimeFormatException e) {
-            say(player, e.getMessage());
+            say(sender, e.getMessage());
             return;
         }
-        final OfflinePlayer offPlayer = target != null && target != player ? target : player;
-        final PlayerData data = PlayerManager.getData(offPlayer.getUniqueId());
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
         final long total = data.getTimePlayed() - totalsec;
         if (total < 0) {
             data.setTimePlayed(0L);
-            say(player, "Time played set to &a0 seconds &7" + (offPlayer == player ? "." : " for &a" + offPlayer.getName() + "&7."));
+            say(sender, "Time played set to &a0 seconds &7" + (target == sender ? "." : " for &a" + target.getName() + "&7."));
             return;
         }
         data.setTimePlayed(total);
-        say(player, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (offPlayer == player ? "your" : "&a" + offPlayer.getName() + "&7's") +
-                " time. " + (offPlayer == player ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        say(sender, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (target == sender ? "your" : "&a" + target.getName() + "&7's") +
+                " time. " + (target == sender ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
     }
 
     @CommandHook("fly")
-    public void onFly(final Player player, final Player target) {
-        final Player flyPlayer = target != null && target != player ? target : player;
-        flyPlayer.setAllowFlight(!flyPlayer.getAllowFlight());
-        say(flyPlayer, "Fly mode has been " + (flyPlayer.getAllowFlight() ? "enabled" : "disabled") + ".");
-        if (flyPlayer == player) return;
-        say(player, "&a" + flyPlayer.getName() + "&7's fly mode has been " + (flyPlayer.getAllowFlight() ? "enabled" : "disabled") + ".");
+    public void onFly(final CommandSender sender, final Player target) {
+        target.setAllowFlight(!target.getAllowFlight());
+        say(target, "Fly mode has been " + (target.getAllowFlight() ? "enabled" : "disabled") + ".");
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + "&7's fly mode has been " + (target.getAllowFlight() ? "enabled" : "disabled") + ".");
     }
 
     @CommandHook("gms")
-    public void onGmSurvival(final Player player, final Player target) {
-        final Player gmPlayer = target != null && target != player ? target : player;
-        gmPlayer.setGameMode(GameMode.SURVIVAL);
-        say(gmPlayer, "You are now in &asurvival&7 mode.");
-        if (gmPlayer == player) return;
-        say(player, "&a" + gmPlayer.getName() + " &7is now in &asurvival&7 mode.");
+    public void onGmSurvival(final CommandSender sender, final Player target) {
+        target.setGameMode(GameMode.SURVIVAL);
+        say(target, "You are now in &asurvival&7 mode.");
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + " &7is now in &asurvival&7 mode.");
     }
 
     @CommandHook("gmc")
-    public void onGmCreative(final Player player, final Player target) {
-        final Player gmPlayer = target != null && target != player ? target : player;
-        gmPlayer.setGameMode(GameMode.CREATIVE);
-        say(gmPlayer, "You are now in &acreative&7 mode.");
-        if (gmPlayer == player) return;
-        say(player, "&a" + gmPlayer.getName() + " &7is now in &acreative&7 mode.");
+    public void onGmCreative(final CommandSender sender, final Player target) {
+        target.setGameMode(GameMode.CREATIVE);
+        say(target, "You are now in &acreative&7 mode.");
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + " &7is now in &acreative&7 mode.");
     }
 
     @CommandHook("gma")
-    public void onGmAdventure(final Player player, final Player target) {
-        final Player gmPlayer = target != null && target != player ? target : player;
-        gmPlayer.setGameMode(GameMode.ADVENTURE);
-        say(gmPlayer, "You are now in &aadventure&7 mode.");
-        if (gmPlayer == player) return;
-        say(player, "&a" + gmPlayer.getName() + " &7is now in &aadventure&7 mode.");
+    public void onGmAdventure(final CommandSender sender, final Player target) {
+        target.setGameMode(GameMode.ADVENTURE);
+        say(target, "You are now in &aadventure&7 mode.");
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + " &7is now in &aadventure&7 mode.");
     }
 
     @CommandHook("gmsp")
-    public void onGmSpectator(final Player player, final Player target) {
-        final Player gmPlayer = target != null && target != player ? target : player;
-        gmPlayer.setGameMode(GameMode.SPECTATOR);
-        say(gmPlayer, "You are now in &aspectator&7 mode.");
-        if (gmPlayer == player) return;
-        say(player, "&a" + gmPlayer.getName() + " &7is now in &aspectator&7 mode.");
+    public void onGmSpectator(final CommandSender sender, final Player target) {
+        target.setGameMode(GameMode.SPECTATOR);
+        say(target, "You are now in &aspectator&7 mode.");
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + " &7is now in &aspectator&7 mode.");
     }
 
     @CommandHook("god")
-    public void onGod(final Player player, final Player target) {
-        final PlayerData data = PlayerManager.getData(target != null ? target.getUniqueId() : player.getUniqueId());
+    public void onGod(final CommandSender sender, final Player target) {
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
         data.setGodmode(!data.isGodmode());
         say(target, "You are " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
-        if (data.getPlayer() == player) return;
-        say(player, "&a" + data.getName() + " &7is " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
+        if (data.getPlayer() == sender) return;
+        say(sender, "&a" + data.getName() + " &7is " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
     }
 }

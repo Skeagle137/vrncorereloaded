@@ -64,18 +64,17 @@ public class TpCommands {
 
     @CommandHook("back")
     public void onBack(final Player player, final Player target) {
-        final Player backPlayer = target != null ? target : player;
-        final Location backLoc = backCache.getBackLoc(backPlayer.getUniqueId());
+        final Location backLoc = backCache.getBackLoc(target.getUniqueId());
         if (backLoc == null) {
-            say(player, backPlayer == player ? "&cYou do not have anywhere to teleport back to."
-                    : "&a" + backPlayer.getName() + " &7does not have a saved last location.");
+            say(player, target == player ? "&cYou do not have anywhere to teleport back to."
+                    : "&a" + target.getName() + " &7does not have a saved last location.");
             return;
         }
         final Location newLoc = player.getLocation();
-        backCache.teleToBackLoc(player, backPlayer);
+        backCache.teleToBackLoc(player, target);
         backCache.setBackLoc(player.getUniqueId(), newLoc);
-        say(player, backPlayer == player ? "&7Teleported to your last location."
-                : "&7Teleported to &a" + backPlayer.getName() + "&7's last location.");
+        say(player, target == player ? "&7Teleported to your last location."
+                : "&7Teleported to &a" + target.getName() + "&7's last location.");
         backCache.setBackLoc(player.getUniqueId(), newLoc);
     }
 

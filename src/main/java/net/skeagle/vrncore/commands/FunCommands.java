@@ -45,19 +45,18 @@ public class FunCommands {
             return;
         }
         Bukkit.dispatchCommand(target, command.substring(1));
-        say(sender, "Made target execute command: &a" + command);
+        say(sender, "Made " + target.getName() + " execute command: &a" + command);
     }
 
     @CommandHook("hallucinate")
-    public void onHallucinate(final Player player, final Player target) {
-        final Player halluPlayer = target != null && target != player ? target : player;
-        final ServerPlayer entityPlayer = ((CraftPlayer) halluPlayer).getHandle();
+    public void onHallucinate(final CommandSender sender, final Player target) {
+        final ServerPlayer entityPlayer = ((CraftPlayer) target).getHandle();
         final EnderDragon dragon = new EnderDragon(EntityType.ENDER_DRAGON, entityPlayer.level);
         dragon.copyPosition(entityPlayer);
         dragon.setInvulnerable(true);
         entityPlayer.connection.send(new ClientboundAddMobPacket(dragon));
-        say(halluPlayer, halluPlayer == player ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
-                "Sent &a" + halluPlayer.getName() + "&7 a hallucination.");
+        say(target, target == sender ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
+                "Sent &a" + target.getName() + "&7 a hallucination.");
     }
 
     @CommandHook("push")

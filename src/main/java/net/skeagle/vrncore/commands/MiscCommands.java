@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -31,33 +32,44 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class MiscCommands {
 
+    private final Map<UUID, UUID> sitMap = new HashMap<>();
+
     public MiscCommands() {
         Task.syncRepeating(() -> {
             ArmorStand stand;
-            for (final UUID uuid : PlayerSitUtil.getSitMap().values()) {
+            for (final UUID uuid : sitMap.values()) {
                 stand = (ArmorStand) Bukkit.getEntity(uuid);
-                if (!stand.getPassengers().isEmpty()) {
-                    stand.setRotation(stand.getPassengers().get(0).getLocation().getYaw(), stand.getPassengers().get(0).getLocation().getPitch());
+                if (!stand.getPassengers().isEmpty() && stand.getPassengers().get(0) instanceof Player player) {
+                    stand.setRotation(player.getLocation().getYaw(), player.getLocation().getPitch());
                     if (VRNUtil.getStandingBlock(stand.getLocation().add(0, 1.7, 0)) == null) {
-                        final PlayerSitUtil p = PlayerSitUtil.getPlayer((Player) stand.getPassengers().get(0));
-                        p.setSitting(false);
+                        setSitting(player, false);
                     }
                 }
             }
         }, 0, 1);
 
-        new EventListener<>(PlayerDeathEvent.class, e ->
-                handleSit(e.getEntity()));
+        new EventListener<>(PlayerDeathEvent.class, e -> {
+            if (isSitting(e.getEntity())) {
+                setSitting(e.getEntity(), false);
+            }
+        });
 
-        new EventListener<>(PlayerQuitEvent.class, e ->
-                handleSit(e.getPlayer()));
+        new EventListener<>(PlayerQuitEvent.class, e -> {
+            if (isSitting(e.getPlayer())) {
+                setSitting(e.getPlayer(), false);
+            }
+        });
 
-        new EventListener<>(PlayerTeleportEvent.class, e ->
-                handleSit(e.getPlayer()));
+        new EventListener<>(PlayerTeleportEvent.class, e -> {
+            if (isSitting(e.getPlayer())) {
+                setSitting(e.getPlayer(), false);
+            }
+        });
 
         new EventListener<>(PlayerArmorStandManipulateEvent.class, e -> {
-            if (PlayerSitUtil.containsStand(e.getRightClicked()))
+            if (sitMap.containsValue(e.getRightClicked().getUniqueId())) {
                 e.setCancelled(true);
+            }
         });
     }
 
@@ -68,17 +80,16 @@ public class MiscCommands {
 
     @CommandHook("trails")
     public void onTrails(final Player player, final Player target) {
-        final Player trailsPlayer = target != null && target != player ? target : player;
-        new TrailsGUI(player, trailsPlayer);
+        new TrailsGUI(player, target);
     }
 
     @CommandHook("sit")
     public void onSit(final Player player) {
-        final PlayerSitUtil p = PlayerSitUtil.getPlayer(player);
-        if (p.isSitting())
-            p.setSitting(false);
+        if (isSitting(player)) {
+            setSitting(player, false);
+        }
         else if (Math.abs(player.getVelocity().getY()) < 0.5 && VRNUtil.getStandingBlock(player.getLocation()) != null)
-            p.setSitting(true);
+            setSitting(player, true);
         else
             say(player, Messages.msg("sitAir"));
     }
@@ -142,56 +153,27 @@ public class MiscCommands {
                 !b.isLiquid() && !b.isPassable();
     }
 
-    private void handleSit(final Player p) {
-        final PlayerSitUtil util = PlayerSitUtil.getPlayer(p);
-        if (util.isSitting())
-            util.setSitting(false);
+    private boolean isSitting(Player player) {
+        return sitMap.containsKey(player.getUniqueId());
     }
 
-    private static class PlayerSitUtil {
-
-        private final Player p;
-
-        private static final HashMap<UUID, UUID> sitMap = new HashMap<>();
-
-        public static boolean containsStand(final ArmorStand stand) {
-            return sitMap.containsValue(stand.getUniqueId());
-        }
-
-        public static PlayerSitUtil getPlayer(final Player p) {
-            return new PlayerSitUtil(p);
-        }
-
-        public static HashMap<UUID, UUID> getSitMap() {
-            return sitMap;
-        }
-
-        public PlayerSitUtil(final Player p) {
-            this.p = p;
-        }
-
-        public boolean isSitting() {
-            return sitMap.containsKey(p.getUniqueId());
-        }
-
-        public void setSitting(final boolean b) {
-            if (b && !isSitting()) {
-                final Location loc = p.getLocation();
-                final ArmorStand stand = loc.getWorld().spawn(loc.clone().subtract(0.0, 1.7, 0.0), ArmorStand.class);
-                stand.setGravity(false);
-                stand.setVisible(false);
-                stand.setSilent(true);
-                say(p, "You are now sitting.");
-                stand.addPassenger(p);
-                sitMap.put(p.getUniqueId(), stand.getUniqueId());
-            } else if (!b && isSitting()) {
-                final ArmorStand stand = (ArmorStand) Bukkit.getEntity(sitMap.get(p.getUniqueId()));
-                say(p, "You are no longer sitting.");
-                sitMap.remove(p.getUniqueId());
-                p.eject();
-                p.teleport(stand.getLocation().clone().add(0.0, 1.7, 0.0));
-                stand.remove();
-            }
+    private void setSitting(final Player player, final boolean sitting) {
+        if (sitting && !isSitting(player)) {
+            final Location loc = player.getLocation();
+            final ArmorStand stand = loc.getWorld().spawn(loc.clone().subtract(0.0, 1.7, 0.0), ArmorStand.class);
+            stand.setGravity(false);
+            stand.setVisible(false);
+            stand.setSilent(true);
+            say(player, "You are now sitting.");
+            stand.addPassenger(player);
+            sitMap.put(player.getUniqueId(), stand.getUniqueId());
+        } else if (!sitting && isSitting(player)) {
+            final ArmorStand stand = (ArmorStand) Bukkit.getEntity(sitMap.get(player.getUniqueId()));
+            say(player, "You are no longer sitting.");
+            sitMap.remove(player.getUniqueId());
+            player.eject();
+            player.teleport(stand.getLocation().clone().add(0.0, 1.7, 0.0));
+            stand.remove();
         }
     }
 }
