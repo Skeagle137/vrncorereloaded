@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class TrailListener implements Listener {
 
@@ -54,15 +53,12 @@ public class TrailListener implements Listener {
             return;
         }
         if (player.hasPermission(trail.getPermission(TrailType.ARROW))) {
-            Task.syncRepeating(new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!arrow.isValid() || arrow.isOnGround()) {
-                        cancel();
-                        return;
-                    }
-                    data.getTrailStyle().tick(player, trail, arrow.getLocation(), TrailType.ARROW, TrailVisibility.ALL);
+            Task.syncRepeating(run -> {
+                if (!arrow.isValid() || arrow.isOnGround()) {
+                    run.cancel();
+                    return;
                 }
+                data.getTrailStyle().tick(player, trail, arrow.getLocation(), TrailType.ARROW, TrailVisibility.ALL);
             }, 2, 1);
             return;
         }

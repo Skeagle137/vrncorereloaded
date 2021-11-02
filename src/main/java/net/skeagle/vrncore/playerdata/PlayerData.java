@@ -44,7 +44,7 @@ public class PlayerData {
     }
 
     public String getNick() {
-        return nickname == null ? getName() : null;
+        return nickname;
     }
 
     public void setNick(final String nickname) {
@@ -53,7 +53,7 @@ public class PlayerData {
     }
 
     public String getName() {
-        return getPlayer() != null ? color(getPlayer().getName() + "&r") : getPlayer().getName();
+        return nickname != null ? color(nickname + "&r") : getPlayer().getName();
     }
 
     public void updateName() {
@@ -141,7 +141,7 @@ public class PlayerData {
         db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
         db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, trailStyle, vanished, muted, " +
                         "godmode, lastLocation, timePlayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                uuid.toString(), nickname, arrowtrail, playertrail, trailStyle, vanished, muted,
+                uuid.toString(), nickname, arrowtrail, playertrail, VRNcore.getInstance().getStyleRegistry().getStyle(trailStyle), vanished, muted,
                 godmode, VRNUtil.LocationSerialization.serialize(lastLocation), timePlayed);
     }
 }

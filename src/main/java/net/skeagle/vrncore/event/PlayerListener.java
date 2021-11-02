@@ -38,12 +38,12 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
         final PlayerData data = PlayerManager.getData(e.getPlayer().getUniqueId());
+        if (data.getNick() != null) {
+            data.updateName();
+        }
         if (!e.getPlayer().hasPlayedBefore() && Settings.joinLeaveEnabled) {
             e.setJoinMessage(Messages.msg("welcomeMsg").replaceAll("%player%", data.getName()));
             return;
-        }
-        if (data.getNick() != null) {
-            data.updateName();
         }
         if (Settings.joinLeaveEnabled) {
             e.setJoinMessage(Messages.msg("joinMsg").replaceAll("%player%", data.getName()));

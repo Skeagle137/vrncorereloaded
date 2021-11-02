@@ -19,10 +19,6 @@ public class StyleRegistry {
         registerAll();
     }
 
-    public void clear() {
-        this.styles.clear();
-    }
-
     public void registerAll() {
         List<Class<? extends TrailStyle>> list = VRNLib.getExtendingClasses(plugin, TrailStyle.class);
         for (Class<?> clazz : list) {
@@ -39,5 +35,7 @@ public class StyleRegistry {
         return styles.get(style);
     }
 
-
+    public Style getStyle(TrailStyle style) {
+        return styles.keySet().stream().filter(s -> get(s) == style).findFirst().orElse(Style.DEFAULT);
+    }
 }
