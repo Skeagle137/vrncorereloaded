@@ -32,7 +32,6 @@ delhome home:home* {
     hook delhome
 }
 delwarp warp:warp* {
-    optionalTarget
     permission vrn.delwarp
     help Remove a warp.
     hook delwarp
@@ -63,25 +62,25 @@ fly player:player*? {
 }
 gamemode,gm {
     survival,s,0 player:player*? {
-        optionaltarget
+        optionalTarget
         permission vrn.gamemode
         help Change a player's game mode to survival.
         hook gms
     }
     creative,c,1 player:player*? {
-        optionaltarget
+        optionalTarget
         permission vrn.gamemode
         help Change a player's game mode to creative.
         hook gmc
     }
     adventure,a,2 player:player*? {
-        optionaltarget
+        optionalTarget
         permission vrn.gamemode
         help Change a player's game mode to adventure.
         hook gma
     }
     spectator,sp,3 player:player*? {
-        optionaltarget
+        optionalTarget
         permission vrn.gamemode
         help Change a player's game mode to spectator.
         hook gmsp
