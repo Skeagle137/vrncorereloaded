@@ -2,7 +2,6 @@ package net.skeagle.vrncore.GUIs;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.homes.Home;
-import net.skeagle.vrncore.utils.ItemUtil;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.VRNLib;
 import net.skeagle.vrnlib.commandmanager.Messages;
@@ -39,7 +38,7 @@ public class HomesGUI extends PageableGUI<Home> {
     @Override
     protected ItemStack convertToItem(Home h) {
         Block b = VRNUtil.getStandingBlock(h.location());
-        return ItemUtil.genItem(b != null ? b.getType() : Material.BARRIER).name("&7" + h.name()).build();
+        return new ItemBuilder(b != null ? b.getType() : Material.BARRIER).setName("&7" + h.name());
     }
 
     @Override
