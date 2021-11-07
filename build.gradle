@@ -86,5 +86,15 @@ publishing {
     }
     repositories {
         mavenLocal()
+        maven {
+            url "https://repo.skeagle.net/snapshots"
+            credentials {
+                username = alias
+                password = token
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
     }
 }
