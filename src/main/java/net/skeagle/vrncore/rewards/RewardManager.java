@@ -18,33 +18,31 @@ import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public class RewardManager {
 
-    private final ConfigManager rewardConfig;
+    private ConfigManager rewardConfig;
     private static List<Reward> rewards = new ArrayList<>();
 
     public RewardManager(Plugin plugin) {
-        rewards.add(new Reward("default"));
+        if (!HookManager.isLuckPermsLoaded()) {
+            log(Level.SEVERE, color("&cRewards require luckperms to be installed. Rewards will be disabled."));
+            return;
+        }
         rewardConfig = ConfigManager.create(plugin, "rewards.yml").target(this.getClass()).saveDefaults().load();
-        this.checkLuckperms();
-        this.save();
+        if (rewards.isEmpty()) {
+            rewards.add(new Reward("default"));
+            this.save();
+        }
     }
 
     public void save() {
+        if (rewardConfig == null)
+            return;
         rewardConfig.save();
     }
 
     public void reload() {
+        if (rewardConfig == null)
+            return;
         rewardConfig.reload();
-        this.checkLuckperms();
-    }
-
-    private void checkLuckperms() {
-        if (!HookManager.isLuckPermsLoaded()) {
-            Predicate<Reward> actionFound = r -> r.action != null;
-            if (rewards.stream().anyMatch(actionFound)) {
-                log(Level.SEVERE, color("&cRewards were found with an action, but luckperms is not installed. These rewards have been disabled."));
-                rewards.removeIf(actionFound);
-            }
-        }
     }
 
     public void run(final Reward reward, final Player player) {
