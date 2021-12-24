@@ -11,7 +11,7 @@ java {
 }
 
 group = 'net.skeagle'
-version = '5.0.0-pre18'
+version = '5.0.0-pre19'
 String mc = '1.18'
 
 repositories {
