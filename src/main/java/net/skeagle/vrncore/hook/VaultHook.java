@@ -1,7 +1,7 @@
 package net.skeagle.vrncore.hook;
 
 import net.milkbowl.vault.chat.Chat;
-import net.skeagle.vrncore.config.Settings;
+import net.skeagle.vrncore.Settings;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import org.bukkit.Bukkit;
@@ -22,7 +22,7 @@ public final class VaultHook {
     }
 
     private String getPrefix(final Player p) {
-        if (!Settings.Chat.multiplePrefix)
+        if (!Settings.multiplePrefix)
             return chat.getPlayerPrefix(p.getWorld().getName(), p);
         final List<String> prefixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
@@ -34,7 +34,7 @@ public final class VaultHook {
     }
 
     private String getSuffix(final Player p) {
-        if (!Settings.Chat.multipleSuffix)
+        if (!Settings.multipleSuffix)
             return chat.getPlayerSuffix(p.getWorld().getName(), p);
         final List<String> suffixes = new ArrayList<>();
         Arrays.asList(chat.getPlayerGroups(p)).forEach(group -> {
@@ -55,7 +55,7 @@ public final class VaultHook {
 
     public String format(final Player p) {
         final PlayerData data = PlayerManager.getData(p.getUniqueId());
-        String s = Settings.Chat.format;
+        String s = Settings.format;
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", data.getName());
         s = s.replaceAll("%suffix", getSuffix(p));

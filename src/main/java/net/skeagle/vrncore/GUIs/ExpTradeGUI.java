@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class ExpTradeGUI {
@@ -51,94 +54,51 @@ public class ExpTradeGUI {
     private static class ExpTradeAmount extends InventoryGUI {
 
         private int amount;
+        private int displayAmount;
         private int stacks;
         private double gained;
         private int finalLevel;
 
         private ExpTradeAmount(final Player player, final String name, final ExpMaterial expmat) {
-            this(player, name, expmat, 1, 0);
-        }
-
-        private ExpTradeAmount(final Player player, final String name, final ExpMaterial expmat, final int initAmount, final int initStacks) {
             super(9, "&9&lExp Trade - Select Amount");
-            this.amount = initAmount;
-            this.stacks = initStacks;
-
-            gained = expmat.worth;
-            finalLevel = (int) (ExpUtil.getExp(player) + gained);
+            this.amount = 1;
+            this.displayAmount = 1;
+            this.gained = expmat.worth;
+            this.finalLevel = (int) (ExpUtil.getExp(player) + gained);
 
             addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to menu)"), e ->
                     new ExpTradeGUI(player)), 2);
 
 
-            addButton(new ItemButton() {
-                @Override
-                public ItemStack getItem() {
-                    return new ItemBuilder(expmat.mat).setName("&l" + name)
-                            .setLore("&9-----------------------------------------",
-                                    "&fLeft or Right click &7increases/decreases the amount by &b1&7.",
-                                    "&fShift Left or Right click &7increases/decreases the amount by &b10&7.",
-                                    "&7Current amount to trade: &d" + (stacks != 0 ? stacks + " &7stack(s)" : "") + (amount != 0 && stacks != 0 ? " and " : "")
-                                            + "&b" + (amount != 0 ? amount : "") + (stacks != 0 ? " &7(&e" + ((stacks * 64) + amount) + "&7 total)" : ""),
-                                    "&7Exp gain from trade: &b" + gained + " level(s)",
-                                    "&7Final Exp level after trade: &a" + finalLevel,
-                                    "&9-----------------------------------------");
-                }
-
-                @Override
-                public void onClick(final InventoryClickEvent e) {
-                    final int prevAmount = amount;
-                    final int prevStacks = stacks;
-                    if (!e.isShiftClick() && e.isLeftClick())
-                        amount++;
-                    if (!e.isShiftClick() && e.isRightClick())
-                        amount--;
-                    if (e.isShiftClick() && e.isLeftClick())
-                        amount += 10;
-                    if (e.isShiftClick() && e.isRightClick())
-                        amount -= 10;
-                    if (e.isLeftClick()) {
-                        if (stacks == 36 && amount > 0)
-                            amount = 0;
-                        if (amount > 63) {
-                            amount -= 64;
-                            stacks++;
-                        }
-                    }
-                    if (e.isRightClick()) {
-                        if (amount < 1 && stacks == 0)
-                            amount = 1;
-                        if (amount < 0) {
-                            amount += 64;
-                            stacks--;
-                        }
-                    }
-                    if (getAmount(player, expmat.mat) < (stacks * 64) + amount) {
-                        amount = prevAmount;
-                        stacks = prevStacks;
-                        //animate "No more items to trade."
-                    }
-                    System.out.println(expmat.worth + " " + expmat.worth * amount);
-                    System.out.println(ExpUtil.getExpToNext(Math.round(player.getLevel() + player.getExp())));
-                    gained = expmat.worth * ((stacks * 64) + amount);
-                    finalLevel = (int) Math.round((ExpUtil.getExp(player) + gained));
-                    update();
-                }
-            }, 4);
+            addButton(ItemButton.create(new ItemBuilder(expmat.mat).setName("&l" + name).setCount(displayAmount)
+                    .setLore(getLore()), (e, button) -> {
+                if (1 > amount - 1 && e.isRightClick() || getAmount(player, expmat.mat) < amount + 1 && e.isLeftClick())
+                    return;
+                amount = e.isShiftClick() ? (e.isLeftClick() ? amount + 10 : amount - 10) : (e.isLeftClick() ? amount + 1 : amount - 1);
+                stacks = amount / 64;
+                displayAmount = amount % 64 != 0 ? amount % 64 : 1;
+                System.out.println(ExpUtil.getExp(player) + " " + player.getExp() + " " + getExpToNext(player.getLevel()));
+                System.out.println(expmat.worth + " " + expmat.worth * amount);
+                System.out.println(ExpUtil.getExpToNext(Math.round(player.getLevel())));
+                System.out.println((ExpUtil.getExp(player) - ExpUtil.getExpFromLevel(player.getLevel())));
+                gained = expmat.worth * amount;
+                finalLevel = (int) Math.round((ExpUtil.getExp(player) + gained));
+                button.setItem(new ItemBuilder(button.getItem()).setCount(displayAmount).setLore(getLore()));
+                update();
+            }), 4);
 
             addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
-                player.closeInventory();
-                final int trueAmount = (this.stacks * 64) + this.amount;
                 for (final ItemStack item : player.getInventory().getContents()) {
                     if (item != null && item.getType() == expmat.mat) {
-                        if (item.getAmount() >= trueAmount) {
-                            player.getInventory().removeItem(new ItemStack(item.getType(), trueAmount));
+                        if (item.getAmount() >= amount) {
+                            player.getInventory().removeItem(new ItemStack(item.getType(), amount));
                             ExpUtil.changeExp(player, (int) (gained));
-                            say(player, "You traded &ax" + trueAmount + " " + name + " &7for &a" + gained + " &7exp level(s).");
+                            say(player, "You traded &ax" + amount + " " + name + " &7for &a" + gained + " &7exp level(s).");
                             break;
                         }
                     }
                 }
+                player.closeInventory();
             }), 6);
 
             open(player);
@@ -151,6 +111,25 @@ public class ExpTradeGUI {
                     total += item.getAmount();
             }
             return total;
+        }
+
+        private String[] getLore() {
+            return new String[] {"&9-----------------------------------------",
+            "&fLeft or Right click &7increases/decreases the amount by &b1&7.",
+                    "&fShift Left or Right click &7increases/decreases the amount by &b10&7.",
+                    "&7Current amount to trade: &d" + (stacks != 0 ? stacks + " &7stack(s)" : "") + (amount % 64 != 0 && stacks != 0 ? " and " : "")
+                            + "&b" + (amount % 64 != 0 ? displayAmount : "") + (stacks != 0 ? " &7(&e" + amount + "&7 total)" : ""),
+                    "&7Exp gain from trade: &b" + gained + " level(s)",
+                    "&7Final Exp level after trade: &a" + finalLevel,
+                    "&9-----------------------------------------"};
+        }
+
+        private int getExpToNext(final int level) {
+            if (level >= 30) {
+                return 112 + (level - 30) * 9;
+            } else {
+                return level >= 15 ? 37 + (level - 15) * 5 : 7 + level * 2;
+            }
         }
     }
 

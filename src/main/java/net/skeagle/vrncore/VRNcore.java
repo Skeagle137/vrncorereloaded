@@ -1,7 +1,7 @@
 package net.skeagle.vrncore;
 
+import net.skeagle.vrncommands.*;
 import net.skeagle.vrncore.commands.*;
-import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.event.AFKListener;
 import net.skeagle.vrncore.event.TrailListener;
 import net.skeagle.vrncore.event.MotdListener;
@@ -11,15 +11,11 @@ import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.npc.Npc;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerManager;
-import net.skeagle.vrncore.rewards.Reward;
 import net.skeagle.vrncore.rewards.RewardManager;
 import net.skeagle.vrncore.trail.style.StyleRegistry;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
-import net.skeagle.vrnlib.commandmanager.ArgType;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
-import net.skeagle.vrnlib.commandmanager.CommandParser;
-import net.skeagle.vrnlib.commandmanager.Messages;
+import net.skeagle.vrnlib.config.ConfigManager;
 import net.skeagle.vrnlib.misc.UserCache;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
@@ -33,7 +29,8 @@ import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public final class VRNcore extends JavaPlugin {
 
-    private Settings settings;
+    private BukkitCommandRegistry registry;
+    private ConfigManager config;
     private PlayerManager playerManager;
     private HomeManager homeManager;
     private WarpManager warpManager;
@@ -44,41 +41,40 @@ public final class VRNcore extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        registry = new BukkitCommandRegistry(this);
         //messages and config
-        Messages.load(this);
-        settings = new Settings(this);
+        config = ConfigManager.create(this).target(Settings.class).saveDefaults().load();
+        BukkitMessages.load(registry);
         //hooks
         HookManager.loadHooks();
         //database setup
         db = new SQLHelper(SQLHelper.openSQLite(getDataFolder().toPath().resolve("vrn_data.db")));
         db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, arrowtrail STRING, playertrail STRING, " +
-                "trailStyle STRING, vanished BOOLEAN, muted BOOLEAN, godmode BOOLEAN, lastOnline BIGINT, lastLocation STRING, timePlayed BIGINT);");
+                "trailStyle STRING, playerStates STRING, timePlayed BIGINT);");
         db.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
                 "location STRING, skin STRING, rotateHead BOOLEAN);");
-        db.execute("CREATE TABLE IF NOT EXISTS rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, permission STRING, message STRING, " +
-                "firework BOOLEAN, title STRING, subtitle STRING, type STRING, action STRING, groupname STRING, cost BIGINT, time BIGINT);");
         //managers and tasks
         UserCache.asyncInit();
         playerManager = new PlayerManager();
         styleRegistry = new StyleRegistry(this);
         homeManager = new HomeManager();
         warpManager = new WarpManager();
-        rewardManager = new RewardManager();
+        rewardManager = new RewardManager(this);
         npcManager = new NpcManager();
         new Tasks();
         //commands
-        new CommandParser(getResource("commands.txt"))
+        new BukkitCommandParser(getResource("commands.txt"))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
                         new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
-                .parse().register("vrncore", this, new AdminCommands(), new TpCommands(),
+                .parse().register(registry, "vrncore", this, new AdminCommands(), new TpCommands(),
                 new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
                 new NickCommands(), new NpcCommands());
         //listeners
-        if (Settings.Motd.motdEnabled)
+        if (Settings.motdEnabled)
             Bukkit.getPluginManager().registerEvents(new MotdListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Bukkit.getPluginManager().registerEvents(new AFKListener(), this);
@@ -87,9 +83,9 @@ public final class VRNcore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        settings.get().save();
+        config.save();
         playerManager.save();
-        rewardManager.getRewards().forEach(Reward::save);
+        rewardManager.save();
     }
 
     public static VRNcore getInstance() {
@@ -137,9 +133,10 @@ public final class VRNcore extends JavaPlugin {
 
     @CommandHook("reload")
     public void onReload(final CommandSender sender) {
-        Messages.load(this);
-        settings.get().load();
-        say(sender, "&aConfigs and messages reloaded.");
+        BukkitMessages.load(registry);
+        config.reload();
+        rewardManager.reload();
+        say(sender, "&aConfigs, messages, and rewards reloaded.");
     }
 }
 

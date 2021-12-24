@@ -1,12 +1,12 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncommands.BukkitMessages;
+import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.GUIs.HomesGUI;
 import net.skeagle.vrncore.GUIs.WarpsGUI;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.homes.Home;
 import net.skeagle.vrncore.warps.Warp;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
-import net.skeagle.vrnlib.commandmanager.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -91,6 +91,6 @@ public class HomesWarpsCommands {
     }
 
     private void sayTp(Player player) {
-        say(player, Messages.msg("teleporting"));
+        say(player, BukkitMessages.msg("teleporting"));
     }
 }

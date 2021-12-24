@@ -14,9 +14,9 @@ import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -63,7 +63,7 @@ public class Npc {
     }
 
     public void delete() {
-        final ClientboundRemoveEntityPacket destroy = new ClientboundRemoveEntityPacket(entityId);
+        final ClientboundRemoveEntitiesPacket destroy = new ClientboundRemoveEntitiesPacket(entityId);
         Bukkit.getOnlinePlayers().forEach(pl -> ((CraftPlayer) pl).getHandle().connection.send(destroy));
     }
 

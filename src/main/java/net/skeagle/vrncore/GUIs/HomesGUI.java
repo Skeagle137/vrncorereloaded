@@ -1,10 +1,10 @@
 package net.skeagle.vrncore.GUIs;
 
+import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.homes.Home;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.VRNLib;
-import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
 import net.skeagle.vrnlib.inventorygui.PageableGUI;
@@ -46,14 +46,14 @@ public class HomesGUI extends PageableGUI<Home> {
         Player player = getViewer();
         if (e.getClick().isLeftClick()) {
             player.closeInventory();
-            say(player, Messages.msg("teleporting"));
+            say(player, BukkitMessages.msg("teleporting"));
             player.teleport(h.location());
         }
         if (e.getClick().isRightClick()) {
             String perm = "vrn.delhome." + (h.owner() != target.getUniqueId() ? "others" : "self");
             if (!player.hasPermission(perm)) {
                 player.closeInventory();
-                say(player, Messages.getLoaded(VRNLib.getInstance()).get("noPermission"));
+                say(player, BukkitMessages.getLoaded(VRNLib.getInstance()).get("noPermission"));
                 return;
             }
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);

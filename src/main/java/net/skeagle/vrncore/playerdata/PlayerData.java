@@ -2,18 +2,18 @@ package net.skeagle.vrncore.playerdata;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.trail.Style;
 import net.skeagle.vrncore.trail.style.TrailStyle;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncommands.BukkitUtils.color;
 
 public class PlayerData {
 
@@ -22,24 +22,23 @@ public class PlayerData {
     private Particle arrowtrail;
     private Particle playertrail;
     private TrailStyle trailStyle;
-    private boolean vanished;
-    private boolean muted;
-    private boolean godmode;
-    private Location lastLocation;
+    private final PlayerStates states;
     private long timePlayed;
 
-    PlayerData(final UUID uuid, final String nickname, final Particle arrowtrail, final Particle playertrail,
-               final TrailStyle trailStyle, final boolean vanished, final boolean muted, final boolean godmode,
-               final Location lastLocation, final long timePlayed) {
+    PlayerData(final UUID uuid) {
+        this.uuid = uuid;
+        this.trailStyle = VRNcore.getInstance().getStyleRegistry().get(Style.DEFAULT);
+        this.states = new PlayerStates();
+    }
+
+    PlayerData(final UUID uuid, final String nickname, final Particle arrowtrail, final Particle playertrail, final TrailStyle trailStyle,
+               final PlayerStates states, final long timePlayed) {
         this.uuid = uuid;
         this.nickname = nickname;
         this.arrowtrail = arrowtrail;
         this.playertrail = playertrail;
         this.trailStyle = trailStyle;
-        this.vanished = vanished;
-        this.muted = muted;
-        this.godmode = godmode;
-        this.lastLocation = lastLocation;
+        this.states = states;
         this.timePlayed = timePlayed;
     }
 
@@ -92,36 +91,8 @@ public class PlayerData {
         this.trailStyle = trailStyle;
     }
 
-    public boolean isVanished() {
-        return vanished;
-    }
-
-    public void setVanished(final boolean vanished) {
-        this.vanished = vanished;
-    }
-
-    public boolean isMuted() {
-        return muted;
-    }
-
-    public void setMuted(final boolean muted) {
-        this.muted = muted;
-    }
-
-    public boolean isGodmode() {
-        return godmode;
-    }
-
-    public void setGodmode(final boolean godmode) {
-        this.godmode = godmode;
-    }
-
-    public Location getLastLocation() {
-        return lastLocation;
-    }
-
-    public void setLastLocation(final Location last_location) {
-        this.lastLocation = last_location;
+    public PlayerStates getStates() {
+        return states;
     }
 
     public long getTimePlayed() {
@@ -139,9 +110,7 @@ public class PlayerData {
     public void save() {
         final SQLHelper db = VRNcore.getInstance().getDB();
         db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
-        db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, trailStyle, vanished, muted, " +
-                        "godmode, lastLocation, timePlayed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                uuid.toString(), nickname, arrowtrail, playertrail, VRNcore.getInstance().getStyleRegistry().getStyle(trailStyle), vanished, muted,
-                godmode, VRNUtil.LocationSerialization.serialize(lastLocation), timePlayed);
+        db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, trailStyle, playerStates, timePlayed) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                uuid.toString(), nickname, arrowtrail, playertrail, VRNcore.getInstance().getStyleRegistry().getStyle(trailStyle), VRNUtil.GSON.toJson(states), timePlayed);
     }
 }

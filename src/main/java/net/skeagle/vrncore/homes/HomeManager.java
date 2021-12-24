@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.homes;
 
+import net.skeagle.vrncommands.ArgType;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrnlib.commandmanager.ArgType;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -25,18 +25,37 @@ public class TrailsGUI extends InventoryGUI {
         addButton(ItemButton.create(new ItemBuilder(Material.BLAZE_POWDER).setName("&b&lPlayer trail selection menu")
                 .setLore("", "&7Click to open the player", "&7trail selection menu."), e -> new TrailSelection(target, TrailType.PLAYER).open(player)), 10);
 
-        addButton(new ItemButton() {
-            @Override
-            public ItemStack getItem() {
-                return new ItemBuilder(Material.REDSTONE).setName("&6&lReset trails")
-                        .setLore("", "&7Player trail: " + (data.getPlayerTrail() != null ? "&a" + data.getPlayerTrail() : "&cnone"),
-                                "&7Arrow trail: " + (data.getArrowTrail() != null ? "&a" + data.getArrowTrail() : "&cnone"),
-                                "&bLeft click &7to reset player trail.",
-                                "&aShift left click &7to edit player trail.",
-                                "&dRight click &7to reset arrow trail.",
-                                "&eShift right click &7to edit arrow trail.")
-                        .glint(data.getArrowTrail() != null || data.getPlayerTrail() != null);
+        addButton(ItemButton.create(new ItemBuilder(Material.REDSTONE).setName("&6&lReset trails")
+                .setLore("", "&7Player trail: " + (data.getPlayerTrail() != null ? "&a" + data.getPlayerTrail() : "&cnone"),
+                        "&7Arrow trail: " + (data.getArrowTrail() != null ? "&a" + data.getArrowTrail() : "&cnone"),
+                        "&bLeft click &7to reset player trail.",
+                        "&aShift left click &7to edit player trail.",
+                        "&dRight click &7to reset arrow trail.",
+                        "&eShift right click &7to edit arrow trail.")
+                .glint(data.getArrowTrail() != null || data.getPlayerTrail() != null), (e, button) -> {
+            if (e.getClick().isShiftClick() && e.getClick().isLeftClick())
+                data.setPlayerTrail(null);
+            if (e.getClick().isShiftClick() && e.getClick().isRightClick()) {
+                data.setArrowTrail(null);
             }
+            if (!e.getClick().isShiftClick() && e.getClick().isLeftClick()) {
+
+            }
+            if (!e.getClick().isShiftClick() && e.getClick().isRightClick()) {
+
+            }
+            button.setItem(new ItemBuilder(button.getItem()).glint(data.getArrowTrail() != null || data.getPlayerTrail() != null));
+            update();
+        }), 13);
+
+        /*addButton(new ItemButton(new ItemBuilder(Material.REDSTONE).setName("&6&lReset trails")
+                .setLore("", "&7Player trail: " + (data.getPlayerTrail() != null ? "&a" + data.getPlayerTrail() : "&cnone"),
+                        "&7Arrow trail: " + (data.getArrowTrail() != null ? "&a" + data.getArrowTrail() : "&cnone"),
+                        "&bLeft click &7to reset player trail.",
+                        "&aShift left click &7to edit player trail.",
+                        "&dRight click &7to reset arrow trail.",
+                        "&eShift right click &7to edit arrow trail.")
+                .glint(data.getArrowTrail() != null || data.getPlayerTrail() != null)) {
 
             @Override
             public void onClick(final InventoryClickEvent e) {
@@ -53,7 +72,7 @@ public class TrailsGUI extends InventoryGUI {
                 }
                 update();
             }
-        }, 13);
+        }, 13);*/
 
         addButton(ItemButton.create(new ItemBuilder(Material.SPECTRAL_ARROW).setName("&d&lArrow trail selection menu")
                 .setLore("", "&7Click to open the arrow", "&7trail selection menu."), e -> new TrailSelection(target, TrailType.ARROW).open(player)), 16);

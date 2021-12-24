@@ -2,8 +2,6 @@ package net.skeagle.vrncore.playerdata;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.trail.Style;
-import net.skeagle.vrncore.trail.style.StyleRegistry;
-import net.skeagle.vrncore.trail.style.TrailStyle;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.misc.UserCache;
 import net.skeagle.vrnlib.sql.SQLHelper;
@@ -11,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -36,11 +33,9 @@ public class PlayerManager {
                     res.getString(3) != null ? Particle.valueOf(res.getString(3)) : null,
                     res.getString(4) != null ? Particle.valueOf(res.getString(4)) : null,
                     VRNcore.getInstance().getStyleRegistry().get(res.getString(5) != null ? Style.valueOf(res.getString(5)) : Style.DEFAULT),
-                    res.getBoolean(6), res.getBoolean(7), res.getBoolean(8),
-                    VRNUtil.LocationSerialization.deserialize(res.getString(9)), res.getLong(10));
+                    VRNUtil.GSON.fromJson(res.getString(6), PlayerStates.class), res.getLong(7));
         }
-        return new PlayerData(uuid, null, null, null, VRNcore.getInstance().getStyleRegistry().get(Style.DEFAULT),
-                false, false, false, null, 0L);
+        return new PlayerData(uuid);
     }
 
     public OfflinePlayer getOfflinePlayer(final String name) {

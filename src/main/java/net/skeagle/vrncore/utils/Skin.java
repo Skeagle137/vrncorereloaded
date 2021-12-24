@@ -1,7 +1,5 @@
 package net.skeagle.vrncore.utils;
 
-import com.google.gson.Gson;
-
 public class Skin {
 
     private final String name;
@@ -15,7 +13,7 @@ public class Skin {
     }
 
     public String serialize() {
-        return new Gson().toJson(this);
+        return VRNUtil.GSON.toJson(this);
     }
 
     public String getName() {

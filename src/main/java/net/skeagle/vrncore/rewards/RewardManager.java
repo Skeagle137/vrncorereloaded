@@ -1,62 +1,65 @@
 package net.skeagle.vrncore.rewards;
 
 
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrnlib.config.ConfigManager;
 import net.skeagle.vrnlib.misc.Task;
-import net.skeagle.vrnlib.sql.SQLHelper;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+
+import static net.skeagle.vrncommands.BukkitUtils.color;
+import static net.skeagle.vrncore.utils.VRNUtil.log;
+import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public class RewardManager {
 
-    private final List<Reward> rewards;
+    private final ConfigManager rewardConfig;
+    private static List<Reward> rewards = new ArrayList<>();
 
-    public RewardManager() {
-        rewards = new ArrayList<>();
-        load();
+    public RewardManager(Plugin plugin) {
+        rewards.add(new Reward("default"));
+        rewardConfig = ConfigManager.create(plugin, "rewards.yml").target(this.getClass()).saveDefaults().load();
+        this.checkLuckperms();
+        this.save();
     }
 
-    public void load() {
-        final SQLHelper db = VRNcore.getInstance().getDB();
-        final SQLHelper.Results res = db.queryResults("SELECT * FROM rewards");
-        res.forEach(reward -> {
-            final String name = reward.getString(2);
-            final boolean permission = reward.getBoolean(3);
-            final String message = res.getString(4);
-            final boolean firework = res.getBoolean(5);
-            final String title = res.getString(6);
-            final String subtitle = res.getString(7);
-            final RewardType rewardType = RewardType.valueOf(res.getString(8));
-            final RewardAction rewardAction = res.getString(9) == null ? null : RewardAction.valueOf(res.getString(9));
-            final String group = res.getString(10);
-            final long cost = res.getLong(11);
-            final long time = res.getLong(12);
-            rewards.add(new Reward(name, permission, message, firework, title, subtitle, rewardType, rewardAction, group, cost, time));
-        });
+    public void save() {
+        rewardConfig.save();
     }
 
-    public void createReward(final String name) {
-        final Reward reward = new Reward(name);
-        rewards.add(reward);
-        Task.asyncDelayed(reward::save);
+    public void reload() {
+        rewardConfig.reload();
+        this.checkLuckperms();
     }
 
-    public void deleteReward(final Reward reward) {
-        final SQLHelper db = VRNcore.getInstance().getDB();
-        db.execute("DELETE FROM rewards WHERE name = ?", reward.getName());
-        rewards.remove(reward);
+    private void checkLuckperms() {
+        if (!HookManager.isLuckPermsLoaded()) {
+            Predicate<Reward> actionFound = r -> r.action != null;
+            if (rewards.stream().anyMatch(actionFound)) {
+                log(Level.SEVERE, color("&cRewards were found with an action, but luckperms is not installed. These rewards have been disabled."));
+                rewards.removeIf(actionFound);
+            }
+        }
     }
 
-    public Reward getReward(final String s) {
-        return rewards.stream().filter(r -> r.getName().equalsIgnoreCase(s)).findFirst().orElse(null);
+    public void run(final Reward reward, final Player player) {
+        if (reward.message != null) {
+            sayNoPrefix(player, color(reward.replaceVars(player, reward.message)));
+        }
+        if (reward.title != null || reward.subtitle != null)
+            player.sendTitle(reward.title != null ? color(reward.replaceVars(player, reward.title)) :
+                    "", reward.subtitle != null ? color(reward.replaceVars(player, reward.subtitle)) : "", 5, 120, 40);
+        Task.syncDelayed(() -> reward.sendFirework(player.getLocation().add(0, 1.5, 0)));
+        if (reward.action != null && reward.group != null)
+            reward.action.get().accept(player, reward.group);
     }
 
     public Reward getRewardByTime(final long l) {
         return rewards.stream().filter(r -> r.getTime() == l).findFirst().orElse(null);
-    }
-
-    public List<Reward> getRewards() {
-        return rewards;
     }
 }

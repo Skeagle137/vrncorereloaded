@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.npc.Npc;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

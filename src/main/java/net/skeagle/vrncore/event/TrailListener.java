@@ -35,7 +35,7 @@ public class TrailListener implements Listener {
                     continue;
                 }
                 if (pl.hasPermission(trail.getPermission(TrailType.PLAYER))) {
-                    data.getTrailStyle().tick(pl, trail, pl.getLocation(), TrailType.PLAYER, data.isVanished() ? TrailVisibility.CLIENT : TrailVisibility.ALL);
+                    data.getTrailStyle().tick(pl, trail, pl.getLocation(), TrailType.PLAYER, data.getStates().isVanished() ? TrailVisibility.CLIENT : TrailVisibility.ALL);
                     continue;
                 }
                 data.setPlayerTrail(null);

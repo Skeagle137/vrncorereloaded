@@ -1,5 +1,5 @@
-back player:player*? {
-    optionalTarget
+back player:player*?(context self) {
+    others
     permission vrn.back
     help Teleport back to a player's previous location.
     user player
@@ -41,8 +41,8 @@ demo player:player* {
     help Shows the demo screen to a player.
     hook demo
 }
-echest player:player*? {
-    optionalTarget
+echest player:player*?(context self) {
+    others
     permission vrn.echest
     help Opens a player's ender chest.
     user player
@@ -54,33 +54,34 @@ exptrade {
     user player
     hook exptrade
 }
-fly player:player*? {
-    optionalTarget
+fly player:player*?(context self) {
+    others
     permission vrn.fly
     help Toggles flight for a player.
     hook fly
 }
 gamemode,gm {
-    survival,s,0 player:player*? {
-        optionalTarget
+    permission vrn.gamemode
+    survival,s,0 player:player*?(context self) {
+        others
         permission vrn.gamemode
         help Change a player's game mode to survival.
         hook gms
     }
-    creative,c,1 player:player*? {
-        optionalTarget
+    creative,c,1 player:player*?(context self) {
+        others
         permission vrn.gamemode
         help Change a player's game mode to creative.
         hook gmc
     }
-    adventure,a,2 player:player*? {
-        optionalTarget
+    adventure,a,2 player:player*?(context self) {
+        others
         permission vrn.gamemode
         help Change a player's game mode to adventure.
         hook gma
     }
-    spectator,sp,3 player:player*? {
-        optionalTarget
+    spectator,sp,3 player:player*?(context self) {
+        others
         permission vrn.gamemode
         help Change a player's game mode to spectator.
         hook gmsp
@@ -92,20 +93,20 @@ giveplus,givep {
     user player
     hook giveplus
 }
-god player:player*? {
-    optionalTarget
+god player:player*?(context self) {
+    others
     permission vrn.god
     help Make a player invulnerable.
     hook god
 }
-hallucinate,hallu player:player*? {
-    optionalTarget
+hallucinate,hallu player:player*?(context self) {
+    others
     permission vrn.hallucinate
     help Make another player see hallucinations.
     hook hallucinate
 }
-heal player:player*? {
-    optionalTarget
+heal player:player*?(context self) {
+    others
     permission vrn.heal
     help Heal another player or yourself.
     hook heal
@@ -116,8 +117,8 @@ home home:home* {
     user player
     hook home
 }
-homes player:player*? {
-    optionalTarget
+homes player:player*?(context self) {
+    others
     permission vrn.homes
     help List all available homes that a player has.
     user player
@@ -128,18 +129,8 @@ invsee player:player* {
     help View another player's inventory.
     hook invsee
 }
-kick --silent,-s player:player* string...:reason*? {
-    permission vrn.kick
-    help Kick a player from the server.
-    hook kick
-}
-mute player:player* {
-    permission vrn.mute
-    help Mute a player.
-    hook mute
-}
-nick player:player*? string:nick* {
-    optionalTarget
+nick player:player*?(context self) string:nick* {
+    others
     permission vrn.nick
     help Set a nickname for a player.
     hook nick
@@ -151,6 +142,7 @@ night {
     hook night
 }
 npc {
+    permission vrn.npc
     create string:name* {
         permission vrn.npc
         help Create an npc.
@@ -165,6 +157,7 @@ npc {
     }
 }
 ptime {
+    permission vrn.ptime
     day {
         permission vrn.ptime
         help Set personal time to day.
@@ -190,6 +183,7 @@ push player:player* int:multiplier*?(3) {
     hook push
 }
 pweather {
+    permission vrn.pweather
     sun {
         permission vrn.pweather
         help Set personal weather to sun.
@@ -226,8 +220,8 @@ rename string...:name* {
     user player
     hook rename
 }
-removenick player:player*? {
-    optionalTarget
+removenick player:player*?(context self) {
+    others
     permission vrn.nick
     help Remove a nickname from a player.
     hook removenick
@@ -273,8 +267,8 @@ spawnmob entitytype:entitytype* int:count*?(1) {
     user player
     hook spawnmob
 }
-speed player:player*? int:count*?(1) {
-    optionalTarget
+speed player:player*?(context self) int:count*?(1) {
+    others
     permission vrn.speed
     help Change a player's fly and walk speed.
     hook speed
@@ -291,26 +285,27 @@ sun {
     hook sun
 }
 timeplayed {
-    get offlineplayer:offlineplayer*? {
-        optionalTarget
+    permission vrn.timeplayed
+    get offlineplayer:offlineplayer*?(context self) {
+        others
         permission vrn.timeplayed.get
         help Check the time that a player has been on the server.
         hook timeplayedget
     }
-    set offlineplayer:offlineplayer*? string:time* {
-        optionalTarget
+    set offlineplayer:offlineplayer*?(context self) string:time* {
+        others
         permission vrn.timeplayed.set
         help Set the time that a player has been on the server.
         hook timeplayedset
     }
-    add offlineplayer:offlineplayer*? string:time* {
-        optionalTarget
+    add offlineplayer:offlineplayer*?(context self) string:time* {
+        others
         permission vrn.timeplayed.add
         help Add to the time that a player has been on the server.
         hook timeplayedadd
     }
-    subtract offlineplayer:offlineplayer*? string:time* {
-        optionalTarget
+    subtract offlineplayer:offlineplayer*?(context self) string:time* {
+        others
         permission vrn.timeplayed.subtract
         help Subtract from the time that a player has been on the server.
         hook timeplayedsubtract
@@ -370,15 +365,15 @@ tphere player:player* {
     user player
     hook tphere
 }
-trails,trail player:player*? {
-    optionalTarget
+trails,trail player:player*?(context self) {
+    others
     permission vrn.trails
     help Select and customize your arrow and player trails through a gui.
     user player
     hook trails
 }
-vanish player:player*? {
-    optionalTarget
+vanish player:player*?(context self) {
+    others
     permission vrn.vanish
     help Hide yourself or another player from other players.
     hook vanish

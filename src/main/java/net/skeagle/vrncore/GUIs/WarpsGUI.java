@@ -1,10 +1,10 @@
 package net.skeagle.vrncore.GUIs;
 
+import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrnlib.VRNLib;
-import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
 import net.skeagle.vrnlib.inventorygui.PageableGUI;
@@ -42,14 +42,14 @@ public class WarpsGUI extends PageableGUI<Warp> {
         Player player = getViewer();
         if (e.getClick().isLeftClick()) {
             player.closeInventory();
-            say(player, Messages.msg("teleporting"));
+            say(player, BukkitMessages.msg("teleporting"));
             player.teleport(w.location());
         }
         if (e.getClick().isRightClick()) {
             String perm = "vrn.delwarp." + (!w.owner().equals(player.getUniqueId()) ? "others" : "self");
             if (!player.hasPermission(perm)) {
                 getViewer().closeInventory();
-                say(getViewer(), Messages.getLoaded(VRNLib.getInstance()).get("noPermission"));
+                say(getViewer(), BukkitMessages.getLoaded(VRNLib.getInstance()).get("noPermission"));
                 return;
             }
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);

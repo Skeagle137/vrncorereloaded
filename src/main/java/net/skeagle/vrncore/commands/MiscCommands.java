@@ -1,11 +1,11 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncommands.BukkitMessages;
+import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.GUIs.ExpTradeGUI;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
-import net.skeagle.vrncore.config.Settings;
+import net.skeagle.vrncore.Settings;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
-import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.itemutils.ItemUtils;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncommands.BukkitUtils.color;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class MiscCommands {
@@ -91,7 +91,7 @@ public class MiscCommands {
         else if (Math.abs(player.getVelocity().getY()) < 0.5 && VRNUtil.getStandingBlock(player.getLocation()) != null)
             setSitting(player, true);
         else
-            say(player, Messages.msg("sitAir"));
+            say(player, BukkitMessages.msg("sitAir"));
     }
 
     @CommandHook("exptrade")
@@ -114,10 +114,10 @@ public class MiscCommands {
     public void onRtp(final Player player) {
         say(player, "&aSearching for a destination.");
         final Random r = new Random();
-        final int min = Settings.Rtp.rtpMin;
-        final int max = Settings.Rtp.rtpMax;
-        final int origin_x = Settings.Rtp.rtpOriginX;
-        final int origin_z = Settings.Rtp.rtpOriginZ;
+        final int min = Settings.rtpMin;
+        final int max = Settings.rtpMax;
+        final int origin_x = Settings.rtpOriginX;
+        final int origin_z = Settings.rtpOriginZ;
         final int x = genRandom(r, max, min);
         final int z = genRandom(r, max, min);
         final Location loc = new Location(player.getWorld(), origin_x + x + 0.5, 128, origin_z + z + 0.5, player.getLocation().getYaw(), player.getLocation().getPitch());

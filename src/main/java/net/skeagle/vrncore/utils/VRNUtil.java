@@ -1,25 +1,25 @@
 package net.skeagle.vrncore.utils;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.skeagle.vrnlib.VRNLib;
-import net.skeagle.vrnlib.commandmanager.Messages;
+import com.google.gson.Gson;
+import net.skeagle.vrncommands.BukkitMessages;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
+import static net.skeagle.vrncommands.BukkitUtils.color;
+
 public final class VRNUtil {
+
+    public static final Gson GSON = new Gson();
 
     public static void say(CommandSender cs, String... message) {
         if (cs == null) return;
         for (String msg : message)
-            cs.sendMessage(color(Messages.msg("prefix") + " " + msg));
+            cs.sendMessage(color(BukkitMessages.msg("prefix") + " " + msg));
     }
 
     public static void sayNoPrefix(CommandSender cs, String... message) {
@@ -38,32 +38,8 @@ public final class VRNUtil {
             Bukkit.getLogger().log(level, color(s));
     }
 
-    public static String color(String s) {
-        for (int i = 0; i < s.length(); ++i) {
-            if (s.length() - i > 8) {
-                String temp = s.substring(i, i + 8);
-                if (temp.startsWith("&#")) {
-                    char[] chars = temp.replaceFirst("&#", "").toCharArray();
-                    StringBuilder rgbColor = new StringBuilder();
-                    rgbColor.append("&x");
-                    for (char c : chars)
-                        rgbColor.append("&").append(c);
-                    s = s.replaceAll(temp, rgbColor.toString());
-                }
-            }
-        }
-        return ChatColor.translateAlternateColorCodes('&', s);
-    }
-
-    public static String[] color(String... i) {
-        for (String uncolored : i)
-            color(uncolored);
-        return i;
-    }
-
-    public static void sayActionBar(Player p, String msg) {
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                TextComponent.fromLegacyText(color(msg)));
+    public static void broadcast(boolean silent, String s) {
+        Bukkit.broadcast(s, silent ? "vrn.silentbypass" : "");
     }
 
     public static Block getStandingBlock(Location loc) {
@@ -109,6 +85,10 @@ public final class VRNUtil {
 
     private static boolean blockCheck(Block b) {
         return (!b.getType().isAir() && b.getType().isSolid());
+    }
+
+    public static <T extends Throwable, U> U sneakyThrow(Throwable t) throws T {
+        throw (T) t;
     }
 
     public static class LocationSerialization {

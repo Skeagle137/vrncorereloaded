@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.npc;
 
-import com.google.gson.Gson;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.SkinUtil;
@@ -17,11 +16,9 @@ import java.util.List;
 public class NpcManager {
 
     private final List<Npc> npcList;
-    private final Gson gson;
 
     public NpcManager() {
         this.npcList = new ArrayList<>();
-        this.gson = new Gson();
         this.load();
 
         new EventListener<>(VRNcore.getInstance(), PlayerJoinEvent.class,
@@ -35,7 +32,7 @@ public class NpcManager {
             final String name = npc.getString(2);
             final String display = npc.getString(3);
             final Location loc = VRNUtil.LocationSerialization.deserialize(npc.getString(4));
-            final Skin skin = npc.getString(5) != null ? gson.fromJson(npc.getString(5), Skin.class) : null;
+            final Skin skin = npc.getString(5) != null ? VRNUtil.GSON.fromJson(npc.getString(5), Skin.class) : null;
             final boolean rotateHead = npc.getBoolean(6);
             npcList.add(new Npc(name, display, loc, skin, rotateHead));
         });

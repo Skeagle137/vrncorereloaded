@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.commands;
 
-import net.skeagle.vrnlib.commandmanager.CommandHook;
+import net.skeagle.vrncommands.CommandHook;
 import org.bukkit.WeatherType;
 import org.bukkit.entity.Player;
 

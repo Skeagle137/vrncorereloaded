@@ -1,6 +1,5 @@
 package net.skeagle.vrncore;
 
-import net.skeagle.vrncore.config.Settings;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.rewards.Reward;
@@ -9,7 +8,7 @@ import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncommands.BukkitUtils.color;
 import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
 public class Tasks {
@@ -20,10 +19,7 @@ public class Tasks {
 
     public void loadTasks() {
 
-        Task.asyncRepeating(() -> {
-            VRNcore.getInstance().getPlayerManager().save();
-            VRNcore.getInstance().getRewardManager().getRewards().forEach(Reward::save);
-        }, 20L, 20L * (Settings.autoSaveInterval * 60L));
+        Task.asyncRepeating(() -> VRNcore.getInstance().getPlayerManager().save(), 20L, 20L * (Settings.autoSaveInterval * 60L));
 
         Task.asyncRepeating(() -> {
             for (final Player pl : Bukkit.getOnlinePlayers()) {
@@ -36,12 +32,12 @@ public class Tasks {
                     final Reward reward = VRNcore.getInstance().getRewardManager().getRewardByTime(time);
                     if (reward != null) {
                         if (reward.checkPerm(pl))
-                            Task.asyncDelayed(() -> reward.run(pl));
+                            Task.asyncDelayed(() -> VRNcore.getInstance().getRewardManager().run(reward, pl));
                     }
-                    if (manager.getTimeAfk() > Settings.Afk.afktime)
+                    if (manager.getTimeAfk() > Settings.afktime)
                         manager.setAfk(true);
-                } else if (manager.getTimeAfk() >= Settings.Afk.kickTime && !pl.hasPermission("vrn.afkexempt"))
-                    Task.syncDelayed(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.Afk.kickTime))));
+                } else if (manager.getTimeAfk() >= Settings.kickTime && !pl.hasPermission("vrn.afkexempt"))
+                    Task.syncDelayed(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.kickTime))));
             }
         }, 0, 20);
     }

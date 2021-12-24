@@ -29,10 +29,10 @@ public final class SkinUtil {
         final String signature;
         try {
             final URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
-            final String uuid = new JsonParser().parse(new InputStreamReader(url.openStream())).getAsJsonObject().get("id").getAsString();
+            final String uuid = JsonParser.parseReader(new InputStreamReader(url.openStream())).getAsJsonObject().get("id").getAsString();
 
             final URL session = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
-            final JsonObject textureProperty = new JsonParser().parse(new InputStreamReader(session.openStream())).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+            final JsonObject textureProperty = JsonParser.parseReader(new InputStreamReader(session.openStream())).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
             texture = textureProperty.get("value").getAsString();
             signature = textureProperty.get("signature").getAsString();
         } catch (final IOException e) {

@@ -1,12 +1,13 @@
 package net.skeagle.vrncore.commands;
 
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
+import net.skeagle.vrncommands.BukkitMessages;
+import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.GUIs.GivePlusGUI;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
-import net.skeagle.vrnlib.commandmanager.Messages;
+import net.skeagle.vrncore.playerdata.PlayerStates;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.misc.TimeUtil;
@@ -16,7 +17,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ import org.bukkit.event.server.TabCompleteEvent;
 
 import java.util.*;
 
-import static net.skeagle.vrncore.utils.VRNUtil.color;
+import static net.skeagle.vrncommands.BukkitUtils.color;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 import static net.skeagle.vrnlib.misc.TimeUtil.parseTimeString;
 import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
@@ -42,11 +43,11 @@ public class AdminCommands {
                 vanished.remove(e.getPlayer().getUniqueId()));
 
         new EventListener<>(PlayerJoinEvent.class, e -> {
-            final PlayerData data = PlayerManager.getData(e.getPlayer().getUniqueId());
+            final PlayerStates data = PlayerManager.getData(e.getPlayer().getUniqueId()).getStates();
             if (data.isVanished()) {
                 for (final Player pl : Bukkit.getOnlinePlayers()) {
                     if (pl == e.getPlayer()) continue;
-                    vanished.add(data.getPlayer().getUniqueId());
+                    vanished.add(e.getPlayer().getUniqueId());
                     Task.syncDelayed(() -> {
                         ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
                                 ((CraftPlayer) e.getPlayer()).getHandle()));
@@ -58,7 +59,7 @@ public class AdminCommands {
 
         new EventListener<>(EntityTargetEvent.class, e -> {
             if (!(e.getTarget() instanceof Player player)) return;
-            final PlayerData data = PlayerManager.getData(player.getUniqueId());
+            final PlayerStates data = PlayerManager.getData(player.getUniqueId()).getStates();
             if (data.isVanished()) {
                 if (e.getEntity() instanceof Mob mob) {
                     mob.setTarget(null);
@@ -84,7 +85,7 @@ public class AdminCommands {
 
     @CommandHook("broadcast")
     public void onBroadcast(final CommandSender sender, final String message) {
-        Bukkit.broadcastMessage(color(Messages.msg("broadcastPrefix") + " " + message));
+        Bukkit.broadcastMessage(color(BukkitMessages.msg("broadcastPrefix") + " " + message));
     }
 
     @CommandHook("clearchat")
@@ -103,54 +104,34 @@ public class AdminCommands {
     }
 
     @CommandHook("vanish")
-    public void onVanish(final CommandSender sender, final Player target) {
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        if (!data.isVanished()) {
-            this.vanished.add(data.getPlayer().getUniqueId());
-            for (final Player pl : Bukkit.getOnlinePlayers()) {
-                if (pl == data.getPlayer()) continue;
-                pl.hidePlayer(VRNcore.getInstance(), data.getPlayer());
-                ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, ((CraftPlayer) data.getPlayer()).getHandle()));
+    public void onVanish(final CommandSender sender, final OfflinePlayer target) {
+        final PlayerStates data = PlayerManager.getData(target.getUniqueId()).getStates();
+        if (target.getPlayer() != null) {
+            if (!data.isVanished()) {
+                this.vanished.add(target.getUniqueId());
+                for (final Player pl : Bukkit.getOnlinePlayers()) {
+                    if (pl == target) continue;
+                    pl.hidePlayer(VRNcore.getInstance(), target.getPlayer());
+                    ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, ((CraftPlayer) target).getHandle()));
+                }
+            } else {
+                this.vanished.remove(target.getUniqueId());
+                for (final Player pl : Bukkit.getOnlinePlayers()) {
+                    if (pl == target) continue;
+                    pl.showPlayer(VRNcore.getInstance(), target.getPlayer());
+                    ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, ((CraftPlayer) target).getHandle()));
+                }
             }
-        } else {
-            this.vanished.remove(data.getPlayer().getUniqueId());
-            for (final Player pl : Bukkit.getOnlinePlayers()) {
-                if (pl == data.getPlayer()) continue;
-                pl.showPlayer(VRNcore.getInstance(), data.getPlayer());
-                ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, ((CraftPlayer) data.getPlayer()).getHandle()));
-            }
+            say(target.getPlayer(), "Vanish " + (data.isVanished() ? "enabled." : "disabled."));
         }
         data.setVanished(!data.isVanished());
-        say(data.getPlayer(), "Vanish " + (data.isVanished() ? "enabled." : "disabled."));
-        if (data.getPlayer() == sender) return;
-        say(sender, "Vanish " + (data.isVanished() ? "enabled" : "disabled") + " for &a" + data.getName() + "&7.");
+        if (target == sender) return;
+        say(sender, "Vanish " + (data.isVanished() ? "enabled" : "disabled") + " for &a" + target.getName() + "&7.");
     }
 
     @CommandHook("giveplus")
     public void onGivePlus(final Player player) {
         new GivePlusGUI(player);
-    }
-
-    @CommandHook("ban")
-    public void onBan(final CommandSender sender, final Player target, final String reason, final boolean silent) {
-
-    }
-
-    @CommandHook("kick")
-    public void onKick(final CommandSender sender, final boolean silent, final Player target, final String reason) {
-        target.kickPlayer(color("&cYou have been kicked by &b" + sender.getName() + "&c" +
-                (reason == null ? "." : " for: \n&6" + reason)));
-        if (!silent)
-            Bukkit.broadcastMessage(color("&a" + target.getName() + " &7was kicked by&c " + sender.getName() + "&7" +
-                    (reason == null ? "." : " for: &b" + reason)));
-    }
-
-    @CommandHook("mute")
-    public void onMute(final CommandSender sender, final Player target) {
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        data.setMuted(!data.isMuted());
-        say(data.getPlayer(), "You are " + (data.isMuted() ? "now" : "no longer") + " muted.");
-        say(sender, "&a" + data.getName() + " &7is " + (data.isMuted() ? "now" : "no longer") + " muted.");
     }
 
     @CommandHook("smite")
@@ -199,37 +180,6 @@ public class AdminCommands {
     public void onInvsee(final Player player, final Player target) {
         player.openInventory(target.getInventory());
         say(player, "Now showing &a" + target.getName() + "&7's inventory.");
-        /*
-        Common.runAsync(() -> {
-            OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-            File f;
-            if (p.hasPlayedBefore())
-                f = new File("world" + File.separator + "playerdata", p.getUniqueId().toString() + ".dat");
-            else {
-                say(getPlayer(), "&cno player data found for " + args[0] + ".");
-                return;
-            }
-            try {
-                NBTTagCompound nbt = NBTCompressedStreamTools.a(new FileInputStream(f));
-                NBTTagList list = (NBTTagList) nbt.get("Inventory");
-                if (list == null) {
-                    say(getPlayer(), "&cCould not read " + p.getName() + "'s inventory.");
-                    return;
-                }
-                List<NBTTagCompound> compoundlist = new ArrayList<>();
-                for (int i = 0; i < list.size() - 1; i++) {
-                    NBTTagCompound compound = (NBTTagCompound) list.get(i);
-                    if (!compound.isEmpty())
-                        compoundlist.add(compound);
-                }
-                Common.run(() -> new InvseeGUI(compoundlist, p));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-         */
     }
 
     @CommandHook("speed")
@@ -364,11 +314,13 @@ public class AdminCommands {
     }
 
     @CommandHook("god")
-    public void onGod(final CommandSender sender, final Player target) {
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        data.setGodmode(!data.isGodmode());
-        say(target, "You are " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
-        if (data.getPlayer() == sender) return;
-        say(sender, "&a" + data.getName() + " &7is " + (data.isGodmode() ? "now" : "no longer") + " invulnerable.");
+    public void onGod(final CommandSender sender, final OfflinePlayer target) {
+        final PlayerStates data = PlayerManager.getData(target.getUniqueId()).getStates();
+        data.setGodmode(!data.hasGodmode());
+        if (target.getPlayer() != null) {
+            say(target.getPlayer(), "You are " + (data.hasGodmode() ? "now" : "no longer") + " invulnerable.");
+        }
+        if (target == sender) return;
+        say(sender, "&a" + target.getName() + " &7is " + (data.hasGodmode() ? "now" : "no longer") + " invulnerable.");
     }
 }

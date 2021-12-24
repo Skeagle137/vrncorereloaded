@@ -6,14 +6,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.SkinUtil;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -26,7 +26,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class FunCommands {
 
-    private final Map<UUID, Skin> skinCache;
+    private final Map<UUID, Property> skinCache;
 
     public FunCommands() {
         skinCache = new HashMap<>();
@@ -72,15 +72,33 @@ public class FunCommands {
 
     @CommandHook("skin")
     public void onSkin(final Player player, final String name) {
+        if (name == null || name.equalsIgnoreCase(player.getName())) {
+            if (!skinCache.containsKey(player.getUniqueId())) {
+                say(player, "&cYou do not currently have a different skin active.");
+                return;
+            }
+            replaceSkin(player, null);
+            say(player, "&aYour skin has been reset.");
+        }
         final Skin skin = SkinUtil.getSkin(name);
         if (skin == null) {
             say(player, "&cThe skin could not be retrieved. Likely there is no player with this name.");
             return;
         }
+        replaceSkin(player, skin);
+        say(player, "&aYour skin has been changed successfully. To reset it, run /skin.");
+    }
+
+    private void replaceSkin(Player player, Skin skin) {
         final ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
         final Property property = nmsPlayer.getGameProfile().getProperties().get("textures").iterator().next();
+
+        if (!skinCache.containsKey(player.getUniqueId())) {
+            skinCache.put(player.getUniqueId(), property);
+        }
         nmsPlayer.getGameProfile().getProperties().remove("textures", property);
-        nmsPlayer.getGameProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
+        Property newProperty = skin != null ? new Property("textures", skin.getTexture(), skin.getSignature()) : skinCache.remove(player.getUniqueId());
+        nmsPlayer.getGameProfile().getProperties().put("textures", newProperty);
 
         final Location loc = player.getLocation().clone();
         final ServerLevel level = (ServerLevel) nmsPlayer.level;
@@ -106,6 +124,5 @@ public class FunCommands {
             pl.hidePlayer(VRNcore.getInstance(), player);
             pl.showPlayer(VRNcore.getInstance(), player);
         }
-        say(player, "&aYour skin has been changed successfully.");
     }
 }

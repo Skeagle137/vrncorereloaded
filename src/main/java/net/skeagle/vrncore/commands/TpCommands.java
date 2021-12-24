@@ -1,15 +1,16 @@
 package net.skeagle.vrncore.commands;
 
+import net.skeagle.vrncommands.BukkitMessages;
+import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
-import net.skeagle.vrnlib.commandmanager.CommandHook;
-import net.skeagle.vrnlib.commandmanager.Messages;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -39,7 +40,7 @@ public class TpCommands {
             if (pl != player)
                 onTpHere(player, pl);
         }
-        say(player, Messages.msg("teleportedAll"));
+        say(player, BukkitMessages.msg("teleportedAll"));
     }
 
     @CommandHook("tphere")
@@ -154,8 +155,8 @@ public class TpCommands {
         tpaUtil.deleteRequest(request, false);
     }
 
-    private void sayTp(final Player player) {
-        say(player, Messages.msg("teleporting"));
+    private void sayTp(final CommandSender sender) {
+        say(sender, BukkitMessages.msg("teleporting"));
     }
 
     private static class BackCache {
