@@ -58,6 +58,6 @@ public class HomeManager {
     }
 
     public ArgType<Home> getArgType() {
-        return new ArgType<>("home", (s, c) -> getHome(c, (Player) s)).setTab((s, c) -> getHomeNames((Player) s));
+        return new ArgType<>("home", (s, c) -> getHome(c, s.getUser())).setTab((s, c) -> getHomeNames(s.getUser()));
     }
 }
