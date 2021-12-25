@@ -23,11 +23,12 @@ public class HomesWarpsCommands {
     @CommandHook("sethome")
     public void onSetHome(Player player, String name) {
         if (!player.hasPermission("vrn.homelimit.*")) {
-            for (int i = 0; i <= VRNcore.getInstance().getHomeManager().getHomeNames(player).size(); i++)
+            for (int i = 0; i <= VRNcore.getInstance().getHomeManager().getHomeNames(player).size(); i++) {
                 if (player.hasPermission("vrn.homelimit." + i)) {
                     say(player, "&cYou can only set a maximum of " + i + " homes. Delete some of your homes if you want to set more.");
                     return;
                 }
+            }
         }
         if (VRNcore.getInstance().getHomeManager().getHome(name, player) != null) {
             say(player, "&cA home with that name already exists.");
@@ -61,11 +62,12 @@ public class HomesWarpsCommands {
     @CommandHook("setwarp")
     public void onSetWarp(Player player, String name) {
         if (!player.hasPermission("vrn.warplimit.*")) {
-            for (int i = 0; i <= VRNcore.getInstance().getHomeManager().getHomeNames(player).size(); i++)
+            for (long i = 0; i <= VRNcore.getInstance().getWarpManager().getWarpsOwned(player); i++) {
                 if (player.hasPermission("vrn.warplimit." + i)) {
                     say(player, "&cYou can only set a maximum of " + i + " warps. Delete some of your warps if you want to set more.");
                     return;
                 }
+            }
         }
         if (VRNcore.getInstance().getWarpManager().getWarp(name) != null) {
             say(player, "&cA warp with that name already exists.");

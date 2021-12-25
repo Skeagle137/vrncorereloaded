@@ -61,7 +61,6 @@ fly player:player*?(context self) {
     hook fly
 }
 gamemode,gm {
-    permission vrn.gamemode
     survival,s,0 player:player*?(context self) {
         others
         permission vrn.gamemode
@@ -137,7 +136,6 @@ night {
     hook night
 }
 npc {
-    permission vrn.npc
     create string:name* {
         permission vrn.npc
         help Create an npc.
@@ -152,7 +150,6 @@ npc {
     }
 }
 ptime {
-    permission vrn.ptime
     day {
         permission vrn.ptime
         help Set personal time to day.
@@ -178,7 +175,6 @@ push player:player* int:multiplier*?(3) {
     hook push
 }
 pweather {
-    permission vrn.pweather
     sun {
         permission vrn.pweather
         help Set personal weather to sun.
@@ -280,7 +276,6 @@ sun {
     hook sun
 }
 timeplayed {
-    permission vrn.timeplayed
     get offlineplayer:offlineplayer*?(context self) {
         others
         permission vrn.timeplayed.get
