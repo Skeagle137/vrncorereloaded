@@ -46,14 +46,14 @@ public class WarpsGUI extends PageableGUI<Warp> {
             player.teleport(w.location());
         }
         if (e.getClick().isRightClick()) {
-            String perm = "vrn.delwarp." + (!w.owner().equals(player.getUniqueId()) ? "others" : "self");
+            String perm = "vrn.delwarp." + (!w.owner().equals(player.getUniqueId()) ? "others" : "");
             if (!player.hasPermission(perm)) {
                 getViewer().closeInventory();
                 say(getViewer(), BukkitMessages.getLoaded(VRNLib.getInstance()).get("noPermission"));
                 return;
             }
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);
-            new DeleteConfirm(player, w);
+            deleteConfirm(player, w);
         }
     }
 
@@ -62,18 +62,15 @@ public class WarpsGUI extends PageableGUI<Warp> {
         return null;
     }
 
-    private static class DeleteConfirm {
-
-        private DeleteConfirm(Player player, Warp w) {
-            InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
-            gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new WarpsGUI().open(player)), 2);
-            gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
-            gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
-                VRNcore.getInstance().getWarpManager().deleteWarp(w);
-                player.closeInventory();
-                say(player, "&7Warp &a" + w.name() + "&7 successfully deleted.");
-            }), 6);
-            gui.open(player);
-        }
+    private void deleteConfirm(Player player, Warp w) {
+        InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
+        gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new WarpsGUI().open(player)), 2);
+        gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
+        gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
+            VRNcore.getInstance().getWarpManager().deleteWarp(w);
+            player.closeInventory();
+            say(player, "&7Warp &a" + w.name() + "&7 successfully deleted.");
+        }), 6);
+        gui.open(player);
     }
 }

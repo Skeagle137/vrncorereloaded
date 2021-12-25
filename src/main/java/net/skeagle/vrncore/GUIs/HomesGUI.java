@@ -50,14 +50,14 @@ public class HomesGUI extends PageableGUI<Home> {
             player.teleport(h.location());
         }
         if (e.getClick().isRightClick()) {
-            String perm = "vrn.delhome." + (h.owner() != target.getUniqueId() ? "others" : "self");
+            String perm = "vrn.delhome." + (h.owner() != target.getUniqueId() ? "others" : "");
             if (!player.hasPermission(perm)) {
                 player.closeInventory();
                 say(player, BukkitMessages.getLoaded(VRNLib.getInstance()).get("noPermission"));
                 return;
             }
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);
-            new DeleteConfirm(player, target, h);
+            deleteConfirm(player, target, h);
         }
     }
 
@@ -66,18 +66,15 @@ public class HomesGUI extends PageableGUI<Home> {
         return null;
     }
 
-    private static class DeleteConfirm {
-
-        private DeleteConfirm(Player player, Player target, Home h) {
-            InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
-            gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new HomesGUI(target).open(player)), 2);
-            gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
-            gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
-                VRNcore.getInstance().getHomeManager().deleteHome(h);
-                player.closeInventory();
-                say(player, "&7Home &a" + h.name() + "&7 successfully deleted.");
-            }), 6);
-            gui.open(player);
-        }
+    private void deleteConfirm(Player player, Player target, Home h) {
+        InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
+        gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new HomesGUI(target).open(player)), 2);
+        gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
+        gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
+            VRNcore.getInstance().getHomeManager().deleteHome(h);
+            player.closeInventory();
+            say(player, "&7Home &a" + h.name() + "&7 successfully deleted.");
+        }), 6);
+        gui.open(player);
     }
 }

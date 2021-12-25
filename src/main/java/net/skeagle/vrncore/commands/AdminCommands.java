@@ -176,12 +176,6 @@ public class AdminCommands {
         say(sender, "&a" + target.getName() + "&7's health and hunger are now full.");
     }
 
-    @CommandHook("invsee")
-    public void onInvsee(final Player player, final Player target) {
-        player.openInventory(target.getInventory());
-        say(player, "Now showing &a" + target.getName() + "&7's inventory.");
-    }
-
     @CommandHook("speed")
     public void onSpeed(final CommandSender sender, final Player target, final int speed) {
         if (speed == 1) {

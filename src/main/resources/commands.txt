@@ -124,11 +124,6 @@ homes player:player*?(context self) {
     user player
     hook homes
 }
-invsee player:player* {
-    permission vrn.invsee
-    help View another player's inventory.
-    hook invsee
-}
 nick player:player*?(context self) string:nick* {
     others
     permission vrn.nick
