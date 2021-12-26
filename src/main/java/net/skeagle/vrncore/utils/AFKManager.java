@@ -36,6 +36,10 @@ public final class AFKManager {
         return manager;
     }
 
+    public void remove(Player player) {
+        afkPlayers.remove(player.getUniqueId());
+    }
+
     public void setSavedLocation(final SavedLocation loc) {
         savedLocation = new SavedLocation(loc);
     }

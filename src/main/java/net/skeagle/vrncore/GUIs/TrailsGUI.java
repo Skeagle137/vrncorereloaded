@@ -102,10 +102,10 @@ public class TrailsGUI extends InventoryGUI {
                 final boolean b = (type == TrailType.ARROW ? data.getArrowTrail() : data.getPlayerTrail()) != null &&
                         (type == TrailType.ARROW ? data.getArrowTrail() : data.getPlayerTrail()) == particle.getParticle();
                 return new ItemBuilder(particle.getMaterial()).setName("&6" + particle.getParticleName())
-                        .setLore("", "&7Click to select", "&7this " + type.getName() + " trail.").glint(b);
+                        .setLore("", "&7Click to select", "&7this " + type.name().toLowerCase() + " trail.").glint(b);
             }
             return new ItemBuilder(Material.GRAY_DYE).setName("&4???")
-                    .setLore("", "&cYou cannot use", "&cthis " + type.getName() + " trail.");
+                    .setLore("", "&cYou cannot use", "&cthis " + type.name().toLowerCase() + " trail.");
         }
 
         @Override

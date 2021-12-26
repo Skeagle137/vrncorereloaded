@@ -36,8 +36,10 @@ public class Tasks {
                     }
                     if (manager.getTimeAfk() > Settings.afktime)
                         manager.setAfk(true);
-                } else if (manager.getTimeAfk() >= Settings.kickTime && !pl.hasPermission("vrn.afkexempt"))
+                } else if (manager.getTimeAfk() >= Settings.kickTime && !pl.hasPermission("vrn.afkexempt")) {
                     Task.syncDelayed(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.kickTime))));
+                    manager.remove(pl);
+                }
             }
         }, 0, 20);
     }
