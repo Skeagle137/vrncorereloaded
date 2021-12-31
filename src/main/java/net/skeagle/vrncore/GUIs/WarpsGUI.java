@@ -4,67 +4,52 @@ import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
-import net.skeagle.vrnlib.VRNLib;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
-import net.skeagle.vrnlib.inventorygui.PageableGUI;
+import net.skeagle.vrnlib.inventorygui.PaginationPanel;
 import net.skeagle.vrnlib.itemutils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
-public class WarpsGUI extends PageableGUI<Warp> {
+public class WarpsGUI {
 
-    public WarpsGUI() {
-        super("Global warps list");
+    public WarpsGUI(Player player) {
+        BorderedGUI gui = new BorderedGUI("Global warps list");
+        PaginationPanel panel = gui.paginate();
+        VRNcore.getInstance().getWarpManager().getWarps().forEach(w ->
+                panel.addPagedButton(ItemButton.create(getIcon(w), e -> {
+                    if (e.getClick().isLeftClick()) {
+                        player.closeInventory();
+                        say(player, BukkitMessages.msg("teleporting"));
+                        player.teleport(w.location());
+                    }
+                    if (e.getClick().isRightClick() && !w.owner().equals(player.getUniqueId())) {
+                        if (!player.hasPermission("vrn.delwarp.others")) {
+                            player.closeInventory();
+                            say(player, BukkitMessages.msg("noPermission"));
+                            return;
+                        }
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);
+                        deleteConfirm(player, w);
+                    }
+                }))
+        );
+        gui.open(player);
     }
 
-    @Override
-    protected List<Warp> getContents() {
-        return VRNcore.getInstance().getWarpManager().getWarps();
-    }
-
-    @Override
-    protected ItemStack convertToItem(Warp w) {
+    private ItemStack getIcon(Warp w) {
         Block b = VRNUtil.getStandingBlock(w.location());
         return new ItemBuilder(b != null ? b.getType() : Material.BARRIER).setName("&7" + w.name());
     }
 
-    @Override
-    protected void onClickItem(Warp w, InventoryClickEvent e) {
-        Player player = getViewer();
-        if (e.getClick().isLeftClick()) {
-            player.closeInventory();
-            say(player, BukkitMessages.msg("teleporting"));
-            player.teleport(w.location());
-        }
-        if (e.getClick().isRightClick()) {
-            String perm = "vrn.delwarp." + (!w.owner().equals(player.getUniqueId()) ? "others" : "");
-            if (!player.hasPermission(perm)) {
-                getViewer().closeInventory();
-                say(getViewer(), BukkitMessages.getLoaded(VRNLib.getInstance()).get("noPermission"));
-                return;
-            }
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);
-            deleteConfirm(player, w);
-        }
-    }
-
-    @Override
-    protected ItemButton getInfoItem() {
-        return null;
-    }
-
     private void deleteConfirm(Player player, Warp w) {
         InventoryGUI gui = new InventoryGUI(9, "&c&lConfirm delete?");
-        gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new WarpsGUI().open(player)), 2);
+        gui.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to homes list)"), e -> new WarpsGUI(player)), 2);
         gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
         gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
             VRNcore.getInstance().getWarpManager().deleteWarp(w);

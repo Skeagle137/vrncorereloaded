@@ -1,4 +1,5 @@
 prefix: &8[&9&lVRN&r&8]&7
+noPermission: &cYou do not have permission to do this.
 broadcastPrefix: &8[&3&lVRN Broadcast&r&8]&b
 teleporting: Teleporting...
 teleportedAll: Teleported all players.
