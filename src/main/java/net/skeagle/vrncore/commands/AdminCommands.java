@@ -88,15 +88,6 @@ public class AdminCommands {
         Bukkit.broadcastMessage(color(BukkitMessages.msg("broadcastPrefix") + " " + message));
     }
 
-    @CommandHook("clearchat")
-    public void onClearChat(final CommandSender sender) {
-        Bukkit.getOnlinePlayers().forEach((pl) -> {
-            for (int i = 0; i < 150; i++)
-                pl.sendMessage("");
-        });
-        Bukkit.broadcastMessage(color("&a" + sender.getName() + " &7has cleared the chat."));
-    }
-
     @CommandHook("echest")
     public void onEchest(final Player player, final Player target) {
         player.openInventory(target.getEnderChest());

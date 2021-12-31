@@ -10,11 +10,6 @@ broadcast,bc string...:message* {
     help Broadcast a message to the entire server.
     hook broadcast
 }
-clearchat {
-    permission vrn.clearchat
-    help Clears the chat.
-    hook clearchat
-}
 craft {
     permission vrn.craft
     help Opens a crafting table interface.
