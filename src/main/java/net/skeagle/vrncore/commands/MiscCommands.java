@@ -2,9 +2,11 @@ package net.skeagle.vrncore.commands;
 
 import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncommands.CommandHook;
+import net.skeagle.vrncommands.Sender;
 import net.skeagle.vrncore.GUIs.ExpTradeGUI;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
 import net.skeagle.vrncore.Settings;
+import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.itemutils.ItemUtils;
 import net.skeagle.vrnlib.misc.EventListener;
@@ -14,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -22,55 +25,36 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.UnaryOperator;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public class MiscCommands {
 
-    private final Map<UUID, UUID> sitMap = new HashMap<>();
+    private final Map<UUID, UUID> lastReplies = new HashMap<>();
 
-    public MiscCommands() {
-        Task.syncRepeating(() -> {
-            ArmorStand stand;
-            for (final UUID uuid : sitMap.values()) {
-                stand = (ArmorStand) Bukkit.getEntity(uuid);
-                if (!stand.getPassengers().isEmpty() && stand.getPassengers().get(0) instanceof Player player) {
-                    stand.setRotation(player.getLocation().getYaw(), player.getLocation().getPitch());
-                    if (VRNUtil.getStandingBlock(stand.getLocation().add(0, 1.7, 0)) == null) {
-                        setSitting(player, false);
-                    }
-                }
-            }
-        }, 0, 1);
+    @CommandHook("message")
+    public void onMessage(final Player player, final Player target, String message) {
+        String playerName = PlayerManager.getData(player.getUniqueId()).getName();
+        String targetName = PlayerManager.getData(target.getUniqueId()).getName();
+        String outgoing = BukkitMessages.msg("senderMsgPlayerPrefix").replaceAll("%target%", targetName) + message;
+        String incoming = BukkitMessages.msg("playerMsgSenderPrefix").replaceAll("%sender%", playerName)  + message;
+        sayNoPrefix(player, outgoing);
+        sayNoPrefix(target, incoming);
+        lastReplies.put(player.getUniqueId(), target.getUniqueId());
+        lastReplies.put(target.getUniqueId(), player.getUniqueId());
+    }
 
-        new EventListener<>(PlayerDeathEvent.class, e -> {
-            if (isSitting(e.getEntity())) {
-                setSitting(e.getEntity(), false);
-            }
-        });
-
-        new EventListener<>(PlayerQuitEvent.class, e -> {
-            if (isSitting(e.getPlayer())) {
-                setSitting(e.getPlayer(), false);
-            }
-        });
-
-        new EventListener<>(PlayerTeleportEvent.class, e -> {
-            if (isSitting(e.getPlayer())) {
-                setSitting(e.getPlayer(), false);
-            }
-        });
-
-        new EventListener<>(PlayerArmorStandManipulateEvent.class, e -> {
-            if (sitMap.containsValue(e.getRightClicked().getUniqueId())) {
-                e.setCancelled(true);
-            }
-        });
+    @CommandHook("reply")
+    public void onReply(final Player player, String message) {
+        if (lastReplies.get(player.getUniqueId()) == null) {
+            say(player, "&cYou have not messaged someone to be able to reply to them yet.");
+            return;
+        }
+        onMessage(player, Bukkit.getPlayer(lastReplies.get(player.getUniqueId())), message);
     }
 
     @CommandHook("craft")
@@ -81,17 +65,6 @@ public class MiscCommands {
     @CommandHook("trails")
     public void onTrails(final Player player, final Player target) {
         new TrailsGUI(player, target);
-    }
-
-    @CommandHook("sit")
-    public void onSit(final Player player) {
-        if (isSitting(player)) {
-            setSitting(player, false);
-        }
-        else if (Math.abs(player.getVelocity().getY()) < 0.5 && VRNUtil.getStandingBlock(player.getLocation()) != null)
-            setSitting(player, true);
-        else
-            say(player, BukkitMessages.msg("sitAir"));
     }
 
     @CommandHook("exptrade")
@@ -151,29 +124,5 @@ public class MiscCommands {
         return b.getType().isSolid() &&
                 b.getType() != Material.LAVA &&
                 !b.isLiquid() && !b.isPassable();
-    }
-
-    private boolean isSitting(Player player) {
-        return sitMap.containsKey(player.getUniqueId());
-    }
-
-    private void setSitting(final Player player, final boolean sitting) {
-        if (sitting && !isSitting(player)) {
-            final Location loc = player.getLocation();
-            final ArmorStand stand = loc.getWorld().spawn(loc.clone().subtract(0.0, 1.7, 0.0), ArmorStand.class);
-            stand.setGravity(false);
-            stand.setVisible(false);
-            stand.setSilent(true);
-            say(player, "You are now sitting.");
-            stand.addPassenger(player);
-            sitMap.put(player.getUniqueId(), stand.getUniqueId());
-        } else if (!sitting && isSitting(player)) {
-            final ArmorStand stand = (ArmorStand) Bukkit.getEntity(sitMap.get(player.getUniqueId()));
-            say(player, "You are no longer sitting.");
-            sitMap.remove(player.getUniqueId());
-            player.eject();
-            player.teleport(stand.getLocation().clone().add(0.0, 1.7, 0.0));
-            stand.remove();
-        }
     }
 }

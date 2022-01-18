@@ -1,8 +1,8 @@
 package net.skeagle.vrncore.trail.style;
 
+import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.Style;
-import net.skeagle.vrncore.trail.TrailType;
 import net.skeagle.vrncore.trail.TrailVisibility;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,9 +15,9 @@ public abstract class TrailStyle {
         this.style = style;
     }
 
-    public abstract void tick(Player player, Particles particle, Location loc, TrailType type, TrailVisibility visibility);
+    public abstract void tick(Player player, Location loc, TrailData data, Particles particle, TrailVisibility visibility);
 
-    Style getStyle() {
+    public Style get() {
         return style;
     }
 }

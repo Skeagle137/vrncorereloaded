@@ -13,13 +13,8 @@ import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
 public class Tasks {
 
-    public Tasks() {
-        loadTasks();
-    }
-
-    public void loadTasks() {
-
-        Task.asyncRepeating(() -> VRNcore.getInstance().getPlayerManager().save(), 20L, 20L * (Settings.autoSaveInterval * 60L));
+    public Tasks(VRNcore plugin) {
+        Task.asyncRepeating(() -> plugin.getPlayerManager().save(), 20L, 20L * (Settings.autoSaveInterval * 60L));
 
         Task.asyncRepeating(() -> {
             for (final Player pl : Bukkit.getOnlinePlayers()) {
@@ -29,10 +24,12 @@ public class Tasks {
                 if (!updateAFKPlayer(pl) || !manager.isAfk()) {
                     time += 1;
                     data.setTimePlayed(time);
-                    final Reward reward = VRNcore.getInstance().getRewardManager().getRewardByTime(time);
+                    final Reward reward = plugin.getRewardManager().getRewardByTime(time);
                     if (reward != null) {
-                        if (reward.checkPerm(pl))
-                            Task.asyncDelayed(() -> VRNcore.getInstance().getRewardManager().run(reward, pl));
+                        if (reward.checkPerm(pl)) {
+                            Task.asyncDelayed(() -> plugin.getRewardManager().run(reward, pl));
+                            data.updateName();
+                        }
                     }
                     if (manager.getTimeAfk() > Settings.afktime)
                         manager.setAfk(true);

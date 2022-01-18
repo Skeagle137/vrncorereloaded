@@ -118,6 +118,12 @@ homes player:player*?(context self) {
     user player
     hook homes
 }
+message,msg,whisper,w player:player* string...:msg* {
+    permission vrn.message
+    help Message another player.
+    user player
+    hook message
+}
 nick player:player*?(context self) string:nick* {
     others
     permission vrn.nick
@@ -200,17 +206,23 @@ realname string:nick* {
     help Find out a player's real name from their nick name.
     hook realname
 }
+removenick player:player*?(context self) {
+    others
+    permission vrn.nick
+    help Remove a nickname from a player.
+    hook removenick
+}
 rename string...:name* {
     permission vrn.rename
     help Renames an item in your hand.
     user player
     hook rename
 }
-removenick player:player*?(context self) {
-    others
-    permission vrn.nick
-    help Remove a nickname from a player.
-    hook removenick
+reply,r string...:msg* {
+    permission vrn.message
+    help Reply to a player you have messaged
+    user player
+    hook reply
 }
 rtp {
     permission vrn.rtp
@@ -229,12 +241,6 @@ setwarp string:name* {
     help Create a warp.
     user player
     hook setwarp
-}
-sit {
-    permission vrn.sit
-    help Defy all known laws of minecraft physics and sit anywhere.
-    user player
-    hook sit
 }
 skin string:name* {
     permission vrn.skin
@@ -350,6 +356,12 @@ tphere player:player* {
     user player
     hook tphere
 }
+tptoggle {
+    permission vrn.tptoggle
+    help Toggle being able to recieve teleport requests from other players.
+    user player
+    hook tptoggle
+}
 trails,trail player:player*?(context self) {
     others
     permission vrn.trails
@@ -357,11 +369,20 @@ trails,trail player:player*?(context self) {
     user player
     hook trails
 }
-vanish player:player*?(context self) {
+vanish player:player*?(context self) --silent,-s {
     others
     permission vrn.vanish
     help Hide yourself or another player from other players.
     hook vanish
+}
+vrn {
+    help Display plugin information and admin options.
+    hook vrn
+    reload {
+        help Reload all messages and configs.
+        permission vrn.reload
+        hook reload
+    }
 }
 warp warp:warp* {
     permission vrn.warp
@@ -374,13 +395,4 @@ warps {
     help List all available warps.
     user player
     hook warps
-}
-vrn {
-    help Display plugin information and admin options.
-    hook vrn
-    reload {
-        help Reload all messages and configs.
-        permission vrn.reload
-        hook reload
-    }
 }

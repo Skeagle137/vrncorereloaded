@@ -25,7 +25,7 @@ public class BorderedGUI extends InventoryGUI {
             }
         });
         if (backButton != null) {
-            addButton(45, backButton);
+            addButton(53, backButton);
         }
         if (infoButton != null) {
             addButton(49, infoButton);

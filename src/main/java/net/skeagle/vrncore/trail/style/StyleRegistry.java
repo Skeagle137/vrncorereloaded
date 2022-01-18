@@ -24,7 +24,7 @@ public class StyleRegistry {
         for (Class<?> clazz : list) {
             try {
                 TrailStyle style = (TrailStyle) clazz.getConstructor().newInstance();
-                styles.put(style.getStyle(), style);
+                styles.put(style.get(), style);
             } catch (ReflectiveOperationException e) {
                 throw new IllegalStateException("Style " + clazz.getName() + " could not be registered", e);
             }
@@ -37,5 +37,9 @@ public class StyleRegistry {
 
     public Style getStyle(TrailStyle style) {
         return styles.keySet().stream().filter(s -> get(s) == style).findFirst().orElse(Style.DEFAULT);
+    }
+
+    public Map<Style, TrailStyle> getStyles() {
+        return styles;
     }
 }

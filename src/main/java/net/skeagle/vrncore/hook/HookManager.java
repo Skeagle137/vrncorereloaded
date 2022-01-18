@@ -31,7 +31,7 @@ public final class HookManager {
     }
 
     public static String format(Player p) {
-        return isVaultLoaded() ? vault.format(p) : "";
+        return format(null, p);
     }
 
     public static String format(String s, Player p) {

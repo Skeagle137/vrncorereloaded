@@ -1,13 +1,19 @@
 package net.skeagle.vrncore.commands;
 
+import net.luckperms.api.event.node.NodeMutateEvent;
+import net.luckperms.api.model.user.User;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.GUIs.GivePlusGUI;
-import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.Settings;
+import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.hook.LuckPermsHook;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.playerdata.PlayerStates;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.misc.TimeUtil;
@@ -19,67 +25,95 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.TabCompleteEvent;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
+import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 import static net.skeagle.vrnlib.misc.TimeUtil.parseTimeString;
 import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
 public class AdminCommands {
 
-    private final List<UUID> vanished;
+    private final Plugin plugin;
+    private final List<Player> vanished;
 
-    public AdminCommands() {
+    public AdminCommands(Plugin plugin) {
+        this.plugin = plugin;
         vanished = new ArrayList<>();
+        if (HookManager.isLuckPermsLoaded()) {
+            new LuckPermsHook().getLuckperms().getEventBus().subscribe(this.plugin, NodeMutateEvent.class, e -> {
+                if (!e.isUser()) return;
+                Player p = Bukkit.getPlayer(((User) e.getTarget()).getUniqueId());
+                if (p == null) return;
+                if (!PlayerManager.getData(p.getUniqueId()).getStates().isVanished()) {
+                    return;
+                }
+                String perm = "vrn.vanish";
+                if (e.getDataBefore().stream().anyMatch(n -> n.getKey().startsWith(perm)) && e.getDataAfter().stream().noneMatch(n -> n.getKey().startsWith(perm))) {
+                    updateVanishedPlayers(p);
+                }
+            });
+        }
+
         new EventListener<>(PlayerQuitEvent.class, e ->
-                vanished.remove(e.getPlayer().getUniqueId()));
+                vanished.remove(e.getPlayer()));
 
         new EventListener<>(PlayerJoinEvent.class, e -> {
-            final PlayerStates data = PlayerManager.getData(e.getPlayer().getUniqueId()).getStates();
-            if (data.isVanished()) {
-                for (final Player pl : Bukkit.getOnlinePlayers()) {
-                    if (pl == e.getPlayer()) continue;
-                    vanished.add(e.getPlayer().getUniqueId());
-                    Task.syncDelayed(() -> {
-                        ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER,
-                                ((CraftPlayer) e.getPlayer()).getHandle()));
-                        pl.hidePlayer(VRNcore.getInstance(), e.getPlayer());
-                    }, 3);
+            Task.syncDelayed(() -> {
+                if (PlayerManager.getData(e.getPlayer().getUniqueId()).getStates().isVanished()) {
+                    vanished.add(e.getPlayer());
                 }
-            }
+                for (Player pl : Bukkit.getOnlinePlayers()) {
+                    if (pl == e.getPlayer()) continue;
+                    if (vanished.contains(e.getPlayer())) {
+                        if (!VRNUtil.hasVanishPriority(e.getPlayer(), pl)) continue;
+                        addVanish(e.getPlayer(), pl);
+                    }
+                    if (vanished.contains(pl)) {
+                        if (!VRNUtil.hasVanishPriority(pl, e.getPlayer())) continue;
+                        addVanish(pl, e.getPlayer());
+                    }
+                }
+            });
         });
 
-        new EventListener<>(EntityTargetEvent.class, e -> {
+        new EventListener<>(EntityTargetLivingEntityEvent.class, EventPriority.HIGH, e -> {
             if (!(e.getTarget() instanceof Player player)) return;
-            final PlayerStates data = PlayerManager.getData(player.getUniqueId()).getStates();
-            if (data.isVanished()) {
-                if (e.getEntity() instanceof Mob mob) {
-                    mob.setTarget(null);
-                    e.setCancelled(true);
-                }
+            if (PlayerManager.getData(player.getUniqueId()).getStates().isVanished()) {
+                e.setCancelled(true);
             }
         });
 
         new EventListener<>(TabCompleteEvent.class, e -> {
-            if (!(e instanceof Player player)) return;
+            if (!(e.getSender() instanceof Player player)) return;
             final List<String> list = e.getCompletions();
-            for (final UUID uuid : vanished) {
-                if (list.contains(uuid.toString())) {
-                    if (uuid.equals(player.getUniqueId())) continue;
-                    final Player p = Bukkit.getPlayer(uuid);
-                    if (p == null) continue;
-                    list.remove(p.getName());
+            for (Player pl : vanished) {
+                if (pl == player) continue;
+                if (VRNUtil.hasVanishPriority(pl, player)) {
+                    list.remove(pl.getName());
                 }
             }
             e.setCompletions(list);
+        });
+
+        new EventListener<>(PlayerCommandPreprocessEvent.class, e -> {
+            if (e.isCancelled()) return;
+            for (Player pl : vanished) {
+                if (pl == e.getPlayer()) continue;
+                if (VRNUtil.hasVanishPriority(pl, e.getPlayer())) {
+                    e.setMessage(e.getMessage().replaceAll(pl.getName(), pl.getName() + "§§"));
+                }
+            }
         });
     }
 
@@ -95,29 +129,34 @@ public class AdminCommands {
     }
 
     @CommandHook("vanish")
-    public void onVanish(final CommandSender sender, final OfflinePlayer target) {
-        final PlayerStates data = PlayerManager.getData(target.getUniqueId()).getStates();
+    public void onVanish(final CommandSender sender, final OfflinePlayer target, boolean silent) {
+        final PlayerData data = PlayerManager.getData(target.getUniqueId());
+        final PlayerStates states = data.getStates();
         if (target.getPlayer() != null) {
-            if (!data.isVanished()) {
-                this.vanished.add(target.getUniqueId());
-                for (final Player pl : Bukkit.getOnlinePlayers()) {
-                    if (pl == target) continue;
-                    pl.hidePlayer(VRNcore.getInstance(), target.getPlayer());
-                    ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, ((CraftPlayer) target).getHandle()));
+            Player player = target.getPlayer();
+            if (!states.isVanished()) {
+                this.vanished.add(player);
+            }
+            else {
+                this.vanished.remove(player);
+            }
+            for (final Player pl : Bukkit.getOnlinePlayers()) {
+                if (pl == player || VRNUtil.hasVanishPriority(pl, player)) continue;
+                if (!states.isVanished()) {
+                    addVanish(player, pl);
+                } else {
+                    removeVanish(player, pl);
                 }
-            } else {
-                this.vanished.remove(target.getUniqueId());
-                for (final Player pl : Bukkit.getOnlinePlayers()) {
-                    if (pl == target) continue;
-                    pl.showPlayer(VRNcore.getInstance(), target.getPlayer());
-                    ((CraftPlayer) pl).getHandle().connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, ((CraftPlayer) target).getHandle()));
+                if (!silent) {
+                    sayNoPrefix(pl, Settings.joinLeaveEnabled ? BukkitMessages.msg(!states.isVanished() ? "leaveMsg" : "joinMsg").replaceAll("%player%", data.getName()) :
+                            "&e" + target.getName() + (!states.isVanished() ? " left" : " joined") + " the game.");
                 }
             }
-            say(target.getPlayer(), "Vanish " + (data.isVanished() ? "enabled." : "disabled."));
         }
-        data.setVanished(!data.isVanished());
+        states.setVanished(!states.isVanished());
+        say(target.getPlayer(), "Vanish " + (states.isVanished() ? "enabled." : "disabled."));
         if (target == sender) return;
-        say(sender, "Vanish " + (data.isVanished() ? "enabled" : "disabled") + " for &a" + target.getName() + "&7.");
+        say(sender, "Vanish " + (states.isVanished() ? "enabled" : "disabled") + " for &a" + target.getName() + "&7.");
     }
 
     @CommandHook("giveplus")
@@ -307,5 +346,27 @@ public class AdminCommands {
         }
         if (target == sender) return;
         say(sender, "&a" + target.getName() + " &7is " + (data.hasGodmode() ? "now" : "no longer") + " invulnerable.");
+    }
+
+    private void addVanish(Player vanished, Player viewer) {
+        ServerPlayer nmsPlayer = ((CraftPlayer) viewer).getHandle();
+        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, ((CraftPlayer) vanished).getHandle()));
+        viewer.hidePlayer(plugin, vanished);
+    }
+
+    private void removeVanish(Player vanished, Player viewer) {
+        ServerPlayer nmsPlayer = ((CraftPlayer) viewer).getHandle();
+        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, ((CraftPlayer) vanished).getHandle()));
+        viewer.showPlayer(plugin, vanished);
+    }
+
+    private void updateVanishedPlayers(Player player) {
+        for (Player pl : Bukkit.getOnlinePlayers()) {
+            if (!VRNUtil.hasVanishPriority(pl, player)) {
+                removeVanish(pl, player);
+                continue;
+            }
+            addVanish(pl, player);
+        }
     }
 }

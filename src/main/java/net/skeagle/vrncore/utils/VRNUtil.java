@@ -7,14 +7,18 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
 
 public final class VRNUtil {
 
     public static final Gson GSON = new Gson();
+    public static final String NOPERM = BukkitMessages.msg("noPermission");
 
     public static void say(CommandSender cs, String... message) {
         if (cs == null) return;
@@ -38,8 +42,28 @@ public final class VRNUtil {
             Bukkit.getLogger().log(level, color(s));
     }
 
-    public static void broadcast(boolean silent, String s) {
-        Bukkit.broadcast(s, silent ? "vrn.silentbypass" : "");
+    public static int getLimitForPerm(Player player, String startsWith) {
+        int highest = 0;
+        for (String perm : player.getEffectivePermissions().stream().map(PermissionAttachmentInfo::getPermission).collect(Collectors.toList())) {
+            if (perm.startsWith(startsWith)) {
+                String[] spl = perm.split("\\.");
+                if (spl.length == 4) {
+                    int limit = Integer.parseInt(spl[3]);
+                    if (highest < limit) {
+                        highest = limit;
+                    }
+                }
+            }
+        }
+        return highest;
+    }
+
+    public static boolean hasVanishPriority(Player vanished, Player viewer) {
+            String s = "vrn.vanish.priority";
+        if (viewer.hasPermission("vrn.vanish") || viewer.hasPermission("vrn.vanish.others")) {
+            return getLimitForPerm(vanished, s) >= getLimitForPerm(viewer, s);
+        }
+        return true;
     }
 
     public static Block getStandingBlock(Location loc) {
@@ -85,10 +109,6 @@ public final class VRNUtil {
 
     private static boolean blockCheck(Block b) {
         return (!b.getType().isAir() && b.getType().isSolid());
-    }
-
-    public static <T extends Throwable, U> U sneakyThrow(Throwable t) throws T {
-        throw (T) t;
     }
 
     public static class LocationSerialization {

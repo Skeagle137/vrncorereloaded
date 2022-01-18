@@ -53,19 +53,11 @@ public final class VaultHook {
         return chat.getName();
     }
 
-    public String format(final Player p) {
-        final PlayerData data = PlayerManager.getData(p.getUniqueId());
-        String s = Settings.format;
-        s = s.replaceAll("%prefix", getPrefix(p));
-        s = s.replaceAll("%player", data.getName());
-        s = s.replaceAll("%suffix", getSuffix(p));
-        s = s.replaceAll("%world", p.getWorld().getName());
-        s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
-        return s;
-    }
-
     public String format(String s, final Player p) {
         final PlayerData data = PlayerManager.getData(p.getUniqueId());
+        if (s == null) {
+            s = Settings.format;
+        }
         s = s.replaceAll("%prefix", getPrefix(p));
         s = s.replaceAll("%player", data.getName());
         s = s.replaceAll("%suffix", getSuffix(p));

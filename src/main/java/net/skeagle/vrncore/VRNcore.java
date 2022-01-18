@@ -1,5 +1,8 @@
 package net.skeagle.vrncore;
 
+import net.luckperms.api.event.node.NodeMutateEvent;
+import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import net.skeagle.vrncommands.*;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.event.AFKListener;
@@ -8,6 +11,7 @@ import net.skeagle.vrncore.event.MotdListener;
 import net.skeagle.vrncore.event.PlayerListener;
 import net.skeagle.vrncore.homes.HomeManager;
 import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.hook.LuckPermsHook;
 import net.skeagle.vrncore.npc.Npc;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerManager;
@@ -29,7 +33,6 @@ import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
 public final class VRNcore extends JavaPlugin {
 
-    private BukkitCommandRegistry registry;
     private ConfigManager config;
     private PlayerManager playerManager;
     private HomeManager homeManager;
@@ -41,16 +44,14 @@ public final class VRNcore extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        registry = new BukkitCommandRegistry(this);
         //messages and config
         config = ConfigManager.create(this).target(Settings.class).saveDefaults().load();
-        BukkitMessages.load(registry);
+        BukkitMessages.load(this);
         //hooks
         HookManager.loadHooks();
         //database setup
         db = new SQLHelper(SQLHelper.openSQLite(getDataFolder().toPath().resolve("vrn_data.db")));
-        db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, arrowtrail STRING, playertrail STRING, " +
-                "trailStyle STRING, playerStates STRING, timePlayed BIGINT);");
+        db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, playerTrailData STRING, arrowTrailData STRING, playerStates STRING, timePlayed BIGINT);");
         db.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
@@ -63,15 +64,15 @@ public final class VRNcore extends JavaPlugin {
         warpManager = new WarpManager();
         rewardManager = new RewardManager(this);
         npcManager = new NpcManager();
-        new Tasks();
+        new Tasks(this);
         //commands
         new BukkitCommandParser(getResource("commands.txt"))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
                         new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
-                .parse().register(registry, "vrncore", this, new AdminCommands(), new TpCommands(),
-                new TimeWeatherCommands(), new HomesWarpsCommands(), new MiscCommands(), new FunCommands(),
+                .parse().register(new BukkitCommandRegistry(this), "vrncore", this, new AdminCommands(this), new TpCommands(),
+                new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
                 new NickCommands(), new NpcCommands());
         //listeners
         if (Settings.motdEnabled)
@@ -79,6 +80,14 @@ public final class VRNcore extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Bukkit.getPluginManager().registerEvents(new AFKListener(), this);
         Bukkit.getPluginManager().registerEvents(new TrailListener(), this);
+        if (HookManager.isLuckPermsLoaded()) {
+            new LuckPermsHook().getLuckperms().getEventBus().subscribe(this, NodeMutateEvent.class, e -> {
+                if (!e.isUser()) return;
+                Player p = Bukkit.getPlayer(((User) e.getTarget()).getUniqueId());
+                if (p == null) return;
+                PlayerManager.getData(p.getUniqueId()).updateName();
+            });
+        }
     }
 
     @Override
@@ -133,7 +142,7 @@ public final class VRNcore extends JavaPlugin {
 
     @CommandHook("reload")
     public void onReload(final CommandSender sender) {
-        BukkitMessages.load(registry);
+        BukkitMessages.load(this);
         config.reload();
         rewardManager.reload();
         say(sender, "&aConfigs, messages, and rewards reloaded.");

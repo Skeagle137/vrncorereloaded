@@ -3,6 +3,8 @@ package net.skeagle.vrncore.commands;
 import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.playerdata.PlayerManager;
+import net.skeagle.vrncore.playerdata.PlayerStates;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
@@ -89,10 +91,13 @@ public class TpCommands {
             say(player, "&cYou already have a pending teleport request.");
             return;
         }
+        if (!tpaUtil.addRequest(player, target, TpaUtil.RequestType.THERE)) {
+            say(player, "&c" + target.getName() + " has teleport requests disabled.");
+            return;
+        }
         say(player, "Teleport request sent.");
         say(target, "&a" + player.getName() + " &7is requesting to teleport to you. " +
                 "Do /tpaccept to accept the request or /tpdeny to deny it. This request will expire in 2 minutes.");
-        tpaUtil.addRequest(player, target, TpaUtil.RequestType.THERE);
     }
 
     @CommandHook("tpdeny")
@@ -121,8 +126,8 @@ public class TpCommands {
             say(player, "&cCould not teleport " + sender.getName() + " since they are offline.");
             return;
         }
-        say(player, "&7Accepted the teleport request from &a" + sender.getName() + "&7.");
         tpaUtil.teleportPlayers(request);
+        say(player, "&7Accepted the teleport request from &a" + sender.getName() + "&7.");
     }
 
     @CommandHook("tpahere")
@@ -135,10 +140,13 @@ public class TpCommands {
             say(player, "&cYou already have a pending teleport request.");
             return;
         }
+        if (!tpaUtil.addRequest(player, target, TpaUtil.RequestType.HERE)) {
+            say(player, "&c" + target.getName() + " has teleport requests disabled.");
+            return;
+        }
         say(player, "Teleport request sent.");
         say(target, "&a" + player.getName() + " &7is requesting for you to teleport to them. " +
                 "Do /tpaccept to accept the request or /tpdeny to deny it. This request will expire in 2 minutes.");
-        tpaUtil.addRequest(player, target, TpaUtil.RequestType.HERE);
     }
 
     @CommandHook("tpcancel")
@@ -151,8 +159,15 @@ public class TpCommands {
         final OfflinePlayer reciever = Bukkit.getOfflinePlayer(request.reciever);
         if (reciever.isOnline())
             say((Player) reciever, "&c" + player.getName() + " cancelled their teleport request sent to you.");
-        say(player, "Cancelled the teleport request.");
         tpaUtil.deleteRequest(request, false);
+        say(player, "Cancelled the teleport request.");
+    }
+
+    @CommandHook("tptoggle")
+    public void onTpToggle(final Player player) {
+        PlayerStates states = PlayerManager.getData(player.getUniqueId()).getStates();
+        states.setTpDisabled(!states.isTpDisabled());
+        say(player, "Teleport requests are now &a" + (states.isTpDisabled() ? "disabled" : "enabled") + "&7.");
     }
 
     private void sayTp(final CommandSender sender) {
@@ -187,12 +202,18 @@ public class TpCommands {
             return requests.keySet().stream().filter(r -> r.sender.equals(p.getUniqueId())).findFirst().orElse(null);
         }
 
-        void addRequest(final Player player, final Player target, final RequestType type) {
+        private boolean addRequest(final Player player, final Player target, final RequestType type) {
+            if (!player.hasPermission("vrn.bypass.tptoggle")) {
+                if (PlayerManager.getData(target.getUniqueId()).getStates().isTpDisabled()) {
+                    return false;
+                }
+            }
             final TpaRequest r = getRequestWhereReciever(target);
             if (r != null)
                 r.active = false;
             final TpaRequest request = new TpaRequest(player, target, type);
             requests.put(request, Task.syncDelayed(() -> deleteRequest(request, true), 20 * 120));
+            return true;
         }
 
         void teleportPlayers(final TpaRequest request) {

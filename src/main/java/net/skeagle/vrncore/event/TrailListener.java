@@ -2,6 +2,7 @@ package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
+import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.TrailType;
 import net.skeagle.vrncore.trail.TrailVisibility;
@@ -30,15 +31,15 @@ public class TrailListener implements Listener {
         trailTask = Task.syncRepeating(() -> {
             for (final Player pl : Bukkit.getOnlinePlayers()) {
                 final PlayerData data = PlayerManager.getData(pl.getUniqueId());
-                final Particles trail = Particles.getFromParticle(data.getPlayerTrail());
+                final Particles trail = Particles.getFromParticle(data.getPlayerTrailData().getParticle());
                 if (trail == null) {
                     continue;
                 }
                 if (pl.hasPermission(trail.getPermission(TrailType.PLAYER))) {
-                    data.getTrailStyle().tick(pl, trail, pl.getLocation(), TrailType.PLAYER, data.getStates().isVanished() ? TrailVisibility.CLIENT : TrailVisibility.ALL);
+                    data.getPlayerTrailData().getStyle().tick(pl, pl.getLocation(), data.getPlayerTrailData(), trail, data.getStates().isVanished() ? TrailVisibility.CLIENT : TrailVisibility.ALL);
                     continue;
                 }
-                data.setPlayerTrail(null);
+                data.getPlayerTrailData().setParticle(null);
             }
             tick = ++tick % 60;
         }, 20L, 1L);
@@ -47,8 +48,8 @@ public class TrailListener implements Listener {
     @EventHandler
     public void onArrowShot(final ProjectileLaunchEvent e) {
         if (!(e.getEntity().getShooter() instanceof Player player) || !(e.getEntity() instanceof Arrow arrow)) return;
-        final PlayerData data = PlayerManager.getData(player.getUniqueId());
-        final Particles trail = Particles.getFromParticle(data.getArrowTrail());
+        final TrailData data = PlayerManager.getData(player.getUniqueId()).getArrowTrailData();
+        final Particles trail = Particles.getFromParticle(data.getParticle());
         if (trail == null) {
             return;
         }
@@ -58,10 +59,10 @@ public class TrailListener implements Listener {
                     run.cancel();
                     return;
                 }
-                data.getTrailStyle().tick(player, trail, arrow.getLocation(), TrailType.ARROW, TrailVisibility.ALL);
+                data.getStyle().tick(player, arrow.getLocation(), data, trail, TrailVisibility.ALL);
             }, 2, 1);
             return;
         }
-        data.setArrowTrail(null);
+        data.setParticle(null);
     }
 }

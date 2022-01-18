@@ -37,7 +37,7 @@ public class NickCommands {
     public void onRealname(final CommandSender sender, final String nick) {
         for (final Player pl : Bukkit.getOnlinePlayers()) {
             if (ChatColor.stripColor(pl.getDisplayName()).equals(ChatColor.stripColor(nick))) {
-                say(sender, "&7The player with the nickname " + pl.getDisplayName() + "&r&7 has the real name of &a" + pl.getName() + "&7.");
+                say(sender, "&7The player with the nickname " + PlayerManager.getData(pl.getUniqueId()).getNick() + "&r&7 has the real name of &a" + pl.getName() + "&7.");
                 return;
             }
         }
@@ -47,9 +47,7 @@ public class NickCommands {
     @CommandHook("removenick")
     public void onRemoveNick(final CommandSender sender, final Player target) {
         final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        data.setNick(color(data.getPlayer().getName()));
-        data.getPlayer().setDisplayName(color(data.getPlayer().getName()));
-        data.getPlayer().setPlayerListName(color(data.getPlayer().getName()));
+        data.setNick(null);
         say(sender, data.getPlayer() == sender ? "&7Removed your nickname." : "&7Removed nickname for &a" + data.getName() + ".");
         if (data.getPlayer() == sender) return;
         say(target, "&7Your nickname was disabled.");

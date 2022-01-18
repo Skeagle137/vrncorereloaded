@@ -13,6 +13,7 @@ java {
 group = 'net.skeagle'
 version = '5.0.0-pre19'
 String mc = '1.18'
+String vrnlib = '2.0e'
 
 repositories {
     mavenCentral()
@@ -43,7 +44,7 @@ dependencies {
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:${mc}-R0.1-SNAPSHOT")
     implementation 'org.xerial:sqlite-jdbc:3.36.0.2'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    compileOnly 'net.skeagle:VRNLib:2.0d'
+    compileOnly "net.skeagle:VRNLib:${vrnlib}"
     compileOnly "org.spigotmc:spigot-api:${mc}-R0.1-SNAPSHOT"
     compileOnly 'net.luckperms:api:5.3'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'

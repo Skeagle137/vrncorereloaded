@@ -67,4 +67,8 @@ public final class LuckPermsHook {
     public boolean trackExists(String s) {
         return luckperms.getTrackManager().getTrack(s) != null;
     }
+
+    public LuckPerms getLuckperms() {
+        return luckperms;
+    }
 }

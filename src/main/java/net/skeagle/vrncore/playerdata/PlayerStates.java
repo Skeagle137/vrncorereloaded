@@ -4,6 +4,7 @@ public class PlayerStates {
 
     private boolean vanished;
     private boolean godmode;
+    private boolean tpDisabled;
 
     public boolean isVanished() {
         return vanished;
@@ -20,4 +21,14 @@ public class PlayerStates {
     public void setGodmode(boolean godmode) {
         this.godmode = godmode;
     }
+
+    public boolean isTpDisabled() {
+        return tpDisabled;
+    }
+
+    public void setTpDisabled(boolean tpDisabled) {
+        this.tpDisabled = tpDisabled;
+    }
+
+
 }

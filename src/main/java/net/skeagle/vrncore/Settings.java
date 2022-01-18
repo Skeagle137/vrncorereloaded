@@ -21,6 +21,7 @@ public class Settings {
     public static boolean chatPermission = false;
     public static boolean colorPermission = true;
     public static String format = "%prefix%player%suffix: %message";
+    public static String listFormat = "%prefix %player %suffix";
     public static boolean multiplePrefix = true;
     public static boolean multipleSuffix = true;
 

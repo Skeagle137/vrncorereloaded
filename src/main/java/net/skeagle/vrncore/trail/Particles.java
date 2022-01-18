@@ -1,55 +1,57 @@
 package net.skeagle.vrncore.trail;
 
 import net.skeagle.vrncommands.misc.FormatUtils;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import net.skeagle.vrncore.playerdata.TrailData;
+import net.skeagle.vrncore.utils.VRNUtil;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.Locale;
+import java.util.List;
 
 public enum Particles {
     FIREWORKS_SPARK(Particle.FIREWORKS_SPARK, Material.FIREWORK_ROCKET, ParticleProperties.DIRECTIONAL),
-    WATER_SPLASH(Particle.WATER_SPLASH, Material.FISHING_ROD, ParticleProperties.DIRECTIONAL),
-    VOID(Particle.TOWN_AURA, Material.BEDROCK, ParticleProperties.DIRECTIONAL),
-    CRIT(Particle.CRIT, Material.IRON_SWORD, ParticleProperties.DIRECTIONAL),
-    CRIT_MAGIC("Crit (Enchanted)", Particle.CRIT_MAGIC, Material.DIAMOND_SWORD, ParticleProperties.DIRECTIONAL),
+    WATER_SPLASH(Particle.WATER_SPLASH, Material.FISHING_ROD),
+    VOID(Particle.TOWN_AURA, Material.BEDROCK),
+    CRIT(Particle.CRIT, Material.IRON_SWORD, 0.7),
+    CRIT_MAGIC("Crit (Enchanted)", Particle.CRIT_MAGIC, Material.DIAMOND_SWORD, 0.7),
     SMOKE(Particle.SMOKE_LARGE, Material.SMOKER, ParticleProperties.DIRECTIONAL),
-    POTION("Potion Effect", Particle.SPELL_MOB, Material.POTION, ParticleProperties.COLOR),
-    POTION_SPLASH("Splash Potion", Particle.SPELL_INSTANT, Material.SPLASH_POTION),
-    WITCH("Witch Potion", Particle.SPELL_WITCH, Material.LINGERING_POTION),
+    POTION("Potion Effect", Particle.SPELL_MOB, Material.LINGERING_POTION, ParticleProperties.COLOR),
+    WITCH("Witch Potion", Particle.SPELL_WITCH, Material.SPLASH_POTION),
     DRIP_WATER("Water Drip", Particle.DRIP_WATER, Material.WATER_BUCKET),
     DRIP_LAVA("Lava Drip", Particle.DRIP_LAVA, Material.LAVA_BUCKET),
     STORMY(Particle.VILLAGER_ANGRY, Material.FIRE_CHARGE),
-    EMERALD(Particle.VILLAGER_HAPPY, Material.EMERALD, ParticleProperties.DIRECTIONAL),
+    EMERALD(Particle.VILLAGER_HAPPY, Material.EMERALD),
     NOTE(Particle.NOTE, Material.NOTE_BLOCK, ParticleProperties.COLOR),
-    ENCHANTMENT_GLYPH(Particle.ENCHANTMENT_TABLE, Material.ENCHANTING_TABLE, ParticleProperties.DIRECTIONAL),
+    ENCHANTMENT_GLYPH(Particle.ENCHANTMENT_TABLE, Material.ENCHANTING_TABLE, 1.2),
     FLAME(Particle.FLAME, Material.CAMPFIRE, ParticleProperties.DIRECTIONAL),
     LAVA(Particle.LAVA, Material.MAGMA_BLOCK),
     REDSTONE("Redstone Dust", Particle.REDSTONE, Material.REDSTONE, ParticleProperties.COLOR),
     SNOW(Particle.SNOWBALL, Material.SNOWBALL),
     SLIME(Particle.SLIME, Material.SLIME_BALL),
     HEART(Particle.HEART, Material.POPPY),
-    END_ROD(Particle.END_ROD, Material.END_ROD, ParticleProperties.DIRECTIONAL),
-    SOUL(Particle.SOUL, Material.SOUL_SAND),
-    SPORE_CRIMSON("Spore (Crimson)", Particle.CRIMSON_SPORE, Material.CRIMSON_HYPHAE, ParticleProperties.DIRECTIONAL),
-    SPORE_WARPED("Spore (Warped)", Particle.WARPED_SPORE, Material.WARPED_HYPHAE, ParticleProperties.DIRECTIONAL),
+    END_ROD(Particle.END_ROD, Material.END_ROD, 0.12),
+    SOUL(Particle.SOUL, Material.SOUL_SAND, 0.1),
+    SPORE_CRIMSON("Spore (Crimson)", Particle.CRIMSON_SPORE, Material.CRIMSON_HYPHAE),
+    SPORE_WARPED("Spore (Warped)", Particle.WARPED_SPORE, Material.WARPED_HYPHAE),
     SOUL_FLAME(Particle.SOUL_FIRE_FLAME, Material.SOUL_CAMPFIRE, ParticleProperties.DIRECTIONAL),
-    SPORE_BLOSSOM(Particle.SPORE_BLOSSOM_AIR, Material.FLOWERING_AZALEA, ParticleProperties.DIRECTIONAL),
-    WAX_ON(Particle.WAX_ON, Material.WAXED_COPPER_BLOCK),
-    WAX_OFF(Particle.WAX_OFF, Material.OXIDIZED_COPPER),
-    ELECTRIC_SPARK(Particle.ELECTRIC_SPARK, Material.LIGHTNING_ROD, ParticleProperties.DIRECTIONAL),
-    PORTAL(Particle.REVERSE_PORTAL, Material.PURPLE_WOOL, ParticleProperties.DIRECTIONAL),
-    DAMAGE_INDICATOR(Particle.DAMAGE_INDICATOR, Material.STONE_AXE, ParticleProperties.DIRECTIONAL),
-    FALLING_DUST(Particle.FALLING_DUST, Material.GUNPOWDER, ParticleProperties.DIRECTIONAL),
-    TRANSITION_DUST(Particle.DUST_COLOR_TRANSITION, Material.MAGENTA_CONCRETE_POWDER, ParticleProperties.COLOR_TRANSITION);
+    SPORE_BLOSSOM(Particle.SPORE_BLOSSOM_AIR, Material.FLOWERING_AZALEA),
+    WAX_ON(Particle.WAX_ON, Material.WAXED_COPPER_BLOCK, 12.0),
+    WAX_OFF(Particle.WAX_OFF, Material.OXIDIZED_COPPER, 12.0),
+    PORTAL(Particle.PORTAL, Material.OBSIDIAN, 1.0),
+    REVERSE_PORTAL(Particle.REVERSE_PORTAL, Material.CRYING_OBSIDIAN, 0.1),
+    DAMAGE_INDICATOR(Particle.DAMAGE_INDICATOR, Material.STONE_AXE, 0.45),
+    TRANSITION_DUST(Particle.DUST_COLOR_TRANSITION, Material.MAGENTA_CONCRETE_POWDER, ParticleProperties.COLOR_TRANSITION),
+    FALLING_NECTAR(Particle.FALLING_NECTAR, Material.BEEHIVE),
+    FALLING_HONEY(Particle.FALLING_HONEY, Material.BEE_NEST),
+    SMALL_FLAME(Particle.SMALL_FLAME, Material.CANDLE, 0.1);
+
 
     private final String name;
     private final Particle particle;
     private final Material mat;
-    private ParticleProperties[] properties;
+    private double spreadSpeed;
+    private ParticleProperties[] properties = {};
 
     Particles(final Particle particle, final Material mat) {
         this.name = FormatUtils.toTitleCase(this.name().replaceAll("_", " "));
@@ -73,6 +75,16 @@ public enum Particles {
         this.properties = properties;
     }
 
+    Particles(final Particle particle, final Material mat, final double spreadSpeed) {
+        this(particle, mat, ParticleProperties.DIRECTIONAL);
+        this.spreadSpeed = spreadSpeed;
+    }
+
+    Particles(final String name, final Particle particle, final Material mat, final double spreadSpeed) {
+        this(name, particle, mat, ParticleProperties.DIRECTIONAL);
+        this.spreadSpeed = spreadSpeed;
+    }
+
     public String getParticleName() {
         return name;
     }
@@ -83,6 +95,10 @@ public enum Particles {
 
     public Material getMaterial() {
         return mat;
+    }
+
+    public double getSpreadSpeed() {
+        return spreadSpeed;
     }
 
     public ParticleProperties[] getProperties() {
@@ -97,32 +113,63 @@ public enum Particles {
         return "vrn.trails." + toString().toLowerCase() + "." + type.name().toLowerCase();
     }
 
-    public void run(Player player, Location loc, int amount, double speed, double off) {
-        run(player, loc, amount, speed, off, off, off, new Particle.DustOptions(Color.RED, 1), TrailVisibility.ALL);
+    public void run(Player player, Location loc, TrailData data, int amount, double speed, double off) {
+        run(player, loc, data, amount, speed, off, TrailVisibility.ALL);
     }
 
-    public void run(Player player, Location loc, int amount, double speed, double off, TrailVisibility visibility) {
-        run(player, loc, amount, speed, off, off, off, new Particle.DustOptions(Color.RED, 1), visibility);
+    public void run(Player player, Location loc, TrailData data, int amount, double speed, double off, TrailVisibility visibility) {
+        run(player, loc, data, amount, speed, off, off, off, visibility);
     }
 
-    public void run(Player player, Location loc, int amount, double speed, double offX, double offY, double offZ, TrailVisibility visibility) {
-        run(player, loc, amount, speed, offX, offY, offZ, new Particle.DustOptions(Color.RED, 1), visibility);
+    public void run(Player player, Location loc, TrailData data, int amount, double speed, double offX, double offY, double offZ, TrailVisibility visibility) {
+        Object particleOptions = null;
+        if (this.getProperties().length != 0) {
+            List<ParticleProperties> props = Arrays.asList(this.getProperties());
+            if (props.contains(ParticleProperties.COLOR)) {
+                switch (this) {
+                    case REDSTONE -> particleOptions = new Particle.DustOptions(data.getColor(), (float) data.getSize());
+                    case NOTE -> {
+                        amount = 0;
+                        speed = 1;
+                        offX = data.getNote() / 24D;
+                        offY = 0;
+                        offZ = 0;
+                    }
+                    case POTION -> {
+                        speed = 1;
+                        offX = data.getColor().getRed() / 255D;
+                        offY = data.getColor().getGreen() / 255D;
+                        offZ = data.getColor().getBlue() / 255D;
+                    }
+                }
+            } else if (props.contains(ParticleProperties.COLOR_TRANSITION)) {
+                particleOptions = new Particle.DustTransition(data.getColor(), data.getFade(), (float) data.getSize());
+            }
+        }
+        if (this == POTION) {
+            for (int i = 0; i < amount; i++) {
+                run(player, loc, 0, speed, offX, offY, offZ, particleOptions, visibility);
+            }
+            return;
+        }
+        run(player, loc, amount, speed, offX, offY, offZ, particleOptions, visibility);
     }
 
-    public void run(Player player, Location loc, int amount, double speed, double offX, double offY, double offZ, Particle.DustOptions options, TrailVisibility visibility) {
-        boolean color = particle == Particle.REDSTONE || particle == Particle.DUST_COLOR_TRANSITION;
+    private void run(Player player, Location location, int amount, double speed, double offX, double offY, double offZ, Object options, TrailVisibility visibility) {
         if (visibility == TrailVisibility.CLIENT) {
-
-            player.getWorld().spawnParticle(particle, loc, amount, offX, offY, offZ, speed, color ? options : null, true);
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                if (pl != player && VRNUtil.hasVanishPriority(player, pl)) continue;
+                pl.spawnParticle(this.getParticle(), location, amount, offX, offY, offZ, speed, options);
+            }
         }
         else {
-            loc.getWorld().spawnParticle(particle, loc, amount, offX, offY, offZ, speed, color ? options : null, true);
+            player.getWorld().spawnParticle(this.getParticle(), location, amount, offX, offY, offZ, speed, options, true);
         }
+
     }
 
-    enum ParticleProperties {
+    public enum ParticleProperties {
         DIRECTIONAL,
-        DATA,
         COLOR,
         COLOR_TRANSITION
     }

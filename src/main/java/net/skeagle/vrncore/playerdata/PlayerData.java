@@ -1,16 +1,14 @@
 package net.skeagle.vrncore.playerdata;
 
+import net.skeagle.vrncore.Settings;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.hook.HookManager;
-import net.skeagle.vrncore.trail.Style;
-import net.skeagle.vrncore.trail.style.TrailStyle;
+import net.skeagle.vrncore.trail.TrailType;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
@@ -19,25 +17,23 @@ public class PlayerData {
 
     private final UUID uuid;
     private String nickname;
-    private Particle arrowtrail;
-    private Particle playertrail;
-    private TrailStyle trailStyle;
+    private final TrailData playerTrailData;
+    private final TrailData arrowTrailData;
     private final PlayerStates states;
     private long timePlayed;
 
     PlayerData(final UUID uuid) {
         this.uuid = uuid;
-        this.trailStyle = VRNcore.getInstance().getStyleRegistry().get(Style.DEFAULT);
+        this.playerTrailData = new TrailData(TrailType.PLAYER);
+        this.arrowTrailData = new TrailData(TrailType.ARROW);
         this.states = new PlayerStates();
     }
 
-    PlayerData(final UUID uuid, final String nickname, final Particle arrowtrail, final Particle playertrail, final TrailStyle trailStyle,
-               final PlayerStates states, final long timePlayed) {
+    PlayerData(final UUID uuid, final String nickname, final TrailData playerTrailData, final TrailData arrowTrailData, final PlayerStates states, final long timePlayed) {
         this.uuid = uuid;
         this.nickname = nickname;
-        this.arrowtrail = arrowtrail;
-        this.playertrail = playertrail;
-        this.trailStyle = trailStyle;
+        this.playerTrailData = playerTrailData;
+        this.arrowTrailData = arrowTrailData;
         this.states = states;
         this.timePlayed = timePlayed;
     }
@@ -47,7 +43,7 @@ public class PlayerData {
     }
 
     public void setNick(final String nickname) {
-        this.nickname = color(nickname + "&r");;
+        this.nickname = nickname != null ? color(nickname + "&r") : null;
         updateName();
     }
 
@@ -57,38 +53,21 @@ public class PlayerData {
 
     public void updateName() {
         if (getPlayer() != null) {
-            getPlayer().setDisplayName(nickname);
-            String listname = nickname;
+            getPlayer().setDisplayName(getPlayer().getName());
+            String listname = null;
             if (HookManager.isVaultLoaded()) {
-                listname = "%prefix" + nickname + "%suffix";
-                listname = HookManager.format(listname, getPlayer());
+                listname = HookManager.format(Settings.listFormat, getPlayer());
             }
-            getPlayer().setPlayerListName(color(listname));
+            getPlayer().setPlayerListName(color(listname != null ? listname : getPlayer().getName()));
         }
     }
 
-    public Particle getArrowTrail() {
-        return arrowtrail;
+    public TrailData getPlayerTrailData() {
+        return playerTrailData;
     }
 
-    public void setArrowTrail(@Nullable final Particle arrowtrail) {
-        this.arrowtrail = arrowtrail;
-    }
-
-    public Particle getPlayerTrail() {
-        return playertrail;
-    }
-
-    public void setPlayerTrail(@Nullable final Particle playertrail) {
-        this.playertrail = playertrail;
-    }
-
-    public TrailStyle getTrailStyle() {
-        return trailStyle;
-    }
-
-    public void setTrailStyle(TrailStyle trailStyle) {
-        this.trailStyle = trailStyle;
+    public TrailData getArrowTrailData() {
+        return arrowTrailData;
     }
 
     public PlayerStates getStates() {
@@ -110,7 +89,7 @@ public class PlayerData {
     public void save() {
         final SQLHelper db = VRNcore.getInstance().getDB();
         db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
-        db.execute("INSERT INTO playerdata (id, nick, arrowtrail, playertrail, trailStyle, playerStates, timePlayed) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                uuid.toString(), nickname, arrowtrail, playertrail, VRNcore.getInstance().getStyleRegistry().getStyle(trailStyle), VRNUtil.GSON.toJson(states), timePlayed);
+        db.execute("INSERT INTO playerdata (id, nick, playerTrailData, arrowTrailData, playerStates, timePlayed) VALUES (?, ?, ?, ?, ?, ?)",
+                uuid.toString(), nickname, VRNUtil.GSON.toJson(playerTrailData.serialize()), VRNUtil.GSON.toJson(arrowTrailData.serialize()), VRNUtil.GSON.toJson(states), timePlayed);
     }
 }
