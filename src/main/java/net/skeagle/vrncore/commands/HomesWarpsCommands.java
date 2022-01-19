@@ -7,6 +7,7 @@ import net.skeagle.vrncore.GUIs.WarpsGUI;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.homes.Home;
 import net.skeagle.vrncore.homes.HomeManager;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class HomesWarpsCommands {
 
-    private VRNcore plugin;
+    private final VRNcore plugin;
 
     public HomesWarpsCommands(VRNcore plugin) {
         this.plugin = plugin;
@@ -31,11 +32,10 @@ public class HomesWarpsCommands {
     @CommandHook("sethome")
     public void onSetHome(Player player, String name) {
         if (!player.hasPermission("vrn.homes.limit.*")) {
-            for (int i = 0; i <= plugin.getHomeManager().getHomeNames(player).size(); i++) {
-                if (player.hasPermission("vrn.homelimit." + i)) {
-                    say(player, "&cYou can only set a maximum of " + i + " homes. Delete some of your homes if you want to set more.");
-                    return;
-                }
+            int limit = VRNUtil.getLimitForPerm(player, "vrn.homes.limit");
+            if (plugin.getHomeManager().getHomeNames(player).size() >= limit) {
+                say(player, "&cYou can only set a maximum of " + limit + " homes. Delete some of your homes if you want to set more.");
+                return;
             }
         }
         if (plugin.getHomeManager().getHome(name, player) != null) {
@@ -71,11 +71,10 @@ public class HomesWarpsCommands {
     @CommandHook("setwarp")
     public void onSetWarp(Player player, String name) {
         if (!player.hasPermission("vrn.warplimit.*")) {
-            for (long i = 0; i <= plugin.getWarpManager().getWarpsOwned(player); i++) {
-                if (player.hasPermission("vrn.warplimit." + i)) {
-                    say(player, "&cYou can only set a maximum of " + i + " warps. Delete some of your warps if you want to set more.");
-                    return;
-                }
+            int limit = VRNUtil.getLimitForPerm(player, "vrn.warps.limit");
+            if (plugin.getWarpManager().getWarpsOwned(player) >= limit){
+                say(player, "&cYou can only set a maximum of " + limit + " warps. Delete some of your warps if you want to set more.");
+                return;
             }
         }
         if (plugin.getWarpManager().getWarp(name) != null) {
