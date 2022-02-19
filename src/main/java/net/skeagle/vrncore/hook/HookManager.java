@@ -9,12 +9,15 @@ public final class HookManager {
 
     private static VaultHook vault;
     private static LuckPermsHook luckperms;
+    private static SuperVanishHook superVanish;
 
     public static void loadHooks() {
         if (checkPlugin("Vault"))
             vault = new VaultHook();
         if (checkPlugin("LuckPerms"))
             luckperms = new LuckPermsHook();
+        if (checkPlugin("SuperVanish") || checkPlugin("PremiumVanish"))
+            superVanish = new SuperVanishHook();
     }
 
     private static boolean checkPlugin(String s) {
@@ -28,6 +31,10 @@ public final class HookManager {
 
     public static boolean isLuckPermsLoaded() {
         return luckperms != null;
+    }
+
+    public static boolean isSuperVanishLoaded() {
+        return superVanish != null;
     }
 
     public static String format(Player p) {
