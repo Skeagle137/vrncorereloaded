@@ -1,5 +1,7 @@
 package net.skeagle.vrncore.event;
 
+import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.hook.SuperVanishHook;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.playerdata.TrailData;
@@ -36,7 +38,8 @@ public class TrailListener implements Listener {
                     continue;
                 }
                 if (pl.hasPermission(trail.getPermission(TrailType.PLAYER))) {
-                    data.getPlayerTrailData().getStyle().tick(pl, pl.getLocation(), data.getPlayerTrailData(), trail, data.getStates().isVanished() ? TrailVisibility.CLIENT : TrailVisibility.ALL);
+                    data.getPlayerTrailData().getStyle().tick(pl, pl.getLocation(), data.getPlayerTrailData(), trail,
+                            HookManager.isSuperVanishLoaded() && SuperVanishHook.isVanished(pl) ? TrailVisibility.CLIENT : TrailVisibility.ALL);
                     continue;
                 }
                 data.getPlayerTrailData().setParticle(null);

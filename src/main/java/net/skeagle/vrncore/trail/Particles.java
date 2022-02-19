@@ -1,6 +1,8 @@
 package net.skeagle.vrncore.trail;
 
 import net.skeagle.vrncommands.misc.FormatUtils;
+import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.hook.SuperVanishHook;
 import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.*;
@@ -158,7 +160,9 @@ public enum Particles {
     private void run(Player player, Location location, int amount, double speed, double offX, double offY, double offZ, Object options, TrailVisibility visibility) {
         if (visibility == TrailVisibility.CLIENT) {
             for (Player pl : Bukkit.getOnlinePlayers()) {
-                if (pl != player && VRNUtil.hasVanishPriority(player, pl)) continue;
+                if (HookManager.isSuperVanishLoaded() && !SuperVanishHook.canSee(pl, player)) {
+                    continue;
+                }
                 pl.spawnParticle(this.getParticle(), location, amount, offX, offY, offZ, speed, options);
             }
         }

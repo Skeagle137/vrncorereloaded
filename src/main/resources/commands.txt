@@ -369,12 +369,6 @@ trails,trail player:player*?(context self) {
     user player
     hook trails
 }
-vanish player:player*?(context self) --silent,-s {
-    others
-    permission vrn.vanish
-    help Hide yourself or another player from other players.
-    hook vanish
-}
 vrn {
     help Display plugin information and admin options.
     hook vrn

@@ -1,6 +1,5 @@
 package net.skeagle.vrncore.playerdata;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.trail.Style;

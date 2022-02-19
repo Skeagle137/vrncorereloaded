@@ -5,7 +5,11 @@ import org.bukkit.entity.Player;
 
 public class SuperVanishHook {
 
-    public boolean canSee(Player viewed, Player viewer) {
-        return VanishAPI.canSee(viewed, viewer);
+    public static boolean canSee(Player viewer, Player viewed) {
+        return VanishAPI.canSee(viewer, viewed);
+    }
+
+    public static boolean isVanished(Player player) {
+        return VanishAPI.isInvisible(player);
     }
 }

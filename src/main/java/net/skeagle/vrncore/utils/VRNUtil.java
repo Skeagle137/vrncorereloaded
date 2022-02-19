@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import net.skeagle.vrncommands.BukkitMessages;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -56,14 +58,6 @@ public final class VRNUtil {
             }
         }
         return highest;
-    }
-
-    public static boolean hasVanishPriority(Player vanished, Player viewer) {
-            String s = "vrn.vanish.priority";
-        if (viewer.hasPermission("vrn.vanish") || viewer.hasPermission("vrn.vanish.others")) {
-            return getLimitForPerm(vanished, s) >= getLimitForPerm(viewer, s);
-        }
-        return true;
     }
 
     public static Block getStandingBlock(Location loc) {

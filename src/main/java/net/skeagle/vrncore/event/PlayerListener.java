@@ -3,6 +3,7 @@ package net.skeagle.vrncore.event;
 import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncore.Settings;
 import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.hook.SuperVanishHook;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.utils.VRNUtil;
@@ -71,24 +72,5 @@ public class PlayerListener implements Listener {
         if (!(e.getEntity() instanceof Player player)) return;
         if (PlayerManager.getData(player.getUniqueId()).getStates().hasGodmode())
             e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onDeath(final PlayerDeathEvent e) {
-        final PlayerData data = PlayerManager.getData(e.getEntity().getUniqueId());
-        if (e.getDeathMessage() != null) {
-            String message = e.getDeathMessage().replaceAll(e.getEntity().getName(), data.getName());
-            if (!data.getStates().isVanished()) {
-                e.setDeathMessage(message);
-            }
-            else {
-                e.setDeathMessage(null);
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (VRNUtil.hasVanishPriority(player, e.getEntity())) {
-                        sayNoPrefix(player, "&r" + message);
-                    }
-                }
-            }
-        }
     }
 }

@@ -1,7 +1,6 @@
 package net.skeagle.vrncore;
 
 import net.luckperms.api.event.node.NodeMutateEvent;
-import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.skeagle.vrncommands.*;
 import net.skeagle.vrncore.commands.*;
@@ -71,7 +70,7 @@ public final class VRNcore extends JavaPlugin {
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
                         new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
-                .parse().register(new BukkitCommandRegistry(this), "vrncore", this, new AdminCommands(this), new TpCommands(),
+                .parse().register(new BukkitCommandRegistry(this), "vrncore", this, new AdminCommands(), new TpCommands(),
                 new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
                 new NickCommands(), new NpcCommands());
         //listeners
