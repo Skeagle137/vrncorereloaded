@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.misc.LocationUtils;
 import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
@@ -72,7 +73,7 @@ public class Npc {
         Task.asyncDelayed(() -> {
             db.execute("DELETE FROM npc WHERE name = (?)", name);
             db.execute("INSERT INTO npc (name, display, location, skin, rotatehead) VALUES (?, ?, ?, ?, ?)",
-                    name, display, VRNUtil.LocationSerialization.serialize(location), skin != null ? skin.serialize() : null, rotateHead);
+                    name, display, LocationUtils.toString(location), skin != null ? skin.serialize() : null, rotateHead);
         });
     }
 

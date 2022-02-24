@@ -5,6 +5,7 @@ import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.SkinUtil;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.misc.EventListener;
+import net.skeagle.vrnlib.misc.LocationUtils;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ public class NpcManager {
         res.forEach(npc -> {
             final String name = npc.getString(2);
             final String display = npc.getString(3);
-            final Location loc = VRNUtil.LocationSerialization.deserialize(npc.getString(4));
+            final Location loc = LocationUtils.fromString(npc.getString(4));
             final Skin skin = npc.getString(5) != null ? VRNUtil.GSON.fromJson(npc.getString(5), Skin.class) : null;
             final boolean rotateHead = npc.getBoolean(6);
             npcList.add(new Npc(name, display, loc, skin, rotateHead));

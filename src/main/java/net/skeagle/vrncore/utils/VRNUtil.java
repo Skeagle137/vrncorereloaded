@@ -113,21 +113,4 @@ public final class VRNUtil {
     private static boolean blockCheck(Block b) {
         return (!b.getType().isAir() && b.getType().isSolid());
     }
-
-    public static class LocationSerialization {
-        public static String serialize(Location loc) {
-            if (loc == null || loc.getWorld() == null)
-                return null;
-            return loc.getWorld().getName() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ() + " " + loc.getYaw() + " " + loc.getPitch();
-        }
-
-        public static Location deserialize(String s) {
-            if (s == null) return null;
-            String[] split = s.split(" ");
-            if (split.length != 6)
-                return null;
-            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]),
-                    Float.parseFloat(split[4]), Float.parseFloat(split[5]));
-        }
-    }
 }

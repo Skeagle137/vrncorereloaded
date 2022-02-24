@@ -2,6 +2,7 @@ package net.skeagle.vrncore.warps;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.misc.LocationUtils;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class WarpManager {
         res.forEach(warp -> {
             String name = warp.getString(2);
             UUID owner = UUID.fromString(warp.getString(3));
-            Location loc = VRNUtil.LocationSerialization.deserialize(warp.getString(4));
+            Location loc = LocationUtils.fromString(warp.getString(4));
             warps.add(new Warp(name, owner, loc));
         });
     }

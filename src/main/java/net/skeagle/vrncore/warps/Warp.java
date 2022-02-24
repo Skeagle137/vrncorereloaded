@@ -2,6 +2,7 @@ package net.skeagle.vrncore.warps;
 
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.misc.LocationUtils;
 import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
@@ -16,7 +17,7 @@ public record Warp(String name, UUID owner, Location location) {
         Task.asyncDelayed(() -> {
             db.execute("DELETE FROM warps WHERE name = ? AND owner = ?", name, p.getUniqueId());
             db.execute("INSERT INTO warps (name, owner, location) VALUES (?, ?, ?)",
-                    name, p.getUniqueId().toString(), VRNUtil.LocationSerialization.serialize(location));
+                    name, p.getUniqueId().toString(), LocationUtils.toString(location));
         });
     }
 }

@@ -3,6 +3,7 @@ package net.skeagle.vrncore.homes;
 import net.skeagle.vrncommands.ArgType;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.misc.LocationUtils;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class HomeManager {
         res.forEach(home -> {
             String name = home.getString(2);
             UUID owner = UUID.fromString(home.getString(3));
-            Location loc = VRNUtil.LocationSerialization.deserialize(home.getString(4));
+            Location loc = LocationUtils.fromString(home.getString(4));
             homes.add(new Home(name, owner, loc));
         });
     }
