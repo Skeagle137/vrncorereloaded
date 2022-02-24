@@ -2,10 +2,9 @@ package net.skeagle.vrncore.utils;
 
 import com.google.gson.Gson;
 import net.skeagle.vrncommands.BukkitMessages;
+import net.skeagle.vrncore.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -44,15 +43,25 @@ public final class VRNUtil {
             Bukkit.getLogger().log(level, color(s));
     }
 
-    public static int getLimitForPerm(Player player, String startsWith) {
+    public static int getLimitForPerm(Player player, String startsWith, int max) {
         int highest = 0;
-        for (String perm : player.getEffectivePermissions().stream().map(PermissionAttachmentInfo::getPermission).collect(Collectors.toList())) {
-            if (perm.startsWith(startsWith)) {
-                String[] spl = perm.split("\\.");
-                if (spl.length == 4) {
-                    int limit = Integer.parseInt(spl[3]);
-                    if (highest < limit) {
-                        highest = limit;
+        if (Settings.alternatePermLimitCheck) {
+            for (int i = max; i > 0; --i) {
+                System.out.println(i);
+                if (player.hasPermission(startsWith + "." + i)) {
+                    return i;
+                }
+            }
+        }
+        else {
+            for (String perm : player.getEffectivePermissions().stream().map(PermissionAttachmentInfo::getPermission).collect(Collectors.toList())) {
+                if (perm.startsWith(startsWith)) {
+                    String[] spl = perm.split("\\.");
+                    if (spl.length == 4) {
+                        int limit = Integer.parseInt(spl[3]);
+                        if (highest < limit && limit <= max) {
+                            highest = limit;
+                        }
                     }
                 }
             }
