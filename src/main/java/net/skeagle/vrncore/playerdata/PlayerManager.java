@@ -36,10 +36,11 @@ public class PlayerManager {
         if (!res.isEmpty()) {
             final JsonObject playerTrailData = VRNUtil.GSON.fromJson(res.getString(3), JsonObject.class);
             final JsonObject arrowTrailData = VRNUtil.GSON.fromJson(res.getString(4), JsonObject.class);
+            final PlayerStates states = VRNUtil.GSON.fromJson(res.getString(5), PlayerStates.class);
             return new PlayerData(UUID.fromString(res.getString(1)), res.getString(2),
                     playerTrailData != null ? TrailData.deserialize(plugin, TrailType.PLAYER, playerTrailData) : new TrailData(TrailType.PLAYER),
                     arrowTrailData != null ? TrailData.deserialize(plugin, TrailType.ARROW, arrowTrailData) : new TrailData(TrailType.ARROW),
-                    VRNUtil.GSON.fromJson(res.getString(5), PlayerStates.class), res.getLong(6));
+                    states != null ? states : new PlayerStates(), res.getLong(6));
         }
         return new PlayerData(uuid);
     }
