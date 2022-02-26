@@ -59,8 +59,8 @@ public final class VRNcore extends JavaPlugin {
         UserCache.asyncInit();
         playerManager = new PlayerManager();
         styleRegistry = new StyleRegistry(this);
-        homeManager = new HomeManager();
-        warpManager = new WarpManager();
+        homeManager = new HomeManager(db);
+        warpManager = new WarpManager(db);
         rewardManager = new RewardManager(this);
         npcManager = new NpcManager();
         new Tasks(this);

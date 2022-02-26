@@ -10,6 +10,7 @@ import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
 import net.skeagle.vrnlib.inventorygui.PaginationPanel;
 import net.skeagle.vrnlib.itemutils.ItemBuilder;
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -25,25 +26,25 @@ public class HomesGUI {
     public HomesGUI(HomeManager manager, Player player, Player target) {
         BorderedGUI gui = new BorderedGUI("Viewing " + target.getDisplayName() + "&r's " + "homes");
         PaginationPanel panel = gui.paginate();
-        manager.getHomes().stream().filter(h -> h.owner().equals(target.getUniqueId())).forEach(h ->
-                panel.addPagedButton(ItemButton.create(getIcon(h), e -> {
-                    if (e.getClick().isLeftClick()) {
-                        player.closeInventory();
-                        say(player, BukkitMessages.msg("teleporting"));
-                        player.teleport(h.location());
-                    }
-                    if (e.getClick().isRightClick()) {
-                        if (player != target && !player.hasPermission("vrn.delhome.others")) {
-                            player.closeInventory();
-                            say(player, VRNUtil.NOPERM);
-                            return;
-                        }
-                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);
-                        deleteConfirm(manager, player, target, h);
-                    }
-                }))
-        );
-        gui.open(player);
+        CompletableFuture.runAsync(() ->
+                manager.getHomes(player).forEach(h ->
+                        panel.addPagedButton(ItemButton.create(getIcon(h), e -> {
+                            if (e.getClick().isLeftClick()) {
+                                player.closeInventory();
+                                say(player, BukkitMessages.msg("teleporting"));
+                                player.teleport(h.location());
+                            }
+                            if (e.getClick().isRightClick()) {
+                                if (player != target && !player.hasPermission("vrn.delhome.others")) {
+                                    player.closeInventory();
+                                    say(player, VRNUtil.NOPERM);
+                                    return;
+                                }
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 5f, 0.5f);
+                                deleteConfirm(manager, player, target, h);
+                            }
+                        }))
+                )).thenRun(() -> Task.syncDelayed(() -> gui.open(player)));
     }
 
     private ItemStack getIcon(Home h) {
