@@ -11,7 +11,7 @@ java {
 }
 
 group = 'net.skeagle'
-version = '5.0.2'
+version = '5.0.3'
 Version mc = new Version("18", "2")
 String vrnlib = '2.1'
 
