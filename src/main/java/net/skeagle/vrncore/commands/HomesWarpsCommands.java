@@ -34,11 +34,7 @@ public class HomesWarpsCommands {
     public void onSetHome(Player player, String name) {
         if (!player.hasPermission("vrn.homes.limit.*")) {
             int limit = VRNUtil.getLimitForPerm(player, "vrn.homes.limit", Settings.maxHomes);
-            if (limit == 0) {
-                say(player, "&cYou cannot set any homes.");
-                return;
-            }
-            if (plugin.getHomeManager().getHomeNames(player).size() >= limit) {
+            if (limit != 0 && plugin.getHomeManager().getHomeNames(player).size() >= limit) {
                 say(player, "&cYou can only set a maximum of " + limit + " homes. Delete some of your homes if you want to set more.");
                 return;
             }
@@ -75,13 +71,9 @@ public class HomesWarpsCommands {
 
     @CommandHook("setwarp")
     public void onSetWarp(Player player, String name) {
-        if (!player.hasPermission("vrn.warplimit.*")) {
+        if (!player.hasPermission("vrn.warps.limit.*")) {
             int limit = VRNUtil.getLimitForPerm(player, "vrn.warps.limit", Settings.maxWarps);
-            if (limit == 0) {
-                say(player, "&cYou cannot set any warps.");
-                return;
-            }
-            if (plugin.getWarpManager().getWarpsOwned(player) >= limit) {
+            if (limit != 0 && plugin.getWarpManager().getWarpsOwned(player) >= limit) {
                 say(player, "&cYou can only set a maximum of " + limit + " warps. Delete some of your warps if you want to set more.");
                 return;
             }

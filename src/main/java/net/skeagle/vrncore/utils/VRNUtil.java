@@ -3,6 +3,7 @@ package net.skeagle.vrncore.utils;
 import com.google.gson.Gson;
 import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncore.Settings;
+import net.skeagle.vrncore.VRNcore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -45,9 +46,8 @@ public final class VRNUtil {
 
     public static int getLimitForPerm(Player player, String startsWith, int max) {
         int highest = 0;
-        if (Settings.alternatePermLimitCheck) {
+        if (!Settings.alternatePermLimitCheck) {
             for (int i = max; i > 0; --i) {
-                System.out.println(i);
                 if (player.hasPermission(startsWith + "." + i)) {
                     return i;
                 }
@@ -58,9 +58,14 @@ public final class VRNUtil {
                 if (perm.startsWith(startsWith)) {
                     String[] spl = perm.split("\\.");
                     if (spl.length == 4) {
-                        int limit = Integer.parseInt(spl[3]);
-                        if (highest < limit && limit <= max) {
-                            highest = limit;
+                        try {
+                            int limit = Integer.parseInt(spl[3]);
+                            if (highest < limit && limit <= max) {
+                                highest = limit;
+                            }
+                        }
+                        catch (NumberFormatException ex) {
+                            VRNUtil.log(Level.WARNING, "could not parse perm limit for " + startsWith + ": \"" + spl[3] + "\" is not a number");
                         }
                     }
                 }
