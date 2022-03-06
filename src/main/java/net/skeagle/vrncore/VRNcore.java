@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
@@ -40,6 +41,7 @@ public final class VRNcore extends JavaPlugin {
     private NpcManager npcManager;
     private StyleRegistry styleRegistry;
     private SQLHelper db;
+    private MotdListener motdListener;
 
     @Override
     public void onEnable() {
@@ -74,8 +76,7 @@ public final class VRNcore extends JavaPlugin {
                 new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
                 new NickCommands(), new NpcCommands());
         //listeners
-        if (Settings.motdEnabled)
-            Bukkit.getPluginManager().registerEvents(new MotdListener(this), this);
+        this.reloadMotds();
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Bukkit.getPluginManager().registerEvents(new AFKListener(), this);
         Bukkit.getPluginManager().registerEvents(new TrailListener(), this);
@@ -94,6 +95,20 @@ public final class VRNcore extends JavaPlugin {
         config.save();
         playerManager.save();
         rewardManager.save();
+    }
+
+    private void reloadMotds() {
+        if (Settings.motdEnabled && motdListener == null) {
+            motdListener = new MotdListener(this);
+            Bukkit.getPluginManager().registerEvents(motdListener, this);
+        }
+        else if (!Settings.motdEnabled && motdListener != null) {
+            motdListener = null;
+            ServerListPingEvent.getHandlerList().unregister(this);
+        }
+        if (motdListener != null) {
+            motdListener.loadMotds();
+        }
     }
 
     public static VRNcore getInstance() {
@@ -144,6 +159,7 @@ public final class VRNcore extends JavaPlugin {
         BukkitMessages.load(this);
         config.reload();
         rewardManager.reload();
+        this.reloadMotds();
         say(sender, "&aConfigs, messages, and rewards reloaded.");
     }
 }
