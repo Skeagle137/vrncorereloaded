@@ -13,7 +13,7 @@ import net.skeagle.vrncore.utils.SkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -104,7 +104,7 @@ public class FunCommands {
         final ServerLevel level = (ServerLevel) nmsPlayer.level;
         nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, nmsPlayer));
         nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, nmsPlayer));
-        nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionType(), level.dimension(), level.getSeed(),
+        nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionTypeRegistration(), level.dimension(), level.getSeed(),
                 nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(), level.isDebug(), level.isFlat(), true));
         nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), nmsPlayer.getYRot(),
                 nmsPlayer.getXRot(), Collections.emptySet(), -1337, false));
