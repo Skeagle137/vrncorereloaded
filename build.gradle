@@ -1,9 +1,7 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'io.papermc.paperweight.userdev' version '1.3.5'
+    id 'io.papermc.paperweight.userdev' version '1.3.7'
 }
 
 java {
@@ -12,13 +10,14 @@ java {
 
 group = 'net.skeagle'
 version = '5.0.4'
-Version mc = new Version("18", "2")
-String vrnlib = '2.1'
+Version mc = new Version("19")
+String vrnlib = '2.1.2'
 
 repositories {
     mavenCentral()
-    maven { url = uri('https://oss.sonatype.org/content/repositories/snapshots') }
-    maven { url = uri('https://jitpack.io') }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://repo.skeagle.net/snapshots' }
     gradlePluginPortal()
     mavenLocal()
 }
@@ -66,14 +65,17 @@ task deploy(dependsOn: ["jar", "updatePlugins"]) {
     updatePlugins.mustRunAfter jar
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
     options.encoding = 'UTF-8'
 }
 
 processResources {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
     }
 }
 
@@ -81,19 +83,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-        }
-    }
-    repositories {
-        mavenLocal()
-        maven {
-            url "https://repo.skeagle.net/snapshots"
-            credentials {
-                username = alias
-                password = token
-            }
-            authentication {
-                basic(BasicAuthentication)
-            }
         }
     }
 }

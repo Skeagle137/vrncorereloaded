@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
@@ -13,7 +14,7 @@ import net.skeagle.vrncore.utils.SkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -54,7 +55,7 @@ public class FunCommands {
         final EnderDragon dragon = new EnderDragon(EntityType.ENDER_DRAGON, entityPlayer.level);
         dragon.copyPosition(entityPlayer);
         dragon.setInvulnerable(true);
-        entityPlayer.connection.send(new ClientboundAddMobPacket(dragon));
+        entityPlayer.connection.send(new ClientboundAddEntityPacket(dragon));
         say(target, target == sender ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
                 "Sent &a" + target.getName() + "&7 a hallucination.");
     }
@@ -104,8 +105,9 @@ public class FunCommands {
         final ServerLevel level = (ServerLevel) nmsPlayer.level;
         nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, nmsPlayer));
         nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, nmsPlayer));
-        nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionTypeRegistration(), level.dimension(), level.getSeed(),
-                nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(), level.isDebug(), level.isFlat(), true));
+        nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionTypeId(), level.dimension(), BiomeManager.obfuscateSeed(level.getSeed()),
+                nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(),
+                level.isDebug(), level.isFlat(), true, nmsPlayer.getLastDeathLocation()));
         nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), nmsPlayer.getYRot(),
                 nmsPlayer.getXRot(), Collections.emptySet(), -1337, false));
         nmsPlayer.getBukkitEntity().updateScaledHealth(true);
