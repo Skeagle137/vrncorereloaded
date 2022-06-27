@@ -56,7 +56,7 @@ public class FunCommands {
         dragon.copyPosition(entityPlayer);
         dragon.setInvulnerable(true);
         entityPlayer.connection.send(new ClientboundAddEntityPacket(dragon));
-        say(target, target == sender ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
+        say(sender, target == sender ? "Sent yourself a hallucination. Why you would ever want this is beyond me." :
                 "Sent &a" + target.getName() + "&7 a hallucination.");
     }
 
