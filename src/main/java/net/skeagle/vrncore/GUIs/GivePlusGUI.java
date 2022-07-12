@@ -15,7 +15,7 @@ public class GivePlusGUI {
     public GivePlusGUI(Player player) {
         enum GivePlusMaterial {
             BARRIER, COMMAND_BLOCK, CHAIN_COMMAND_BLOCK, REPEATING_COMMAND_BLOCK,
-            SPAWNER, STRUCTURE_VOID, STRUCTURE_BLOCK, DEBUG_STICK
+            SPAWNER, STRUCTURE_VOID, STRUCTURE_BLOCK, JIGSAW, DEBUG_STICK
         }
         InventoryGUI gui = new InventoryGUI(9, "&9&l/give+");
         for (int i = 0; i < GivePlusMaterial.values().length; i++) {
