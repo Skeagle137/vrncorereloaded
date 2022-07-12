@@ -80,6 +80,7 @@ public class FunCommands {
             }
             replaceSkin(player, null);
             say(player, "&aYour skin has been reset.");
+            return;
         }
         final Skin skin = SkinUtil.getSkin(name);
         if (skin == null) {
@@ -87,7 +88,7 @@ public class FunCommands {
             return;
         }
         replaceSkin(player, skin);
-        say(player, "&aYour skin has been changed successfully. To reset it, run /skin.");
+        say(player, "&aYour skin has been changed. To reset it, run /skin.");
     }
 
     private void replaceSkin(Player player, Skin skin) {

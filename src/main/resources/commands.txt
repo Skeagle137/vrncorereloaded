@@ -242,7 +242,7 @@ setwarp string:name* {
     user player
     hook setwarp
 }
-skin string:name* {
+skin string:name*? {
     permission vrn.skin
     help Changes your skin to the specified player's skin (including offline players).
     user player
