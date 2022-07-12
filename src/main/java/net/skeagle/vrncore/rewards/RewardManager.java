@@ -2,6 +2,7 @@ package net.skeagle.vrncore.rewards;
 
 
 import net.skeagle.vrncore.hook.HookManager;
+import net.skeagle.vrncore.hook.SuperVanishHook;
 import net.skeagle.vrnlib.config.ConfigManager;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.entity.Player;
@@ -52,9 +53,12 @@ public class RewardManager {
         if (reward.title != null || reward.subtitle != null)
             player.sendTitle(reward.title != null ? color(reward.replaceVars(player, reward.title)) :
                     "", reward.subtitle != null ? color(reward.replaceVars(player, reward.subtitle)) : "", 5, 120, 40);
-        Task.syncDelayed(() -> reward.sendFirework(player.getLocation().add(0, 1.5, 0)));
         if (reward.action != null && reward.group != null)
             reward.action.get().accept(player, reward.group);
+        if (HookManager.isSuperVanishLoaded() && SuperVanishHook.isVanished(player)) {
+            return;
+        }
+        Task.syncDelayed(() -> reward.sendFirework(player.getLocation().add(0, 1.5, 0)));
     }
 
     public Reward getRewardByTime(final long l) {
