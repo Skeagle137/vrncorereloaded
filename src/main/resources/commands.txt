@@ -21,7 +21,6 @@ day {
     hook day
 }
 delhome home:home* {
-    optionalTarget
     permission vrn.delhome
     help Remove a home.
     hook delhome
@@ -87,7 +86,7 @@ giveplus,givep {
     user player
     hook giveplus
 }
-god player:player*?(context self) {
+god offlineplayer:offlineplayer*?(context selfoffline) {
     others
     permission vrn.god
     help Make a player invulnerable.
@@ -111,7 +110,7 @@ home home:home* {
     user player
     hook home
 }
-homes player:player*?(context self) {
+homes offlineplayer:offlineplayer*?(context selfoffline) {
     others
     permission vrn.homes
     help List all available homes that a player has.
@@ -139,7 +138,7 @@ night {
 npc {
     create string:name* {
         permission vrn.npc
-        help Create an npc.
+        help Create a npc.
         user player
         hook createnpc
     }
@@ -203,7 +202,7 @@ rain {
 }
 realname string:nick* {
     permission vrn.realname
-    help Find out a player's real name from their nick name.
+    help Find out a player's real name from their nickname.
     hook realname
 }
 removenick player:player*?(context self) {
@@ -277,25 +276,25 @@ sun {
     hook sun
 }
 timeplayed {
-    get offlineplayer:offlineplayer*?(context self) {
+    get offlineplayer:offlineplayer*?(context selfoffline) {
         others
         permission vrn.timeplayed.get
         help Check the time that a player has been on the server.
         hook timeplayedget
     }
-    set offlineplayer:offlineplayer*?(context self) string:time* {
+    set offlineplayer:offlineplayer*?(context selfoffline) string:time* {
         others
         permission vrn.timeplayed.set
         help Set the time that a player has been on the server.
         hook timeplayedset
     }
-    add offlineplayer:offlineplayer*?(context self) string:time* {
+    add offlineplayer:offlineplayer*?(context selfoffline) string:time* {
         others
         permission vrn.timeplayed.add
         help Add to the time that a player has been on the server.
         hook timeplayedadd
     }
-    subtract offlineplayer:offlineplayer*?(context self) string:time* {
+    subtract offlineplayer:offlineplayer*?(context selfoffline) string:time* {
         others
         permission vrn.timeplayed.subtract
         help Subtract from the time that a player has been on the server.

@@ -6,6 +6,7 @@ import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.LocationUtils;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -24,7 +25,7 @@ public class HomeManager {
         homesMap = new ConcurrentHashMap<>();
         this.db = db;
         new EventListener<>(PlayerJoinEvent.class, e ->
-                load(e.getPlayer()).thenApplyAsync(homes -> {
+                this.load(e.getPlayer()).thenApplyAsync(homes -> {
                     if (homes != null)
                         this.homesMap.put(e.getPlayer().getUniqueId(), homes);
                     return null;
@@ -32,7 +33,7 @@ public class HomeManager {
         new EventListener<>(PlayerQuitEvent.class, e -> homesMap.remove(e.getPlayer().getUniqueId()));
     }
 
-    public CompletableFuture<Set<Home>> load(Player player) {
+    public CompletableFuture<Set<Home>> load(OfflinePlayer player) {
         return CompletableFuture.supplyAsync(() -> {
             SQLHelper.Results res = db.queryResults("SELECT * FROM homes WHERE owner = ?", player.getUniqueId());
             Set<Home> set = new HashSet<>();
@@ -66,12 +67,22 @@ public class HomeManager {
         return homesMap.get(player.getUniqueId()).stream().filter(h -> h.name().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
+    public CompletableFuture<Integer> getHomesCount(OfflinePlayer player) {
+        if (homesMap.containsKey(player.getUniqueId())) {
+            return CompletableFuture.completedFuture(homesMap.size());
+        }
+        return this.load(player).thenApplyAsync(Set::size);
+    }
+
     public List<String> getHomeNames(Player player) {
         return homesMap.get(player.getUniqueId()).stream().map(Home::name).collect(Collectors.toList());
     }
 
-    public Set<Home> getHomes(Player player) {
-        return homesMap.get(player.getUniqueId());
+    public CompletableFuture<Set<Home>> getHomes(OfflinePlayer player) {
+        if (homesMap.containsKey(player.getUniqueId())) {
+            return CompletableFuture.supplyAsync(() -> homesMap.get(player.getUniqueId()));
+        }
+        return this.load(player);
     }
 
     public ArgType<Home> getArgType() {

@@ -2,13 +2,16 @@ package net.skeagle.vrncore.playerdata;
 
 import com.google.gson.JsonObject;
 import net.skeagle.vrncore.VRNcore;
+import net.skeagle.vrncore.event.TrailDataUpdateEvent;
 import net.skeagle.vrncore.trail.Style;
 import net.skeagle.vrncore.trail.TrailColors;
 import net.skeagle.vrncore.trail.TrailType;
 import net.skeagle.vrncore.trail.style.StyleRegistry;
 import net.skeagle.vrncore.trail.style.TrailStyle;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 
 public class TrailData {
 
@@ -48,44 +51,49 @@ public class TrailData {
         return particle;
     }
 
-    public void setParticle(Particle particle) {
+    public void setParticle(Player player, Particle particle) {
         this.particle = particle;
+        Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
 
     public Color getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(Player player, Color color) {
         this.color = color;
         TrailColors trailColor = TrailColors.getFromColor(color);
         if (trailColor != null) {
             this.note = trailColor.getNote();
         }
+        Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
 
     public Color getFade() {
         return fade;
     }
 
-    public void setFade(Color fade) {
+    public void setFade(Player player, Color fade) {
         this.fade = fade;
+        Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
 
     public double getSize() {
         return size;
     }
 
-    public void setSize(double size) {
+    public void setSize(Player player, double size) {
         this.size = size;
+        Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
 
     public TrailStyle getStyle() {
         return style;
     }
 
-    public void setStyle(Style style) {
+    public void setStyle(Player player, Style style) {
         this.style = registry.get(style);
+        Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
 
     public double getNote() {

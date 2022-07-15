@@ -1,5 +1,6 @@
 package net.skeagle.vrncore.hook;
 
+import net.skeagle.vrncore.playerdata.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -37,11 +38,11 @@ public final class HookManager {
         return superVanish != null;
     }
 
-    public static String format(Player p) {
-        return format(null, p);
+    public static String format(PlayerData data) {
+        return format(data, null);
     }
 
-    public static String format(String s, Player p) {
-        return isVaultLoaded() ? vault.format(s, p) : "";
+    public static String format(PlayerData data, String s) {
+        return isVaultLoaded() ? vault.format(data, s) : "";
     }
 }

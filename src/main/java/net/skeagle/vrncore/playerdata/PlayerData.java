@@ -7,9 +7,11 @@ import net.skeagle.vrncore.trail.TrailType;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
 
@@ -21,6 +23,7 @@ public class PlayerData {
     private final TrailData arrowTrailData;
     private final PlayerStates states;
     private long timePlayed;
+    private Player player;
 
     PlayerData(final UUID uuid) {
         this.uuid = uuid;
@@ -38,27 +41,31 @@ public class PlayerData {
         this.timePlayed = timePlayed;
     }
 
+    public UUID getUUID() {
+        return uuid;
+    }
+
     public String getNick() {
         return nickname;
     }
 
     public void setNick(final String nickname) {
-        this.nickname = nickname != null ? color(nickname + "&r") : null;
-        updateName();
+        this.nickname = nickname != null ? nickname + "&r" : null;
+        this.updateName();
     }
 
     public String getName() {
-        return nickname != null ? color(nickname + "&r") : getPlayer().getName();
+        return nickname != null ? color(nickname + "&r") : this.getPlayer().getName();
     }
 
     public void updateName() {
-        if (getPlayer() != null) {
-            getPlayer().setDisplayName(getPlayer().getName());
+        if (this.getPlayer() != null) {
+            player.setDisplayName(this.getName());
             String listname = null;
             if (HookManager.isVaultLoaded()) {
-                listname = HookManager.format(Settings.listFormat, getPlayer());
+                listname = HookManager.format(this, Settings.listFormat);
             }
-            getPlayer().setPlayerListName(color(listname != null ? listname : getPlayer().getName()));
+            player.setPlayerListName(color(listname != null ? listname : this.getName()));
         }
     }
 
@@ -83,7 +90,10 @@ public class PlayerData {
     }
 
     public Player getPlayer() {
-        return Bukkit.getPlayer(uuid);
+        if (player == null) {
+            this.player = Bukkit.getPlayer(uuid);
+        }
+        return player;
     }
 
     public void save() {

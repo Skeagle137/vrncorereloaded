@@ -5,7 +5,7 @@ import net.luckperms.api.model.user.User;
 import net.skeagle.vrncommands.*;
 import net.skeagle.vrncore.commands.*;
 import net.skeagle.vrncore.event.AFKListener;
-import net.skeagle.vrncore.event.TrailListener;
+import net.skeagle.vrncore.event.TrailHandler;
 import net.skeagle.vrncore.event.MotdListener;
 import net.skeagle.vrncore.event.PlayerListener;
 import net.skeagle.vrncore.homes.HomeManager;
@@ -13,12 +13,14 @@ import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.hook.LuckPermsHook;
 import net.skeagle.vrncore.npc.Npc;
 import net.skeagle.vrncore.npc.NpcManager;
+import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.rewards.RewardManager;
 import net.skeagle.vrncore.trail.style.StyleRegistry;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
 import net.skeagle.vrnlib.config.ConfigManager;
+import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.misc.UserCache;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
@@ -27,6 +29,14 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.sqlite.Function;
+import org.sqlite.SQLiteException;
+
+import java.sql.SQLException;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
@@ -44,6 +54,7 @@ public final class VRNcore extends JavaPlugin {
     private MotdListener motdListener;
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onEnable() {
         //messages and config
         config = ConfigManager.create(this).target(Settings.class).saveDefaults().load();
@@ -59,7 +70,7 @@ public final class VRNcore extends JavaPlugin {
                 "location STRING, skin STRING, rotateHead BOOLEAN);");
         //managers and tasks
         UserCache.asyncInit();
-        playerManager = new PlayerManager();
+        playerManager = new PlayerManager(this);
         styleRegistry = new StyleRegistry(this);
         homeManager = new HomeManager(db);
         warpManager = new WarpManager(db);
@@ -68,24 +79,25 @@ public final class VRNcore extends JavaPlugin {
         new Tasks(this);
         //commands
         new BukkitCommandParser(getResource("commands.txt"))
+                .setContextProviders(ContextProvider.self, new ContextProvider<>("selfoffline", s -> CompletableFuture.completedFuture(s.getUser())))
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
                         new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
                 .parse().register(new BukkitCommandRegistry(this), "vrncore", this, new AdminCommands(), new TpCommands(),
-                new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
-                new NickCommands(), new NpcCommands());
+                        new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
+                        new NickCommands(this), new NpcCommands());
         //listeners
         this.reloadMotds();
-        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new AFKListener(), this);
-        Bukkit.getPluginManager().registerEvents(new TrailListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TrailHandler(this), this);
         if (HookManager.isLuckPermsLoaded()) {
             new LuckPermsHook().getLuckperms().getEventBus().subscribe(this, NodeMutateEvent.class, e -> {
                 if (!e.isUser()) return;
-                Player p = Bukkit.getPlayer(((User) e.getTarget()).getUniqueId());
-                if (p == null) return;
-                PlayerManager.getData(p.getUniqueId()).updateName();
+                Player player = Bukkit.getPlayer(((User) e.getTarget()).getUniqueId());
+                if (player == null) return;
+                playerManager.getData(player.getUniqueId()).thenAccept(data -> Task.syncDelayed(data::updateName));
             });
         }
     }
@@ -113,6 +125,10 @@ public final class VRNcore extends JavaPlugin {
 
     public static VRNcore getInstance() {
         return VRNcore.getPlugin(VRNcore.class);
+    }
+
+    public static CompletableFuture<PlayerData> getPlayerData(UUID uuid) {
+        return VRNcore.getInstance().getPlayerManager().getData(uuid);
     }
 
     public SQLHelper getDB() {

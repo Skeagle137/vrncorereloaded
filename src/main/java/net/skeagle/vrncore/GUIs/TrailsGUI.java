@@ -1,6 +1,7 @@
 package net.skeagle.vrncore.GUIs;
 
 import net.skeagle.vrncommands.misc.FormatUtils;
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.playerdata.TrailData;
@@ -9,6 +10,7 @@ import net.skeagle.vrncore.trail.Style;
 import net.skeagle.vrncore.trail.TrailColors;
 import net.skeagle.vrnlib.inventorygui.*;
 import net.skeagle.vrnlib.itemutils.ItemBuilder;
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -28,39 +30,38 @@ public class TrailsGUI {
 
     public TrailsGUI(final Player player, final Player target) {
         InventoryGUI gui = new InventoryGUI(45, "Trail Selection for " + target.getName());
-        PlayerData data = PlayerManager.getData(target.getUniqueId());
-        Particles playerParticle = Particles.getFromParticle(data.getPlayerTrailData().getParticle());
-        Particles arrowParticle = Particles.getFromParticle(data.getArrowTrailData().getParticle());
+        VRNcore.getPlayerData(target.getUniqueId()).thenAccept(data -> {
+            Particles playerParticle = Particles.getFromParticle(data.getPlayerTrailData().getParticle());
+            Particles arrowParticle = Particles.getFromParticle(data.getArrowTrailData().getParticle());
 
-        gui.addButton(ItemButton.create(new ItemBuilder(Material.BLAZE_POWDER).setName("&b&lSet Player Trail")
-                .setLore("", "&7Click to open the player", "&7trail selection menu.",
-                        "", "&7Currently selected trail: &a" + (playerParticle != null ? playerParticle.getParticleName() : "&cNone")),
-                e -> new TrailSelection(player, target, data.getPlayerTrailData())), 19);
+            gui.addButton(ItemButton.create(new ItemBuilder(Material.BLAZE_POWDER).setName("&b&lSet Player Trail")
+                            .setLore("", "&7Click to open the player", "&7trail selection menu.",
+                                    "", "&7Currently selected trail: &a" + (playerParticle != null ? playerParticle.getParticleName() : "&cNone")),
+                    e -> new TrailSelection(player, target, data.getPlayerTrailData())), 19);
 
-        gui.addButton(ItemButton.create(new ItemBuilder(Material.BARRIER).setName("&cReset trails")
-                .setLore("", "&7Left click to reset player trail.", "&7Right click to reset arrow trail."), e -> {
-            if (e.isLeftClick()) {
-                data.getPlayerTrailData().setParticle(null);
-            } else if (e.isRightClick()) {
-                data.getArrowTrailData().setParticle(null);
-            }
-        }), 13);
+            gui.addButton(ItemButton.create(new ItemBuilder(Material.BARRIER).setName("&cReset trails")
+                    .setLore("", "&7Left click to reset player trail.", "&7Right click to reset arrow trail."), e -> {
+                if (e.isLeftClick()) {
+                    data.getPlayerTrailData().setParticle(target, null);
+                } else if (e.isRightClick()) {
+                    data.getArrowTrailData().setParticle(target, null);
+                }
+            }), 13);
 
-        gui.addButton(itemOfPermission(player, "vrn.trails.options", new ItemBuilder(Material.REDSTONE).setName("&6&lTrail Options")
-                .setLore("", "&7Left click to edit player trail.", "&7Right click to edit arrow trail."), (e, button) -> {
-            TrailData trailData = e.isLeftClick() ? data.getPlayerTrailData() : data.getArrowTrailData();
-            Particles particle = Particles.getFromParticle(trailData.getParticle());
-            if (particle != null) {
-                new TrailOptions(player, target, particle, trailData);
-            }
-        }, "", "&cYou cannot use", "&cthis feature."), 31);
+            gui.addButton(itemOfPermission(player, "vrn.trails.options", new ItemBuilder(Material.REDSTONE).setName("&6&lTrail Options")
+                    .setLore("", "&7Left click to edit player trail.", "&7Right click to edit arrow trail."), (e, button) -> {
+                TrailData trailData = e.isLeftClick() ? data.getPlayerTrailData() : data.getArrowTrailData();
+                Particles particle = Particles.getFromParticle(trailData.getParticle());
+                if (particle != null) {
+                    new TrailOptions(player, target, particle, trailData);
+                }
+            }, "", "&cYou cannot use", "&cthis feature."), 31);
 
-        gui.addButton(ItemButton.create(new ItemBuilder(Material.SPECTRAL_ARROW).setName("&d&lSet Arrow Trail")
-                .setLore("", "&7Click to open the arrow", "&7trail selection menu.",
-                        "", "&7Currently selected trail: &a" + (arrowParticle != null ? arrowParticle.getParticleName() : "&cNone")),
-                e -> new TrailSelection(player, target, data.getArrowTrailData())), 25);
-
-        gui.open(player);
+            gui.addButton(ItemButton.create(new ItemBuilder(Material.SPECTRAL_ARROW).setName("&d&lSet Arrow Trail")
+                            .setLore("", "&7Click to open the arrow", "&7trail selection menu.",
+                                    "", "&7Currently selected trail: &a" + (arrowParticle != null ? arrowParticle.getParticleName() : "&cNone")),
+                    e -> new TrailSelection(player, target, data.getArrowTrailData())), 25);
+        }).thenRun(() -> Task.syncDelayed(() -> gui.open(player)));;
     }
 
     private static class TrailSelection {
@@ -80,11 +81,11 @@ public class TrailsGUI {
                         .setLore("", "&7Click to select", "&7this " + data.getType().name().toLowerCase() + " trail.").glint(same), (e, button) -> {
                     if (!Arrays.asList(particle.getProperties()).contains(Particles.ParticleProperties.DIRECTIONAL)) {
                         if (data.getStyle().get() == Style.SPREAD) {
-                            data.setStyle(Style.DEFAULT);
+                            data.setStyle(target, Style.DEFAULT);
                         }
                     }
                     player.closeInventory();
-                    data.setParticle(particle.getParticle());
+                    data.setParticle(target, particle.getParticle());
                     say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") +
                             "trail has been changed to &a" + particle.getParticleName() + "&7.");
                 }, "", "&cYou cannot use", "&cthis " + data.getType().name().toLowerCase() + " trail."));
@@ -100,11 +101,11 @@ public class TrailsGUI {
             TrailColors color = TrailColors.getFromColor(data.getColor());
             TrailColors fade = TrailColors.getFromColor(data.getFade());
             if (color == null) {
-                data.setColor(Color.RED);
+                data.setColor(target, Color.RED);
                 color = TrailColors.RED;
             }
             if (fade == null) {
-                data.setFade(Color.WHITE);
+                data.setFade(target, Color.WHITE);
                 fade = TrailColors.WHITE;
             }
             List<Particles.ParticleProperties> props = Arrays.asList(particle.getProperties());
@@ -120,7 +121,7 @@ public class TrailsGUI {
                             case CIRCLE -> Material.FIREWORK_ROCKET;
                         }).setName("&e&l" + FormatUtils.toTitleCase(t.name())), (ev, button2) -> {
                             player.closeInventory();
-                            data.setStyle(t);
+                            data.setStyle(target, t);
                             say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") +
                                     "trail style has been changed to &a" + FormatUtils.toTitleCase(t.name()) + "&7.");
                         }, isStyleCompatable(t, props), "", "&cYou cannot use", "&cthis trail style."));
@@ -130,10 +131,10 @@ public class TrailsGUI {
                     .setLore(getSizeLore(data)), (e, button) -> {
                 if (e.isLeftClick()) {
                     if (data.getSize() >= 2.0) return;
-                    data.setSize(data.getSize() + 0.25);
+                    data.setSize(target, data.getSize() + 0.25);
                 } else if (e.isRightClick()) {
                     if (data.getSize() <= 0.5) return;
-                    data.setSize(data.getSize() - 0.25);
+                    data.setSize(target, data.getSize() - 0.25);
                 }
                 button.setItem(new ItemBuilder(button.getItem()).setLore(getSizeLore(data)));
                 gui.update();
@@ -145,7 +146,7 @@ public class TrailsGUI {
                         .filter(t -> particle.getParticle() != Particle.NOTE || t != TrailColors.BLACK && t != TrailColors.WHITE).collect(Collectors.toList()),
                         t -> itemOfPermission(player, "vrn.trails.fadecolors." + t.name().toLowerCase(), new ItemBuilder(t.getWool()).setName(t.getDisplayName()), (ev, button2) -> {
                             player.closeInventory();
-                            data.setFade(t.getColor());
+                            data.setFade(target, t.getColor());
                             say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") + "trail fade color has been changed to " + t.getDisplayName() + "&7.");
                         }, "", "&cYou cannot use", "&cthis trail fade color."));
             }, props.contains(Particles.ParticleProperties.COLOR_TRANSITION), no), 15);
@@ -156,7 +157,7 @@ public class TrailsGUI {
                         .filter(t -> particle.getParticle() != Particle.NOTE || t != TrailColors.BLACK && t != TrailColors.WHITE).collect(Collectors.toList()),
                         t -> itemOfPermission(player, "vrn.trails.colors." + t.name().toLowerCase(), new ItemBuilder(t.getWool()).setName(t.getDisplayName()), (ev, button2) -> {
                             player.closeInventory();
-                            data.setColor(t.getColor());
+                            data.setColor(target, t.getColor());
                             say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") + "trail color has been changed to " + t.getDisplayName() + "&7.");
                         }, "", "&cYou cannot use", "&cthis trail color."));
             }, props.contains(Particles.ParticleProperties.COLOR) || props.contains(Particles.ParticleProperties.COLOR_TRANSITION), no), 34);

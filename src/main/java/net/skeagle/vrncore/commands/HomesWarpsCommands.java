@@ -8,11 +8,16 @@ import net.skeagle.vrncore.Settings;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.homes.Home;
 import net.skeagle.vrncore.homes.HomeManager;
+import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
+import net.skeagle.vrnlib.misc.Task;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.CompletableFuture;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -54,13 +59,17 @@ public class HomesWarpsCommands {
     }
 
     @CommandHook("homes")
-    public void onHomes(Player player, Player target) {
-        HomeManager manager = plugin.getHomeManager();
-        if (manager.getHomeNames(target).size() >= 1) {
-            new HomesGUI(manager, player, target);
-            return;
-        }
-        say(player, "&c" + (player != target ? target.getName() + " does" : "You do") + " not have any homes available.");
+    public void onHomes(Player player, CompletableFuture<OfflinePlayer> target) {
+        target.thenAcceptAsync(offPlayer -> {
+            HomeManager manager = plugin.getHomeManager();
+            manager.getHomesCount(offPlayer).thenAccept(count -> {
+                if (count >= 1) {
+                    Task.syncDelayed(() -> new HomesGUI(manager, player, offPlayer));
+                    return;
+                }
+                say(player, "&c" + (player != offPlayer ? offPlayer.getName() + " does" : "You do") + " not have any homes available.");
+            });
+        });
     }
 
     @CommandHook("warp")

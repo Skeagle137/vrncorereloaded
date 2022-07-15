@@ -6,6 +6,7 @@ import net.skeagle.vrncommands.Sender;
 import net.skeagle.vrncore.GUIs.ExpTradeGUI;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
 import net.skeagle.vrncore.Settings;
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.itemutils.ItemUtils;
@@ -38,14 +39,16 @@ public class MiscCommands {
 
     @CommandHook("message")
     public void onMessage(final Player player, final Player target, String message) {
-        String playerName = PlayerManager.getData(player.getUniqueId()).getName();
-        String targetName = PlayerManager.getData(target.getUniqueId()).getName();
-        String outgoing = BukkitMessages.msg("senderMsgPlayerPrefix").replaceAll("%target%", targetName) + message;
-        String incoming = BukkitMessages.msg("playerMsgSenderPrefix").replaceAll("%sender%", playerName)  + message;
-        sayNoPrefix(player, outgoing);
-        sayNoPrefix(target, incoming);
-        lastReplies.put(player.getUniqueId(), target.getUniqueId());
-        lastReplies.put(target.getUniqueId(), player.getUniqueId());
+        VRNcore.getPlayerData(player.getUniqueId()).thenAcceptAsync(playerData -> {
+            VRNcore.getPlayerData(target.getUniqueId()).thenAccept(targetData -> {
+                String outgoing = BukkitMessages.msg("senderMsgPlayerPrefix").replaceAll("%target%", targetData.getName()) + message;
+                String incoming = BukkitMessages.msg("playerMsgSenderPrefix").replaceAll("%sender%", playerData.getName())  + message;
+                sayNoPrefix(player, outgoing);
+                sayNoPrefix(target, incoming);
+                lastReplies.put(player.getUniqueId(), target.getUniqueId());
+                lastReplies.put(target.getUniqueId(), player.getUniqueId());
+            });
+        });
     }
 
     @CommandHook("reply")

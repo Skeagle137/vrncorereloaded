@@ -3,8 +3,7 @@ package net.skeagle.vrncore.commands;
 import net.skeagle.vrncommands.BukkitMessages;
 import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.GUIs.GivePlusGUI;
-import net.skeagle.vrncore.playerdata.PlayerData;
-import net.skeagle.vrncore.playerdata.PlayerManager;
+import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.playerdata.PlayerStates;
 import net.skeagle.vrnlib.misc.TimeUtil;
 import org.bukkit.Bukkit;
@@ -15,6 +14,8 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.CompletableFuture;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
 import static net.skeagle.vrncore.utils.VRNUtil.*;
@@ -75,7 +76,9 @@ public class AdminCommands {
     public void onHeal(final CommandSender sender, final Player target) {
         target.setHealth(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         target.setFoodLevel(20);
+        target.setSaturation(5);
         target.setFireTicks(0);
+        target.getActivePotionEffects().clear();
         say(target, "Your health and hunger are now full.");
         if (target == sender) return;
         say(sender, "&a" + target.getName() + "&7's health and hunger are now full.");
@@ -115,14 +118,16 @@ public class AdminCommands {
     }
 
     @CommandHook("timeplayedget")
-    public void onTimePlayedGet(final CommandSender sender, final OfflinePlayer target) {
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        say(sender, (target == sender ? "Your" : "&a" + target.getName() + "&7's") +
-                " time played is &a" + timeToMessage(data.getTimePlayed()) + "&7.");
+    public void onTimePlayedGet(final CommandSender sender, final CompletableFuture<OfflinePlayer> target) {
+        target.thenComposeAsync(offPlayer -> VRNcore.getPlayerData(offPlayer.getUniqueId()).thenAcceptAsync(data -> {
+            VRNcore.getPlayerData(offPlayer.getUniqueId());
+            say(sender, (offPlayer == sender ? "Your" : "&a" + offPlayer.getName() + "&7's") +
+                    " time played is &a" + timeToMessage(data.getTimePlayed()) + "&7.");
+        }));
     }
 
     @CommandHook("timeplayedset")
-    public void onTimePlayedSet(final CommandSender sender, final OfflinePlayer target, final String time) {
+    public void onTimePlayedSet(final CommandSender sender, final CompletableFuture<OfflinePlayer> target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
@@ -130,13 +135,14 @@ public class AdminCommands {
             say(sender, e.getMessage());
             return;
         }
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        data.setTimePlayed(totalsec);
-        say(sender, "Time played set to &a" + timeToMessage(totalsec) + (target == sender ? "&7." : "&7 for &a" + target.getName() + "&7."));
+        target.thenComposeAsync(offPlayer -> VRNcore.getPlayerData(offPlayer.getUniqueId()).thenAcceptAsync(data -> {
+            data.setTimePlayed(totalsec);
+            say(sender, "Time played set to &a" + timeToMessage(totalsec) + (offPlayer == sender ? "&7." : "&7 for &a" + offPlayer.getName() + "&7."));
+        }));
     }
 
     @CommandHook("timeplayedadd")
-    public void onTimePlayedAdd(final CommandSender sender, final OfflinePlayer target, final String time) {
+    public void onTimePlayedAdd(final CommandSender sender, final CompletableFuture<OfflinePlayer> target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
@@ -144,15 +150,16 @@ public class AdminCommands {
             say(sender, e.getMessage());
             return;
         }
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        final long total = data.getTimePlayed() + totalsec;
-        data.setTimePlayed(total);
-        say(sender, "Added &a" + timeToMessage(totalsec) + "&7 to " + (target == sender ? "your" : "&a" + target.getName() + "&7's") +
-                " time. " + (target == sender ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        target.thenComposeAsync(offPlayer -> VRNcore.getPlayerData(offPlayer.getUniqueId()).thenAcceptAsync(data -> {
+            final long total = data.getTimePlayed() + totalsec;
+            data.setTimePlayed(total);
+            say(sender, "Added &a" + timeToMessage(totalsec) + "&7 to " + (offPlayer == sender ? "your" : "&a" + offPlayer.getName() + "&7's") +
+                    " time. " + (offPlayer == sender ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        }));
     }
 
     @CommandHook("timeplayedsubtract")
-    public void onTimePlayedSubtract(final CommandSender sender, final OfflinePlayer target, final String time) {
+    public void onTimePlayedSubtract(final CommandSender sender, final CompletableFuture<OfflinePlayer> target, final String time) {
         final long totalsec;
         try {
             totalsec = parseTimeString(time);
@@ -160,16 +167,17 @@ public class AdminCommands {
             say(sender, e.getMessage());
             return;
         }
-        final PlayerData data = PlayerManager.getData(target.getUniqueId());
-        final long total = data.getTimePlayed() - totalsec;
-        if (total < 0) {
-            data.setTimePlayed(0L);
-            say(sender, "Time played set to &a0 seconds &7" + (target == sender ? "." : " for &a" + target.getName() + "&7."));
-            return;
-        }
-        data.setTimePlayed(total);
-        say(sender, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (target == sender ? "your" : "&a" + target.getName() + "&7's") +
-                " time. " + (target == sender ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        target.thenComposeAsync(offPlayer -> VRNcore.getPlayerData(offPlayer.getUniqueId()).thenAcceptAsync(data -> {
+            final long total = data.getTimePlayed() - totalsec;
+            if (total < 0) {
+                data.setTimePlayed(0L);
+                say(sender, "Time played set to &a0 seconds &7" + (offPlayer == sender ? "." : " for &a" + offPlayer.getName() + "&7."));
+                return;
+            }
+            data.setTimePlayed(total);
+            say(sender, "Subtracted &a" + timeToMessage(totalsec) + "&7 from " + (offPlayer == sender ? "your" : "&a" + offPlayer.getName() + "&7's") +
+                    " time. " + (offPlayer == sender ? "Your" : "Their") + " total time is now &a" + timeToMessage(total) + "&7.");
+        }));
     }
 
     @CommandHook("fly")
@@ -213,13 +221,15 @@ public class AdminCommands {
     }
 
     @CommandHook("god")
-    public void onGod(final CommandSender sender, final OfflinePlayer target) {
-        final PlayerStates data = PlayerManager.getData(target.getUniqueId()).getStates();
-        data.setGodmode(!data.hasGodmode());
-        if (target.getPlayer() != null) {
-            say(target.getPlayer(), "You are " + (data.hasGodmode() ? "now" : "no longer") + " invulnerable.");
-        }
-        if (target == sender) return;
-        say(sender, "&a" + target.getName() + " &7is " + (data.hasGodmode() ? "now" : "no longer") + " invulnerable.");
+    public void onGod(final CommandSender sender, final CompletableFuture<OfflinePlayer> target) {
+        target.thenComposeAsync(offPlayer -> VRNcore.getPlayerData(offPlayer.getUniqueId()).thenAcceptAsync(data -> {
+            PlayerStates states = data.getStates();
+            states.setGodmode(!states.hasGodmode());
+            if (offPlayer.getPlayer() != null) {
+                say(offPlayer.getPlayer(), "You are " + (states.hasGodmode() ? "now" : "no longer") + " invulnerable.");
+            }
+            if (offPlayer == sender) return;
+            say(sender, "&a" + offPlayer.getName() + " &7is " + (states.hasGodmode() ? "now" : "no longer") + " invulnerable.");
+        }));
     }
 }

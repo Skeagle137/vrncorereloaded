@@ -11,6 +11,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public final class VaultHook {
 
@@ -53,16 +54,15 @@ public final class VaultHook {
         return chat.getName();
     }
 
-    public String format(String s, final Player p) {
-        final PlayerData data = PlayerManager.getData(p.getUniqueId());
+    public String format(PlayerData data, String s) {
         if (s == null) {
             s = Settings.format;
         }
-        s = s.replaceAll("%prefix", getPrefix(p));
+        s = s.replaceAll("%prefix", getPrefix(data.getPlayer()));
         s = s.replaceAll("%player", data.getName());
-        s = s.replaceAll("%suffix", getSuffix(p));
-        s = s.replaceAll("%world", p.getWorld().getName());
-        s = s.replaceAll("%group", getGroups(p).length != 0 ? getGroups(p)[0] : "");
+        s = s.replaceAll("%suffix", getSuffix(data.getPlayer()));
+        s = s.replaceAll("%world", data.getPlayer().getWorld().getName());
+        s = s.replaceAll("%group", getGroups(data.getPlayer()).length != 0 ? getGroups(data.getPlayer())[0] : "");
         return s;
     }
 }

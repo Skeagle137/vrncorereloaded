@@ -1,6 +1,6 @@
 package net.skeagle.vrncore.trail.style;
 
-import net.skeagle.vrncore.event.TrailListener;
+import net.skeagle.vrncore.event.TrailHandler;
 import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.Style;
@@ -21,7 +21,7 @@ class Circle extends TrailStyle {
     @Override
     public void tick(Player player, Location loc, TrailData data, Particles particle, TrailVisibility visibility) {
         if (data.getType() == TrailType.PLAYER) {
-            if (TrailListener.tick % 2 != 0) return;
+            if (TrailHandler.tick % 2 != 0) return;
             runPlayer(player, loc, data, particle, visibility, i);
         }
         else {
