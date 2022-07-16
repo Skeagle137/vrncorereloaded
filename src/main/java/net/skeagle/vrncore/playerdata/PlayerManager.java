@@ -80,9 +80,11 @@ public class PlayerManager {
 
     @SuppressWarnings("deprecation")
     private CompletableFuture<OfflinePlayer> checkHasPlayed(String name) {
-        return CompletableFuture.supplyAsync(() -> {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-            return offlinePlayer.hasPlayedBefore() ? offlinePlayer : null;
+        return CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(name)).handleAsync((res, ex) -> {
+            if (res != null && res.hasPlayedBefore()) {
+                return res;
+            }
+            return null;
         });
     }
 

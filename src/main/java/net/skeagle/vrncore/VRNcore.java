@@ -29,14 +29,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.sqlite.Function;
-import org.sqlite.SQLiteException;
-
-import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
@@ -83,7 +77,13 @@ public final class VRNcore extends JavaPlugin {
                 .setArgTypes(ArgType.of("entitytype", EntityType.class), homeManager.getArgType(),
                         new ArgType<>("warp", warpManager::getWarp).tabStream(s -> warpManager.getWarps().stream().map(Warp::name)),
                         new ArgType<>("npc", npcManager::getNpc).tabStream(s -> npcManager.getNpcs().stream().map(Npc::getName)),
-                        new ArgType<>("offlineplayer", playerManager::getOfflinePlayer).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
+                        new ArgType<>("offlineplayer", (s, c) -> playerManager.getOfflinePlayer(c).handleAsync((res, ex) -> {
+                            if (res == null) {
+                                say(s.get(), BukkitMessages.msg("offlinePlayerNotFound"));
+                                return null;
+                            }
+                            return res;
+                        })).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
                 .parse().register(new BukkitCommandRegistry(this), "vrncore", this, new AdminCommands(), new TpCommands(),
                         new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
                         new NickCommands(this), new NpcCommands());

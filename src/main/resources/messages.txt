@@ -11,3 +11,4 @@ senderMsgPlayerPrefix: &dTo &b%target%&d: &#d9d9d9
 playerMsgSenderPrefix: &dFrom &b%sender%&d: &#d9d9d9
 tabListHeader: &e&lWelcome %player%!
 tabListFooter: &b&lEnjoy your stay %player%!
+offlinePlayerNotFound: &cThat player has never joined the server before.
