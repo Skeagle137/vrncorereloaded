@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TrailHandler implements Listener {
 
@@ -30,8 +30,8 @@ public class TrailHandler implements Listener {
     private final Map<Player, WeakReference<TrailData>> arrowCache;
 
     public TrailHandler(VRNcore plugin) {
-        trailCache = Collections.synchronizedMap(new WeakHashMap<>());
-        arrowCache = Collections.synchronizedMap(new WeakHashMap<>());
+        trailCache = Collections.synchronizedMap(new ConcurrentHashMap<>());
+        arrowCache = Collections.synchronizedMap(new ConcurrentHashMap<>());
         this.startParticleTask();
         new EventListener<>(PlayerJoinEvent.class, e -> {
             plugin.getPlayerManager().getData(e.getPlayer().getUniqueId()).thenAccept(data -> {
