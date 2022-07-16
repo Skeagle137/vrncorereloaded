@@ -48,9 +48,11 @@ public class PlayerListener implements Listener {
                 e.setJoinMessage(BukkitMessages.msg("joinMsg").replaceAll("%player%", data.getName()));
                 Task.syncDelayed(() -> say(e.getPlayer(), BukkitMessages.msg("returnMsg").replaceAll("%player%", data.getName())), 2);
             }
-            data.updateName();
-            e.getPlayer().setPlayerListHeaderFooter(BukkitMessages.msg("tabListHeader").replaceAll("%player%", data.getName()),
-                    BukkitMessages.msg("tabListFooter").replaceAll("%player%", data.getName()));
+            Task.syncDelayed(() -> {
+                data.updateName();
+                e.getPlayer().setPlayerListHeaderFooter(BukkitMessages.msg("tabListHeader").replaceAll("%player%", data.getName()),
+                        BukkitMessages.msg("tabListFooter").replaceAll("%player%", data.getName()));
+            }, 2);
         });
     }
 
