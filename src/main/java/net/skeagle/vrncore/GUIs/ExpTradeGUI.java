@@ -1,16 +1,14 @@
 package net.skeagle.vrncore.GUIs;
 
-import net.skeagle.vrncore.utils.ExpUtil;
+import net.skeagle.vrncommands.misc.FormatUtils;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
 import net.skeagle.vrnlib.itemutils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
@@ -23,7 +21,7 @@ public class ExpTradeGUI {
             final String name = expmat.toString().toLowerCase().replaceAll("_", " ");
             gui.addButton(ItemButton.create(new ItemBuilder(expmat.mat).setName("&l" + name)
                     .setLore("&9-----------------------------------------",
-                            "&7One &b" + name + " &7is worth &b" + expmat.worth + " &7exp level(s).",
+                            "&7One &b" + name + " &7is worth &b" + expmat.worth + " &7exp point(s).",
                             "&9-----------------------------------------"), e -> {
                 if (checkInv(player, expmat.mat)) {
                     new ExpTradeAmount(player, name, expmat);
@@ -38,7 +36,7 @@ public class ExpTradeGUI {
         gui.getInventory().setItem(17, new ItemBuilder(Material.MAP).setName("&l&oStats")
                 .setLore("&9-----------------------------------------",
                         "&eCurrent Exp level: &6" + level,
-                        "&eCurrent next level progress: &6" + String.format("%.0f%%", exp),
+                        "&eCurrent next level progress: &6" + String.format("%.0f%%", exp * 100),
                         "&9-----------------------------------------"));
         gui.open(player);
     }
@@ -53,55 +51,50 @@ public class ExpTradeGUI {
 
     private static class ExpTradeAmount extends InventoryGUI {
 
+        private final int worth;
         private int amount;
         private int displayAmount;
         private int stacks;
-        private double gained;
-        private int finalLevel;
+        private double total;
+        private double gain;
 
         private ExpTradeAmount(final Player player, final String name, final ExpMaterial expmat) {
             super(9, "&9&lExp Trade - Select Amount");
+            this.worth = expmat.worth;
             this.amount = 1;
             this.displayAmount = 1;
-            this.gained = expmat.worth;
-            this.finalLevel = (int) (ExpUtil.getExp(player) + gained);
+            this.total = this.getNewTotal(player);
+            this.gain = this.getGain(player);
 
-            addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to menu)"), e ->
+            this.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to menu)"), e ->
                     new ExpTradeGUI(player)), 2);
 
-
-            addButton(ItemButton.create(new ItemBuilder(expmat.mat).setName("&l" + name).setCount(displayAmount)
+            this.addButton(ItemButton.create(new ItemBuilder(expmat.mat).setName("&l" + name).setCount(displayAmount)
                     .setLore(getLore()), (e, button) -> {
-                if (1 > amount - 1 && e.isRightClick() || getAmount(player, expmat.mat) < amount + 1 && e.isLeftClick())
-                    return;
                 amount = e.isShiftClick() ? (e.isLeftClick() ? amount + 10 : amount - 10) : (e.isLeftClick() ? amount + 1 : amount - 1);
+                amount = Math.min(this.getAmount(player, expmat.mat), amount);
                 stacks = amount / 64;
+                if (stacks < 1) {
+                    amount = Math.max(1, amount);
+                }
                 displayAmount = amount % 64 != 0 ? amount % 64 : 1;
-                System.out.println(ExpUtil.getExp(player) + " " + player.getExp() + " " + getExpToNext(player.getLevel()));
-                System.out.println(expmat.worth + " " + expmat.worth * amount);
-                System.out.println(ExpUtil.getExpToNext(Math.round(player.getLevel())));
-                System.out.println((ExpUtil.getExp(player) - ExpUtil.getExpFromLevel(player.getLevel())));
-                gained = expmat.worth * amount;
-                finalLevel = (int) Math.round((ExpUtil.getExp(player) + gained));
+                total = this.getNewTotal(player);
+                gain = this.getGain(player);
                 button.setItem(new ItemBuilder(button.getItem()).setCount(displayAmount).setLore(getLore()));
-                update();
+                this.update();
             }), 4);
 
-            addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
-                for (final ItemStack item : player.getInventory().getContents()) {
-                    if (item != null && item.getType() == expmat.mat) {
-                        if (item.getAmount() >= amount) {
-                            player.getInventory().removeItem(new ItemStack(item.getType(), amount));
-                            ExpUtil.changeExp(player, (int) (gained));
-                            say(player, "You traded &ax" + amount + " " + name + " &7for &a" + gained + " &7exp level(s).");
-                            break;
-                        }
-                    }
+            this.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
+                Map<Integer, ItemStack> notRemoved = player.getInventory().removeItem(new ItemStack(expmat.mat, amount));
+                if (!notRemoved.isEmpty()) {
+                    player.getInventory().getItemInOffHand().setAmount(player.getInventory().getItemInOffHand().getAmount() - notRemoved.get(0).getAmount());
                 }
+                player.giveExp(worth * ((amount % 64) + (stacks * 64)));
+                say(player, "You traded &ax" + amount + " " + name + " &7for &a" + FormatUtils.truncateDouble(gain) + " &7exp level(s).");
                 player.closeInventory();
             }), 6);
 
-            open(player);
+            this.open(player);
         }
 
         private int getAmount(final Player p, final Material mat) {
@@ -119,9 +112,26 @@ public class ExpTradeGUI {
                     "&fShift Left or Right click &7increases/decreases the amount by &b10&7.",
                     "&7Current amount to trade: &d" + (stacks != 0 ? stacks + " &7stack(s)" : "") + (amount % 64 != 0 && stacks != 0 ? " and " : "")
                             + "&b" + (amount % 64 != 0 ? displayAmount : "") + (stacks != 0 ? " &7(&e" + amount + "&7 total)" : ""),
-                    "&7Exp gain from trade: &b" + gained + " level(s)",
-                    "&7Final Exp level after trade: &a" + finalLevel,
+                    "&7Exp gain from trade: &b" + FormatUtils.truncateDouble(gain) + " level(s)",
+                    "&7Final Exp level after trade: &a" + FormatUtils.truncateDouble(total),
                     "&9-----------------------------------------"};
+        }
+
+        private double getGain(Player player) {
+            return this.getNewTotal(player) - player.getLevel() - player.getExp();
+        }
+
+        private double getNewTotal(Player player) {
+            int level = player.getLevel();
+            float progress = player.getExp();
+            progress += (float) worth * ((amount % 64) + (stacks * 64)) / this.getExpToNext(level);
+
+            while (progress >= 1) {
+                progress = (progress - 1) * this.getExpToNext(level);
+                level += 1;
+                progress /= this.getExpToNext(level);
+            }
+            return level + progress;
         }
 
         private int getExpToNext(final int level) {
@@ -134,21 +144,22 @@ public class ExpTradeGUI {
     }
 
     private enum ExpMaterial {
-        NETHERITE(1.5, Material.NETHERITE_INGOT), // 1 and 1/2
-        ANCIENT_DEBRIS(1.0, Material.ANCIENT_DEBRIS), // 1
-        DIAMOND(0.25, Material.DIAMOND), // 1/4
-        EMERALD(0.1, Material.EMERALD), // 1/10
-        GOLD_INGOT(0.03125, Material.GOLD_INGOT), // 1/32
-        IRON_INGOT(0.0208, Material.IRON_INGOT), // 1/48
-        NETHER_QUARTZ(0.015, Material.QUARTZ), // 1/64
-        LAPIS_LAZULI(0.01, Material.LAPIS_LAZULI), // 1/100
-        COAL(0.01, Material.COAL), // 1/100
-        REDSTONE_DUST(0.01, Material.REDSTONE); // 1/100
+        NETHERITE(250, Material.NETHERITE_INGOT),
+        ANCIENT_DEBRIS(150, Material.ANCIENT_DEBRIS),
+        DIAMOND(100, Material.DIAMOND),
+        LAPIS_LAZULI(50, Material.LAPIS_LAZULI),
+        NETHER_QUARTZ(30, Material.QUARTZ),
+        GOLD_INGOT(20, Material.GOLD_INGOT),
+        REDSTONE_DUST(15, Material.REDSTONE),
+        EMERALD(10, Material.EMERALD),
+        COPPER_INGOT(7, Material.COPPER_INGOT),
+        IRON_INGOT(7, Material.IRON_INGOT),
+        COAL(5, Material.COAL);
 
-        private final double worth;
+        private final int worth;
         private final Material mat;
 
-        ExpMaterial(final double worth, final Material mat) {
+        ExpMaterial(final int worth, final Material mat) {
             this.worth = worth;
             this.mat = mat;
         }
