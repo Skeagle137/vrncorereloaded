@@ -30,7 +30,7 @@ public class WarpsGUI {
                 manager.getWarps().forEach(w ->
                         panel.addPagedButton(ItemButton.create(getIcon(w), e -> {
                             if (e.getClick().isLeftClick()) {
-                                player.closeInventory();
+                                Task.syncDelayed(player::closeInventory);
                                 say(player, BukkitMessages.msg("teleporting"));
                                 player.teleport(w.location());
                             }
@@ -58,7 +58,7 @@ public class WarpsGUI {
         gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this warp?"));
         gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
             manager.deleteWarp(w);
-            player.closeInventory();
+            Task.syncDelayed(player::closeInventory);
             say(player, "&7Warp &a" + w.name() + "&7 successfully deleted.");
         }), 6);
         gui.open(player);

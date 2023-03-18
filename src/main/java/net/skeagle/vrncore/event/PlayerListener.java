@@ -41,18 +41,15 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(final PlayerJoinEvent e) {
         plugin.getPlayerManager().getData(e.getPlayer().getUniqueId()).thenAccept(data -> {
+            data.updateName(e.getPlayer());
             if (!e.getPlayer().hasPlayedBefore() && Settings.joinLeaveEnabled) {
                 e.setJoinMessage(BukkitMessages.msg("welcomeMsg").replaceAll("%player%", data.getName()));
-            }
-            else if (Settings.joinLeaveEnabled) {
+            } else if (Settings.joinLeaveEnabled) {
                 e.setJoinMessage(BukkitMessages.msg("joinMsg").replaceAll("%player%", data.getName()));
                 Task.syncDelayed(() -> say(e.getPlayer(), BukkitMessages.msg("returnMsg").replaceAll("%player%", data.getName())), 2);
             }
-            Task.syncDelayed(() -> {
-                data.updateName();
-                e.getPlayer().setPlayerListHeaderFooter(BukkitMessages.msg("tabListHeader").replaceAll("%player%", data.getName()),
-                        BukkitMessages.msg("tabListFooter").replaceAll("%player%", data.getName()));
-            }, 2);
+            e.getPlayer().setPlayerListHeaderFooter(BukkitMessages.msg("tabListHeader").replaceAll("%player%", data.getName()),
+                    BukkitMessages.msg("tabListFooter").replaceAll("%player%", data.getName()));
         });
     }
 

@@ -2,8 +2,6 @@ package net.skeagle.vrncore.GUIs;
 
 import net.skeagle.vrncommands.misc.FormatUtils;
 import net.skeagle.vrncore.VRNcore;
-import net.skeagle.vrncore.playerdata.PlayerData;
-import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.Style;
@@ -61,10 +59,10 @@ public class TrailsGUI {
                             .setLore("", "&7Click to open the arrow", "&7trail selection menu.",
                                     "", "&7Currently selected trail: &a" + (arrowParticle != null ? arrowParticle.getParticleName() : "&cNone")),
                     e -> new TrailSelection(player, target, data.getArrowTrailData())), 25);
-        }).thenRun(() -> Task.syncDelayed(() -> gui.open(player)));;
+        }).thenRun(() -> Task.syncDelayed(() -> gui.open(player)));
     }
 
-    private static class TrailSelection {
+    private class TrailSelection {
 
         private TrailSelection(final Player player, final Player target, TrailData data) {
             BorderedGUI gui = new BorderedGUI("&9" + data.getType().getName() + "Trails");
@@ -79,12 +77,10 @@ public class TrailsGUI {
                 final boolean same = data.getParticle() != null && data.getParticle() == particle.getParticle();
                 panel.addPagedButton(itemOfPermission(player, particle.getPermission(data.getType()), new ItemBuilder(particle.getMaterial()).setName("&6" + particle.getParticleName())
                         .setLore("", "&7Click to select", "&7this " + data.getType().name().toLowerCase() + " trail.").glint(same), (e, button) -> {
-                    if (!Arrays.asList(particle.getProperties()).contains(Particles.ParticleProperties.DIRECTIONAL)) {
-                        if (data.getStyle().get() == Style.SPREAD) {
-                            data.setStyle(target, Style.DEFAULT);
-                        }
+                    if (!data.getStyle().canApply(particle)) {
+                        data.setStyle(target, Style.DEFAULT);
                     }
-                    player.closeInventory();
+                    Task.syncDelayed(player::closeInventory);
                     data.setParticle(target, particle.getParticle());
                     say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") +
                             "trail has been changed to &a" + particle.getParticleName() + "&7.");
@@ -94,7 +90,7 @@ public class TrailsGUI {
         }
     }
 
-    private static class TrailOptions {
+    private class TrailOptions {
 
         private TrailOptions(final Player player, final Player target, Particles particle, TrailData data) {
             InventoryGUI gui = new InventoryGUI(45, "&9" + data.getType().getName() + "Trail Options for " + target.getName());
@@ -115,16 +111,19 @@ public class TrailsGUI {
             gui.addButton(itemOfPermission(player, "vrn.trails.options.style", new ItemBuilder(Material.ENDER_PEARL).setName("&eEdit Trail Style"), (e, button) -> {
                 new TrailOptionSelection<>(player, "&cTrail Styles", List.of(Style.values()),
                         t -> itemOfPermission(player, "vrn.trails.styles." + t.name().toLowerCase(), new ItemBuilder(switch (t) {
+                            //non-idle
                             case DEFAULT -> Material.BLAZE_POWDER;
                             case SPREAD -> Material.FIREWORK_STAR;
                             case ORBIT -> Material.ENDER_EYE;
                             case CIRCLE -> Material.FIREWORK_ROCKET;
+                            //idle
+                            case STAR, HEXAGRAM -> Material.NETHER_STAR;
                         }).setName("&e&l" + FormatUtils.toTitleCase(t.name())), (ev, button2) -> {
-                            player.closeInventory();
+                            Task.syncDelayed(player::closeInventory);
                             data.setStyle(target, t);
                             say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") +
                                     "trail style has been changed to &a" + FormatUtils.toTitleCase(t.name()) + "&7.");
-                        }, isStyleCompatable(t, props), "", "&cYou cannot use", "&cthis trail style."));
+                        }, this.isStyleCompatable(t, props), "", "&cYou cannot use", "&cthis trail style."));
             }, no), 28);
 
             gui.addButton(itemOfPermission(player, "vrn.trails.options.size", new ItemBuilder(Material.MAGMA_CREAM).setName("&eEdit Trail Size")
@@ -145,7 +144,7 @@ public class TrailsGUI {
                 new TrailOptionSelection<>(player, "&cTrail Fade Colors", Arrays.stream(TrailColors.values())
                         .filter(t -> particle.getParticle() != Particle.NOTE || t != TrailColors.BLACK && t != TrailColors.WHITE).collect(Collectors.toList()),
                         t -> itemOfPermission(player, "vrn.trails.fadecolors." + t.name().toLowerCase(), new ItemBuilder(t.getWool()).setName(t.getDisplayName()), (ev, button2) -> {
-                            player.closeInventory();
+                            Task.syncDelayed(player::closeInventory);
                             data.setFade(target, t.getColor());
                             say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") + "trail fade color has been changed to " + t.getDisplayName() + "&7.");
                         }, "", "&cYou cannot use", "&cthis trail fade color."));
@@ -156,7 +155,7 @@ public class TrailsGUI {
                 new TrailOptionSelection<>(player, "&cTrail Colors", Arrays.stream(TrailColors.values())
                         .filter(t -> particle.getParticle() != Particle.NOTE || t != TrailColors.BLACK && t != TrailColors.WHITE).collect(Collectors.toList()),
                         t -> itemOfPermission(player, "vrn.trails.colors." + t.name().toLowerCase(), new ItemBuilder(t.getWool()).setName(t.getDisplayName()), (ev, button2) -> {
-                            player.closeInventory();
+                            Task.syncDelayed(player::closeInventory);
                             data.setColor(target, t.getColor());
                             say(player, (target != player ? "&a" + target.getName() + "'s&7 " : "&7Your ") + "trail color has been changed to " + t.getDisplayName() + "&7.");
                         }, "", "&cYou cannot use", "&cthis trail color."));
@@ -200,7 +199,7 @@ public class TrailsGUI {
         }
     }
 
-    private static ItemButton itemOfPermission(Player player, String permission, ItemStack stack, BiConsumer<InventoryClickEvent, ItemButton> consumer, boolean compatible, String... message) {
+    private ItemButton itemOfPermission(Player player, String permission, ItemStack stack, BiConsumer<InventoryClickEvent, ItemButton> consumer, boolean compatible, String... message) {
         return ItemButton.create(player.hasPermission(permission) ? (compatible ? stack : new ItemBuilder(stack).setLore("", "&cThis option cannot", "&capply to your", "&ccurrent trail.")) :
                 new ItemBuilder(Material.GRAY_DYE).setName("&4???").setLore(message), (e, button) -> {
             if (player.hasPermission(permission) && compatible) {
@@ -209,7 +208,7 @@ public class TrailsGUI {
         });
     }
 
-    private static ItemButton itemOfPermission(Player player, String permission, ItemStack stack, BiConsumer<InventoryClickEvent, ItemButton> consumer, String... message) {
+    private ItemButton itemOfPermission(Player player, String permission, ItemStack stack, BiConsumer<InventoryClickEvent, ItemButton> consumer, String... message) {
         return itemOfPermission(player, permission, stack, consumer, true, message);
     }
 }

@@ -87,4 +87,9 @@ public class Settings {
     @Comment("Set to true to enable a more efficient, but potentially more performance inducing, method for checking limit permissions.")
     @ConfigName("alternate-limit-permission-check")
     public static boolean alternatePermLimitCheck = false;
+
+    //particles
+    @Comment("The amount of time, in seconds, that will pass before idle trail styles will activate.")
+    @ConfigName("idle-trail-activation-seconds")
+    public static int idleTrailActivation = 8;
 }

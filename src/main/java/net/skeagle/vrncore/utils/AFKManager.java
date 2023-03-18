@@ -1,6 +1,10 @@
 package net.skeagle.vrncore.utils;
 
+import net.skeagle.vrncore.Settings;
+import net.skeagle.vrnlib.misc.EventListener;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,44 +16,51 @@ public final class AFKManager {
 
     private boolean afk;
     private int timeAfk;
-    private SavedLocation savedLocation;
+    private Location savedLocation;
+    private int idle = Settings.idleTrailActivation;
+
+    public AFKManager() {
+        new EventListener<>(PlayerMoveEvent.class, e -> {
+            AFKManager manager = getAfkManager(e.getPlayer());
+            Location loc = e.getPlayer().getLocation();
+            if (manager.savedLocation == null) return;
+            if (manager.savedLocation.getX() != loc.getX() || manager.savedLocation.getY() != loc.getY() || manager.savedLocation.getZ() != loc.getZ()) {
+                manager.idle = Settings.idleTrailActivation;
+            }
+        });
+    }
+
+    public static AFKManager getAfkManager(final Player p) {
+        AFKManager manager = afkPlayers.get(p.getUniqueId());
+        if (manager == null) {
+            manager = new AFKManager();
+            afkPlayers.put(p.getUniqueId(), manager);
+        }
+        return manager;
+    }
 
     public int getTimeAfk() {
         return timeAfk;
     }
 
     public void setTimeAfk(final int timeAfk) {
-        if (timeAfk <= -1) return;
-        this.timeAfk = timeAfk;
+        this.timeAfk = timeAfk <= -1 ? 0 : timeAfk;
     }
 
-    public static AFKManager getAfkManager(final Player p) {
+    public void decrementIdleCountdown() {
+        this.idle--;
+    }
 
-        AFKManager manager = afkPlayers.get(p.getUniqueId());
-
-        if (manager == null) {
-            manager = new AFKManager();
-
-            afkPlayers.put(p.getUniqueId(), manager);
-        }
-
-        return manager;
+    public boolean isIdle() {
+        return this.idle < 0;
     }
 
     public void remove(Player player) {
         afkPlayers.remove(player.getUniqueId());
     }
 
-    public void setSavedLocation(final SavedLocation loc) {
-        savedLocation = new SavedLocation(loc);
-    }
-
-    public boolean isYawEqual(final SavedLocation loc) {
-        return getSavedLocation().isYawEqual(loc);
-    }
-
-    public boolean isPitchEqual(final SavedLocation loc) {
-        return getSavedLocation().isPitchEqual(loc);
+    public void setSavedLocation(final Location loc) {
+        savedLocation = loc;
     }
 
     public void setAfk(final boolean afk) {
@@ -60,38 +71,7 @@ public final class AFKManager {
         return this.afk;
     }
 
-    public SavedLocation getSavedLocation() {
+    public Location getSavedLocation() {
         return savedLocation;
-    }
-
-    public static class SavedLocation {
-        private final float yaw;
-        private final float pitch;
-
-        public SavedLocation(final Player p) {
-            this.yaw = p.getLocation().getYaw();
-            this.pitch = p.getLocation().getPitch();
-        }
-
-        public SavedLocation(final SavedLocation loc) {
-            this.yaw = loc.getYaw();
-            this.pitch = loc.getPitch();
-        }
-
-        boolean isYawEqual(final SavedLocation loc) {
-            return ((int) loc.yaw) == ((int) this.yaw);
-        }
-
-        boolean isPitchEqual(final SavedLocation loc) {
-            return ((int) loc.pitch) == ((int) this.pitch);
-        }
-
-        public float getYaw() {
-            return yaw;
-        }
-
-        public float getPitch() {
-            return pitch;
-        }
     }
 }

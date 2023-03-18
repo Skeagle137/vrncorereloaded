@@ -15,8 +15,9 @@ import net.skeagle.vrncore.npc.Npc;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
-import net.skeagle.vrncore.rewards.RewardManager;
+import net.skeagle.vrncore.commands.rewards.RewardManager;
 import net.skeagle.vrncore.trail.style.StyleRegistry;
+import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
 import net.skeagle.vrnlib.config.ConfigManager;
@@ -29,8 +30,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.sqlite.Function;
+
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
@@ -57,7 +62,8 @@ public final class VRNcore extends JavaPlugin {
         HookManager.loadHooks();
         //database setup
         db = new SQLHelper(SQLHelper.openSQLite(getDataFolder().toPath().resolve("vrn_data.db")));
-        db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, playerTrailData STRING, arrowTrailData STRING, playerStates STRING, timePlayed BIGINT);");
+        db.execute("CREATE TABLE IF NOT EXISTS playerdata (id STRING PRIMARY KEY, nick STRING, playerTrailData STRING, arrowTrailData STRING, " +
+                "playerStates STRING, timePlayed BIGINT);");
         db.execute("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS warps (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, owner STRING, location STRING);");
         db.execute("CREATE TABLE IF NOT EXISTS npc (id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, display STRING, " +
@@ -85,7 +91,7 @@ public final class VRNcore extends JavaPlugin {
                             return res;
                         })).tabStream(s -> Bukkit.getOnlinePlayers().stream().map(Player::getName)))
                 .parse().register(new BukkitCommandRegistry(this), "vrncore", this, new AdminCommands(), new TpCommands(),
-                        new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(),
+                        new TimeWeatherCommands(), new HomesWarpsCommands(this), new MiscCommands(), new FunCommands(this),
                         new NickCommands(this), new NpcCommands());
         //listeners
         this.reloadMotds();
@@ -93,11 +99,11 @@ public final class VRNcore extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AFKListener(), this);
         Bukkit.getPluginManager().registerEvents(new TrailHandler(this), this);
         if (HookManager.isLuckPermsLoaded()) {
-            new LuckPermsHook().getLuckperms().getEventBus().subscribe(this, NodeMutateEvent.class, e -> {
+            HookManager.getLuckPermsHook().getLuckperms().getEventBus().subscribe(this, NodeMutateEvent.class, e -> {
                 if (!e.isUser()) return;
                 Player player = Bukkit.getPlayer(((User) e.getTarget()).getUniqueId());
                 if (player == null) return;
-                playerManager.getData(player.getUniqueId()).thenAccept(data -> Task.syncDelayed(data::updateName));
+                playerManager.getData(player.getUniqueId()).thenAccept(data -> Task.syncDelayed(() -> data.updateName()));
             });
         }
     }

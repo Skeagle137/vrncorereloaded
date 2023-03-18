@@ -7,6 +7,8 @@ import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.TrailType;
 import net.skeagle.vrncore.trail.TrailVisibility;
+import net.skeagle.vrncore.trail.style.idle.IdleStyle;
+import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.entity.Arrow;
@@ -17,7 +19,6 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +27,8 @@ public class TrailHandler implements Listener {
 
     private Task trailTask;
     public static int tick = 0;
-    private final Map<Player, WeakReference<TrailData>> trailCache;
-    private final Map<Player, WeakReference<TrailData>> arrowCache;
+    private final Map<Player, TrailData> trailCache;
+    private final Map<Player, TrailData> arrowCache;
 
     public TrailHandler(VRNcore plugin) {
         trailCache = Collections.synchronizedMap(new ConcurrentHashMap<>());
@@ -36,10 +37,10 @@ public class TrailHandler implements Listener {
         new EventListener<>(PlayerJoinEvent.class, e -> {
             plugin.getPlayerManager().getData(e.getPlayer().getUniqueId()).thenAccept(data -> {
                 if (data.getPlayerTrailData() != null) {
-                    trailCache.put(e.getPlayer(), new WeakReference<>(data.getPlayerTrailData()));
+                    trailCache.put(e.getPlayer(), data.getPlayerTrailData());
                 }
                 if (data.getArrowTrailData() != null) {
-                    arrowCache.put(e.getPlayer(), new WeakReference<>(data.getArrowTrailData()));
+                    arrowCache.put(e.getPlayer(), data.getArrowTrailData());
                 }
             });
         });
@@ -53,14 +54,14 @@ public class TrailHandler implements Listener {
                     trailCache.remove(e.getPlayer());
                     return;
                 }
-                trailCache.put(e.getPlayer(), new WeakReference<>(e.getTrailData()));
+                trailCache.put(e.getPlayer(), e.getTrailData());
                 return;
             }
             if (e.getTrailData().getParticle() == null) {
                 arrowCache.remove(e.getPlayer());
                 return;
             }
-            arrowCache.put(e.getPlayer(), new WeakReference<>(e.getTrailData()));
+            arrowCache.put(e.getPlayer(), e.getTrailData());
         });
     }
 
@@ -84,7 +85,7 @@ public class TrailHandler implements Listener {
     }
 
     private void handleTrail(Player player) {
-        TrailData data = trailCache.get(player).get();
+        TrailData data = trailCache.get(player);
         if (data == null) {
             trailCache.remove(player);
         }
@@ -94,6 +95,7 @@ public class TrailHandler implements Listener {
             return;
         }
         if (player.hasPermission(trail.getPermission(TrailType.PLAYER))) {
+            if (data.getStyle() instanceof IdleStyle && !AFKManager.getAfkManager(player).isIdle()) return;
             data.getStyle().tick(player, player.getLocation(), data, trail,
                     HookManager.isSuperVanishLoaded() && SuperVanishHook.isVanished(player) ? TrailVisibility.CLIENT : TrailVisibility.ALL);
             return;
@@ -102,7 +104,7 @@ public class TrailHandler implements Listener {
     }
 
     private void handleArrow(Player player, Arrow arrow) {
-        TrailData data = arrowCache.get(player).get();
+        TrailData data = arrowCache.get(player);
         if (data == null) {
             arrowCache.remove(player);
         }

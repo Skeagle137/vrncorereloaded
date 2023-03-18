@@ -30,6 +30,7 @@ public final class LuckPermsHook {
         User user = luckperms.getUserManager().getUser(player.getUniqueId());
         if (groupExists(s) && user != null) {
             InheritanceNode node = InheritanceNode.builder(s).value(true).build();
+            user.data().clear();
             user.data().add(node);
             luckperms.getUserManager().saveUser(user);
         }

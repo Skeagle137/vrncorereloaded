@@ -14,11 +14,12 @@ import net.skeagle.vrnlib.misc.Task;
 import net.skeagle.vrnlib.sql.SQLHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Npc {
@@ -39,7 +40,7 @@ public class Npc {
 
     public void createNPCForPlayer(final Player p) {
         final GameProfile profile = new GameProfile(UUID.randomUUID(), (display.equals(name) ? name : display));
-        final ServerPlayer npc = new ServerPlayer(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), profile, null);
+        final ServerPlayer npc = new ServerPlayer(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), profile);
         entityId = npc.getId();
         npc.setXRot(location.getYaw());
         npc.setYRot(location.getPitch());
@@ -49,17 +50,17 @@ public class Npc {
 
     public void sendNPCPackets(final Player p, final ServerPlayer npc) {
         final ServerPlayer nmsPlayer = ((CraftPlayer) p).getHandle();
-        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, npc));
+        nmsPlayer.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, npc));
         if (skin != null) {
             npc.getGameProfile().getProperties().put("textures", new Property("textures", skin.getTexture(), skin.getSignature()));
             final SynchedEntityData data = npc.getEntityData();
             data.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
-            ((CraftPlayer) p).getHandle().connection.send(new ClientboundSetEntityDataPacket(entityId, data, true));
+            ((CraftPlayer) p).getHandle().connection.send(new ClientboundSetEntityDataPacket(entityId, data.getNonDefaultValues()));
         }
         nmsPlayer.connection.send(new ClientboundAddPlayerPacket(npc));
         nmsPlayer.connection.send(new ClientboundRotateHeadPacket(npc, (byte) (location.getYaw() * 256 / 360)));
         nmsPlayer.connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte) (location.getYaw() * 256 / 360), (byte) (location.getPitch() * 256 / 360), true));
-        Task.syncDelayed(() -> nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc)), 30);
+        Task.syncDelayed(() -> nmsPlayer.connection.send(new ClientboundPlayerInfoRemovePacket(List.of(npc.getUUID()))), 30);
     }
 
     public void delete() {

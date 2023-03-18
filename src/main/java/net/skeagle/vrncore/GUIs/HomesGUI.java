@@ -33,13 +33,13 @@ public class HomesGUI {
             homes.forEach(h -> {
                 panel.addPagedButton(ItemButton.create(getIcon(h), e -> {
                     if (e.getClick().isLeftClick()) {
-                        player.closeInventory();
+                        Task.syncDelayed(player::closeInventory);
                         say(player, BukkitMessages.msg("teleporting"));
                         player.teleport(h.location());
                     }
                     if (e.getClick().isRightClick()) {
                         if (!player.getUniqueId().equals(target.getUniqueId()) && !player.hasPermission("vrn.delhome.others")) {
-                            player.closeInventory();
+                            Task.syncDelayed(player::closeInventory);
                             say(player, VRNUtil.NOPERM);
                             return;
                         }
@@ -62,7 +62,7 @@ public class HomesGUI {
         gui.getInventory().setItem(4, new ItemBuilder(Material.MAP).setName("&6Are you sure?").setLore("", "&eAre you sure you want to", "&edelete this home?"));
         gui.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
             manager.deleteHome(h);
-            player.closeInventory();
+            Task.syncDelayed(player::closeInventory);
             say(player, "&7Home &a" + h.name() + "&7 successfully deleted.");
         }), 6);
         gui.open(player);

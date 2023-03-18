@@ -4,6 +4,7 @@ import com.mojang.authlib.properties.Property;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -11,25 +12,28 @@ import net.skeagle.vrncommands.CommandHook;
 import net.skeagle.vrncore.VRNcore;
 import net.skeagle.vrncore.utils.Skin;
 import net.skeagle.vrncore.utils.SkinUtil;
+import net.skeagle.vrncore.utils.VRNUtil;
+import net.skeagle.vrnlib.misc.EventListener;
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
 public class FunCommands {
 
+    private final VRNcore plugin;
     private final Map<UUID, Property> skinCache;
 
-    public FunCommands() {
+    public FunCommands(VRNcore plugin) {
+        this.plugin = plugin;
         skinCache = new HashMap<>();
     }
 
@@ -104,13 +108,13 @@ public class FunCommands {
 
         final Location loc = player.getLocation().clone();
         final ServerLevel level = (ServerLevel) nmsPlayer.level;
-        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, nmsPlayer));
-        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, nmsPlayer));
+        nmsPlayer.connection.send(new ClientboundPlayerInfoRemovePacket(List.of(player.getUniqueId())));
+        nmsPlayer.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, nmsPlayer));
         nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionTypeId(), level.dimension(), BiomeManager.obfuscateSeed(level.getSeed()),
                 nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(),
-                level.isDebug(), level.isFlat(), true, nmsPlayer.getLastDeathLocation()));
+                level.isDebug(), level.isFlat(), ClientboundRespawnPacket.KEEP_ALL_DATA, nmsPlayer.getLastDeathLocation()));
         nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), nmsPlayer.getYRot(),
-                nmsPlayer.getXRot(), Collections.emptySet(), -1337, false));
+                nmsPlayer.getXRot(), Collections.emptySet(), -1337));
         nmsPlayer.getBukkitEntity().updateScaledHealth(true);
 
         player.updateInventory();

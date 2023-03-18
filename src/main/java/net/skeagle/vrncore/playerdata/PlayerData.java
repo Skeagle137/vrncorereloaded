@@ -50,7 +50,7 @@ public class PlayerData {
     }
 
     public void setNick(final String nickname) {
-        this.nickname = nickname != null ? nickname + "&r" : null;
+        this.nickname = nickname;
         this.updateName();
     }
 
@@ -59,7 +59,11 @@ public class PlayerData {
     }
 
     public void updateName() {
-        if (this.getPlayer() != null) {
+        this.updateName(this.getPlayer());
+    }
+
+    public void updateName(Player player) {
+        if (player != null) {
             player.setDisplayName(this.getName());
             String listname = null;
             if (HookManager.isVaultLoaded()) {
@@ -98,8 +102,7 @@ public class PlayerData {
 
     public void save() {
         final SQLHelper db = VRNcore.getInstance().getDB();
-        db.execute("DELETE FROM playerdata WHERE id = (?)", uuid.toString());
-        db.execute("INSERT INTO playerdata (id, nick, playerTrailData, arrowTrailData, playerStates, timePlayed) VALUES (?, ?, ?, ?, ?, ?)",
+        db.execute("REPLACE INTO playerdata (id, nick, playerTrailData, arrowTrailData, playerStates, timePlayed) VALUES (?, ?, ?, ?, ?, ?)",
                 uuid.toString(), nickname, VRNUtil.GSON.toJson(playerTrailData.serialize()), VRNUtil.GSON.toJson(arrowTrailData.serialize()), VRNUtil.GSON.toJson(states), timePlayed);
     }
 }

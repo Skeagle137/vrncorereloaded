@@ -9,6 +9,8 @@ import net.skeagle.vrncore.trail.TrailVisibility;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+
 class Spread extends TrailStyle {
 
     public Spread() {
@@ -24,5 +26,10 @@ class Spread extends TrailStyle {
         else {
             particle.run(player, loc, data, 3, particle.getSpreadSpeed() > 0 ? particle.getSpreadSpeed() : 0.35D, 0.6D);
         }
+    }
+
+    @Override
+    public boolean canApply(Particles particle) {
+        return Arrays.asList(particle.getProperties()).contains(Particles.ParticleProperties.DIRECTIONAL);
     }
 }

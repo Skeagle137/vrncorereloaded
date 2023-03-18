@@ -4,6 +4,7 @@ import net.skeagle.vrncommands.misc.FormatUtils;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
 import net.skeagle.vrnlib.itemutils.ItemBuilder;
+import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,7 @@ public class ExpTradeGUI {
                 if (checkInv(player, expmat.mat)) {
                     new ExpTradeAmount(player, name, expmat);
                 } else {
-                    player.closeInventory();
+                    Task.syncDelayed(player::closeInventory);
                     say(player, "&cThat item is not in your inventory.");
                 }
             }), i);
@@ -91,7 +92,7 @@ public class ExpTradeGUI {
                 }
                 player.giveExp(worth * ((amount % 64) + (stacks * 64)));
                 say(player, "You traded &ax" + amount + " " + name + " &7for &a" + FormatUtils.truncateDouble(gain) + " &7exp level(s).");
-                player.closeInventory();
+                Task.syncDelayed(player::closeInventory);
             }), 6);
 
             this.open(player);

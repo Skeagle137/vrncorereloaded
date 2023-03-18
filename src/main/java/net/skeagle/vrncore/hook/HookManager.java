@@ -34,6 +34,10 @@ public final class HookManager {
         return luckperms != null;
     }
 
+    public static LuckPermsHook getLuckPermsHook() {
+        return luckperms;
+    }
+
     public static boolean isSuperVanishLoaded() {
         return superVanish != null;
     }

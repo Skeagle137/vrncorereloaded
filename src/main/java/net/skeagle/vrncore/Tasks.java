@@ -1,9 +1,10 @@
 package net.skeagle.vrncore;
 
-import net.skeagle.vrncore.rewards.Reward;
+import net.skeagle.vrncore.commands.rewards.Reward;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;
@@ -19,8 +20,8 @@ public class Tasks {
                 final AFKManager manager = AFKManager.getAfkManager(pl);
                 plugin.getPlayerManager().getData(pl.getUniqueId()).thenAccept(data -> {
                     long time = data.getTimePlayed();
-                    if (!updateAFKPlayer(pl) || !manager.isAfk()) {
-                        time += 1;
+                    if (!this.checkAFK(pl) || !manager.isAfk()) {
+                        time++;
                         data.setTimePlayed(time);
                         final Reward reward = plugin.getRewardManager().getRewardByTime(time);
                         if (reward != null) {
@@ -29,8 +30,9 @@ public class Tasks {
                                 data.updateName();
                             }
                         }
-                        if (manager.getTimeAfk() > Settings.afktime)
+                        if (manager.getTimeAfk() >= Settings.afktime) {
                             manager.setAfk(true);
+                        }
                     } else if (manager.getTimeAfk() >= Settings.kickTime && !pl.hasPermission("vrn.afkexempt")) {
                         Task.syncDelayed(() -> pl.kickPlayer(color("&cYou have been kicked for idling more than " + timeToMessage(Settings.kickTime))));
                         manager.remove(pl);
@@ -40,16 +42,19 @@ public class Tasks {
         }, 0, 20);
     }
 
-    private boolean updateAFKPlayer(final Player p) {
-        final AFKManager manager = AFKManager.getAfkManager(p);
-        final AFKManager.SavedLocation oldLoc = manager.getSavedLocation();
-        final AFKManager.SavedLocation loc = new AFKManager.SavedLocation(p);
-        manager.setSavedLocation(loc);
-        if (oldLoc == null || !manager.isYawEqual(oldLoc) && !manager.isPitchEqual(oldLoc)) {
+    private boolean checkAFK(final Player player) {
+        final AFKManager manager = AFKManager.getAfkManager(player);
+        Location old = manager.getSavedLocation();
+        Location current = player.getLocation();
+        manager.setSavedLocation(current);
+        if (old != null && (old.getX() == current.getX() && old.getY() == current.getY() && old.getZ() == current.getZ())) {
+            manager.decrementIdleCountdown();
+        }
+        if (old == null || old.getYaw() != current.getYaw() && old.getPitch() != current.getPitch()) {
             manager.setTimeAfk(0);
-            if (manager.isAfk())
+            if (manager.isAfk()) {
                 manager.setAfk(false);
-            return false;
+            }
         }
         manager.setTimeAfk(manager.getTimeAfk() + 1);
         return true;

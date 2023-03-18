@@ -1,7 +1,6 @@
-package net.skeagle.vrncore.rewards;
+package net.skeagle.vrncore.commands.rewards;
 
 import net.skeagle.vrnlib.config.annotations.ConfigMappable;
-import net.skeagle.vrnlib.config.annotations.ConfigPath;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Color;

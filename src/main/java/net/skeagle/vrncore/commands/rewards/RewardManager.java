@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.rewards;
+package net.skeagle.vrncore.commands.rewards;
 
 
 import net.skeagle.vrncore.hook.HookManager;
@@ -10,7 +10,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static net.skeagle.vrncommands.BukkitUtils.color;

@@ -4,5 +4,7 @@ public enum Style {
     DEFAULT,
     ORBIT,
     SPREAD,
-    CIRCLE
+    CIRCLE,
+    STAR,
+    HEXAGRAM
 }
