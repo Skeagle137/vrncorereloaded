@@ -10,7 +10,7 @@ allprojects {
     apply(plugin = "java")
 
     group = "net.skeagle"
-    version = "5.2.0"
+    version = "5.3.0"
 
     repositories {
         mavenCentral()
