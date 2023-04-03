@@ -200,6 +200,7 @@ public final class VRNCore extends JavaPlugin {
     @CommandHook("reload")
     public void onReload(final CommandSender sender) {
         BukkitMessages.load(this);
+        guiConfig.reload();
         config.reload();
         rewardManager.reload();
         this.reloadMotds();
