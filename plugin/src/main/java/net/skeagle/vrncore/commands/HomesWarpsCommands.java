@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
+@SuppressWarnings("unused")
 public class HomesWarpsCommands {
 
     private final VRNCore plugin;

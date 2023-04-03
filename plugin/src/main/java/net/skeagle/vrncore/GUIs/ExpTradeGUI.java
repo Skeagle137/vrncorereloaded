@@ -1,6 +1,7 @@
 package net.skeagle.vrncore.GUIs;
 
 import net.skeagle.vrncommands.misc.FormatUtils;
+import net.skeagle.vrncore.configurable.GuiConfig;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrnlib.inventorygui.InventoryGUI;
 import net.skeagle.vrnlib.inventorygui.ItemButton;
@@ -10,21 +11,27 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 public class ExpTradeGUI {
 
     public ExpTradeGUI(final Player player) {
-        final InventoryGUI gui = new InventoryGUI(18, "&9&lExp Trade - Menu");
-        for (int i = 0; i < ExpMaterial.values().length; i++) {
-            final ExpMaterial expmat = ExpMaterial.values()[i];
-            final String name = expmat.toString().toLowerCase().replaceAll("_", " ");
-            gui.addButton(ItemButton.create(new ItemBuilder(expmat.mat).setName("&l" + name)
+        int size = ((GuiConfig.expTradeMap.size() / 9) + 2) * 9;
+        if (size > 54) size = 54;
+        final InventoryGUI gui = new InventoryGUI(size, "&9&lExp Trade - Menu");
+        List<Material> expTradeMaterials = GuiConfig.expTradeMap.keySet().stream()
+                .sorted(Comparator.comparingInt(GuiConfig.expTradeMap::get)).limit(45).toList();
+        for (int i = 0; i < GuiConfig.expTradeMap.keySet().size(); i++) {
+            ItemBuilder item = new ItemBuilder(expTradeMaterials.get(i));
+            final String name = FormatUtils.toTitleCase(item.getType().name().replaceAll("_", " "));
+            gui.addButton(ItemButton.create(item.setName("&l" + name)
                     .setLore("&9-----------------------------------------",
-                            "&7One &b" + name + " &7is worth &b" + expmat.worth + " &7exp point(s).",
+                            "&7One &b" + name + " &7is worth &b" + GuiConfig.expTradeMap.get(item.getType()) + " &7exp point(s).",
                             "&9-----------------------------------------"), e -> {
-                if (checkInv(player, expmat.mat)) {
-                    new ExpTradeAmount(player, name, expmat);
+                if (checkInv(player, item.getType())) {
+                    new ExpTradeAmount(player, name, item.getType());
                 } else {
                     Task.syncDelayed(player::closeInventory);
                     VRNUtil.say(player, "&cThat item is not in your inventory.");
@@ -33,7 +40,7 @@ public class ExpTradeGUI {
         }
         final int level = player.getLevel();
         final float exp = player.getExp();
-        gui.getInventory().setItem(17, new ItemBuilder(Material.MAP).setName("&l&oStats")
+        gui.getInventory().setItem(size - 5, new ItemBuilder(Material.MAP).setName("&l&oStats")
                 .setLore("&9-----------------------------------------",
                         "&eCurrent Exp level: &6" + level,
                         "&eCurrent next level progress: &6" + String.format("%.0f%%", exp * 100),
@@ -58,9 +65,9 @@ public class ExpTradeGUI {
         private double total;
         private double gain;
 
-        private ExpTradeAmount(final Player player, final String name, final ExpMaterial expmat) {
+        private ExpTradeAmount(final Player player, final String name, final Material mat) {
             super(9, "&9&lExp Trade - Select Amount");
-            this.worth = expmat.worth;
+            this.worth = GuiConfig.expTradeMap.get(mat);
             this.amount = 1;
             this.displayAmount = 1;
             this.total = this.getNewTotal(player);
@@ -69,10 +76,10 @@ public class ExpTradeGUI {
             this.addButton(ItemButton.create(new ItemBuilder(Material.RED_WOOL).setName("&cCancel (Back to menu)"), e ->
                     new ExpTradeGUI(player)), 2);
 
-            this.addButton(ItemButton.create(new ItemBuilder(expmat.mat).setName("&l" + name).setCount(displayAmount)
+            this.addButton(ItemButton.create(new ItemBuilder(mat).setName("&l" + name).setCount(displayAmount)
                     .setLore(getLore()), (e, button) -> {
                 amount = e.isShiftClick() ? (e.isLeftClick() ? amount + 10 : amount - 10) : (e.isLeftClick() ? amount + 1 : amount - 1);
-                amount = Math.min(this.getAmount(player, expmat.mat), amount);
+                amount = Math.min(this.getAmount(player, mat), amount);
                 stacks = amount / 64;
                 if (stacks < 1) {
                     amount = Math.max(1, amount);
@@ -85,7 +92,7 @@ public class ExpTradeGUI {
             }), 4);
 
             this.addButton(ItemButton.create(new ItemBuilder(Material.LIME_WOOL).setName("&aConfirm"), e -> {
-                Map<Integer, ItemStack> notRemoved = player.getInventory().removeItem(new ItemStack(expmat.mat, amount));
+                Map<Integer, ItemStack> notRemoved = player.getInventory().removeItem(new ItemStack(mat, amount));
                 if (!notRemoved.isEmpty()) {
                     player.getInventory().getItemInOffHand().setAmount(player.getInventory().getItemInOffHand().getAmount() - notRemoved.get(0).getAmount());
                 }
@@ -140,28 +147,6 @@ public class ExpTradeGUI {
             } else {
                 return level >= 15 ? 37 + (level - 15) * 5 : 7 + level * 2;
             }
-        }
-    }
-
-    private enum ExpMaterial {
-        NETHERITE(250, Material.NETHERITE_INGOT),
-        ANCIENT_DEBRIS(150, Material.ANCIENT_DEBRIS),
-        DIAMOND(100, Material.DIAMOND),
-        LAPIS_LAZULI(50, Material.LAPIS_LAZULI),
-        NETHER_QUARTZ(30, Material.QUARTZ),
-        GOLD_INGOT(20, Material.GOLD_INGOT),
-        REDSTONE_DUST(15, Material.REDSTONE),
-        EMERALD(10, Material.EMERALD),
-        COPPER_INGOT(7, Material.COPPER_INGOT),
-        IRON_INGOT(7, Material.IRON_INGOT),
-        COAL(5, Material.COAL);
-
-        private final int worth;
-        private final Material mat;
-
-        ExpMaterial(final int worth, final Material mat) {
-            this.worth = worth;
-            this.mat = mat;
         }
     }
 }

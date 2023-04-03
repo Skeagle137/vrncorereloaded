@@ -29,7 +29,11 @@ public class PlayerManager {
         if (data != null) {
             return CompletableFuture.completedFuture(data);
         }
-        CompletableFuture<PlayerData> retrieved = this.load(uuid);
+        CompletableFuture<PlayerData> retrieved = pending.get(uuid);
+        if (retrieved != null) {
+            return retrieved;
+        }
+        retrieved = this.load(uuid);
         pending.put(uuid, retrieved);
         return retrieved.whenComplete((res, ex) -> {
             pending.remove(uuid);

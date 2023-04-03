@@ -14,6 +14,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class FunCommands {
 
     private final VRNCoreNMS api;

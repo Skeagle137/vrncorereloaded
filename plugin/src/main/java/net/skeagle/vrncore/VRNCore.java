@@ -5,6 +5,7 @@ import net.luckperms.api.model.user.User;
 import net.skeagle.vrncommands.*;
 import net.skeagle.vrncore.api.VRNCoreNMS;
 import net.skeagle.vrncore.commands.*;
+import net.skeagle.vrncore.configurable.GuiConfig;
 import net.skeagle.vrncore.event.AFKListener;
 import net.skeagle.vrncore.event.TrailHandler;
 import net.skeagle.vrncore.event.MotdListener;
@@ -18,7 +19,7 @@ import net.skeagle.vrncore.npc.NpcData;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
-import net.skeagle.vrncore.commands.rewards.RewardManager;
+import net.skeagle.vrncore.configurable.rewards.RewardManager;
 import net.skeagle.vrncore.trail.style.StyleRegistry;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
@@ -45,7 +46,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 public final class VRNCore extends JavaPlugin {
 
     private VRNCoreNMS api;
-    private ConfigManager config;
+    private ConfigManager config, guiConfig;
     private PlayerManager playerManager;
     private HomeManager homeManager;
     private WarpManager warpManager;
@@ -76,6 +77,7 @@ public final class VRNCore extends JavaPlugin {
         }
         //messages and config
         config = ConfigManager.create(this).target(Settings.class).saveDefaults().load();
+        guiConfig = ConfigManager.create(this, "gui-config.yml").target(GuiConfig.class).saveDefaults().load();
         BukkitMessages.load(this);
         //hooks
         HookManager.loadHooks();
@@ -130,7 +132,6 @@ public final class VRNCore extends JavaPlugin {
     @Override
     public void onDisable() {
         if (api == null) return;
-        config.save();
         playerManager.save();
         rewardManager.save();
     }

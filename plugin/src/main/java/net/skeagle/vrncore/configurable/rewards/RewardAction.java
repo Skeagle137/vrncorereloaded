@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.commands.rewards;
+package net.skeagle.vrncore.configurable.rewards;
 
 import net.skeagle.vrncore.hook.HookManager;
 import org.bukkit.entity.Player;

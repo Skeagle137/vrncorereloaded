@@ -1,7 +1,7 @@
 package net.skeagle.vrncore;
 
 import net.skeagle.vrncommands.BukkitUtils;
-import net.skeagle.vrncore.commands.rewards.Reward;
+import net.skeagle.vrncore.configurable.rewards.Reward;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ public class Tasks {
                 final AFKManager manager = AFKManager.getAfkManager(pl);
                 plugin.getPlayerManager().getData(pl.getUniqueId()).thenAccept(data -> {
                     long time = data.getTimePlayed();
-                    if (!this.checkAFK(pl) || !manager.isAfk()) {
+                    if (!this.updateAfk(pl) || !manager.isAfk()) {
                         time++;
                         data.setTimePlayed(time);
                         final Reward reward = plugin.getRewardManager().getRewardByTime(time);
@@ -42,7 +42,7 @@ public class Tasks {
         }, 0, 20);
     }
 
-    private boolean checkAFK(final Player player) {
+    private boolean updateAfk(final Player player) {
         final AFKManager manager = AFKManager.getAfkManager(player);
         Location old = manager.getSavedLocation();
         Location current = player.getLocation();

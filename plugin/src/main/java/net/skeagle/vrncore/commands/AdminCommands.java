@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import static net.skeagle.vrncore.utils.VRNUtil.*;
 import static net.skeagle.vrnlib.misc.TimeUtil.timeToMessage;
 
+@SuppressWarnings("unused")
 public class AdminCommands {
 
     @CommandHook("broadcast")

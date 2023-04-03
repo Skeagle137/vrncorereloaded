@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
+@SuppressWarnings("unused")
 public class NickCommands {
 
     private final VRNCore plugin;

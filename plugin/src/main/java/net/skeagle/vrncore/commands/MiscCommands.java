@@ -7,6 +7,7 @@ import net.skeagle.vrncore.VRNCore;
 import net.skeagle.vrncore.GUIs.ExpTradeGUI;
 import net.skeagle.vrncore.GUIs.TrailsGUI;
 import net.skeagle.vrncore.Settings;
+import net.skeagle.vrncore.configurable.GuiConfig;
 import net.skeagle.vrnlib.itemutils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,6 +22,7 @@ import java.util.*;
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 
+@SuppressWarnings("unused")
 public class MiscCommands {
 
     private final Map<UUID, UUID> lastReplies = new HashMap<>();

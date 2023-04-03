@@ -24,7 +24,7 @@ public class GivePlusGUI {
             ItemBuilder item = new ItemBuilder(materialsList.get(i));
             gui.addButton(ItemButton.create(item.setName("&7" + FormatUtils.toTitleCase(item.getType().name().replaceAll("_", " "))), e -> {
                 Task.syncDelayed(player::closeInventory);
-                player.getInventory().addItem(new ItemBuilder(item).setCount(1));
+                player.getInventory().addItem(item.setCount(1));
                 VRNUtil.say(player, "You have received your item");
             }), i);
         }

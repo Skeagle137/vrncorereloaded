@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
+@SuppressWarnings("unused")
 public class TimeWeatherCommands {
 
     @CommandHook("day")

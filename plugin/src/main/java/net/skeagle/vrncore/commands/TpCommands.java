@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static net.skeagle.vrncore.utils.VRNUtil.say;
 
+@SuppressWarnings("unused")
 public class TpCommands {
 
     private final TpaUtil tpaUtil;

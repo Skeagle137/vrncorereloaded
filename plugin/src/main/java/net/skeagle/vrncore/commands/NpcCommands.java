@@ -7,6 +7,7 @@ import net.skeagle.vrncore.utils.VRNUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("unused")
 public class NpcCommands {
 
     @CommandHook("createnpc")
