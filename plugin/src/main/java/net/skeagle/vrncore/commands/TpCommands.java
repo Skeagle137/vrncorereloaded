@@ -210,7 +210,7 @@ public class TpCommands {
         }
 
         private CompletableFuture<Boolean> addRequest(final Player player, final Player target, final RequestType type) {
-            return VRNCore.getPlayerData(player.getUniqueId()).thenApply(data -> {
+            return VRNCore.getPlayerData(target.getUniqueId()).thenApply(data -> {
                 PlayerStates states = data.getStates();
                 if (states.isTpDisabled()) {
                     return false;
