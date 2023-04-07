@@ -1,6 +1,7 @@
 package net.skeagle.vrncore.configurable.rewards;
 
 import net.skeagle.vrnlib.config.annotations.ConfigMappable;
+import net.skeagle.vrnlib.config.annotations.ConfigPath;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.Color;
@@ -17,6 +18,7 @@ import java.util.Random;
 @ConfigMappable
 public class Reward {
 
+    @ConfigPath
     private String name;
     private boolean permission;
     String message;

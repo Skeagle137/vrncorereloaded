@@ -9,8 +9,8 @@ import net.skeagle.vrnlib.misc.Task;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import static net.skeagle.vrncore.utils.VRNUtil.log;
@@ -19,7 +19,7 @@ import static net.skeagle.vrncore.utils.VRNUtil.sayNoPrefix;
 public class RewardManager {
 
     private ConfigManager rewardConfig;
-    private static List<Reward> rewards = new ArrayList<>();
+    private static Map<String, Reward> rewards = new HashMap<>();
 
     public RewardManager(Plugin plugin) {
         if (!HookManager.isLuckPermsLoaded()) {
@@ -28,7 +28,8 @@ public class RewardManager {
         }
         rewardConfig = ConfigManager.create(plugin, "rewards.yml").target(this.getClass()).saveDefaults().load();
         if (rewards.isEmpty()) {
-            rewards.add(new Reward("default"));
+            rewards.put("default", new Reward("default", false, "&aYou ranked up!",
+                    "&e&lRANK UP", null, RewardAction.SET_GROUP, "bruh", 3600));
             this.save();
         }
     }
@@ -61,6 +62,6 @@ public class RewardManager {
     }
 
     public Reward getRewardByTime(final long l) {
-        return rewards.stream().filter(r -> r.getTime() == l).findFirst().orElse(null);
+        return rewards.values().stream().filter(r -> r.getTime() == l).findFirst().orElse(null);
     }
 }
