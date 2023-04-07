@@ -31,13 +31,6 @@ public class Reward {
     private Reward() {
     }
 
-    public Reward(final String name) {
-        this.name = name;
-        permission = false;
-        action = RewardAction.PROMOTE;
-        time = 0;
-    }
-
     public Reward(final String name, final boolean permission, final String message,
                   final String title, final String subtitle, final RewardAction action, final String group, final long time) {
         this.name = name;
