@@ -1,4 +1,4 @@
-package net.skeagle.vrncore.nms.v1_19_R1;
+package net.skeagle.vrncore.nms.v1_20_R1;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -12,15 +12,16 @@ import net.skeagle.vrncore.api.Npc;
 import net.skeagle.vrncore.api.VRNCoreNMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
-public class VRNCoreNMS1_19_R1 implements VRNCoreNMS {
+public class VRNCoreNMS1_20_R1 implements VRNCoreNMS {
 
     @Override
     public void showDemoMenu(Player player) {
@@ -30,7 +31,7 @@ public class VRNCoreNMS1_19_R1 implements VRNCoreNMS {
     @Override
     public void showHallucination(Player player) {
         final ServerPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-        final EnderDragon dragon = new EnderDragon(EntityType.ENDER_DRAGON, entityPlayer.level);
+        final EnderDragon dragon = new EnderDragon(EntityType.ENDER_DRAGON, entityPlayer.level());
         dragon.copyPosition(entityPlayer);
         dragon.setInvulnerable(true);
         entityPlayer.connection.send(new ClientboundAddEntityPacket(dragon));
@@ -53,21 +54,21 @@ public class VRNCoreNMS1_19_R1 implements VRNCoreNMS {
     public void reloadSkin(Player player) {
         final Location loc = player.getLocation().clone();
         final ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
-        final ServerLevel level = (ServerLevel) nmsPlayer.level;
-        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, nmsPlayer));
-        nmsPlayer.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, nmsPlayer));
+        final ServerLevel level = (ServerLevel) nmsPlayer.level();
+        nmsPlayer.connection.send(new ClientboundPlayerInfoRemovePacket(List.of(player.getUniqueId())));
+        nmsPlayer.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, nmsPlayer));
         nmsPlayer.connection.send(new ClientboundRespawnPacket(level.dimensionTypeId(), level.dimension(), BiomeManager.obfuscateSeed(level.getSeed()),
                 nmsPlayer.gameMode.getGameModeForPlayer(), nmsPlayer.gameMode.getPreviousGameModeForPlayer(),
-                level.isDebug(), level.isFlat(), true, nmsPlayer.getLastDeathLocation()));
+                level.isDebug(), level.isFlat(), ClientboundRespawnPacket.KEEP_ALL_DATA, nmsPlayer.getLastDeathLocation(), nmsPlayer.portalCooldown));
         nmsPlayer.connection.send(new ClientboundPlayerPositionPacket(loc.getX(), loc.getY(), loc.getZ(), nmsPlayer.getYRot(),
-                nmsPlayer.getXRot(), Collections.emptySet(), -1337, false));
+                nmsPlayer.getXRot(), Collections.emptySet(), -1337));
         nmsPlayer.getBukkitEntity().updateScaledHealth(true);
     }
 
     @Override
     public Npc createNpc(String name, Location location) {
         final GameProfile profile = new GameProfile(UUID.randomUUID(), name);
-        final ServerPlayer npc = new ServerPlayer(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), profile, null);
+        final ServerPlayer npc = new ServerPlayer(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), profile);
         npc.setXRot(location.getYaw());
         npc.setYRot(location.getPitch());
         npc.setPos(location.getX(), location.getY(), location.getZ());

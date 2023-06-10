@@ -18,13 +18,14 @@ allprojects {
         maven("https://jitpack.io")
         maven("https://repo.skeagle.net/snapshots")
         maven("https://repo.codemc.io/repository/nms/")
+        maven("https://libraries.minecraft.net/")
         gradlePluginPortal()
         mavenLocal()
     }
 
     dependencies {
         compileOnly("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
-        compileOnly("com.mojang:authlib:3.5.41")
+        compileOnly("com.mojang:authlib:3.16.29")
     }
 
     tasks.withType<JavaCompile> {

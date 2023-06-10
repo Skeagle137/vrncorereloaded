@@ -12,9 +12,9 @@ import net.skeagle.vrncore.event.MotdListener;
 import net.skeagle.vrncore.event.PlayerListener;
 import net.skeagle.vrncore.homes.HomeManager;
 import net.skeagle.vrncore.hook.HookManager;
-import net.skeagle.vrncore.nms.v1_19_R1.VRNCoreNMS1_19_R1;
 import net.skeagle.vrncore.nms.v1_19_R2.VRNCoreNMS1_19_R2;
 import net.skeagle.vrncore.nms.v1_19_R3.VRNCoreNMS1_19_R3;
+import net.skeagle.vrncore.nms.v1_20_R1.VRNCoreNMS1_20_R1;
 import net.skeagle.vrncore.npc.NpcData;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
@@ -60,12 +60,12 @@ public final class VRNCore extends JavaPlugin {
     @SuppressWarnings("deprecation")
     public void onEnable() {
         //NMS
-        if (VRNLib.MID_VERSION >= 19) {
+        if (VRNLib.MID_VERSION >= 20) {
             String serverVersion = VRNLib.getServerVersion();
             api = switch (serverVersion) {
-                case "1.19", "1.19.1", "1.19.2" -> new VRNCoreNMS1_19_R1();
                 case "1.19.3" -> new VRNCoreNMS1_19_R2();
                 case "1.19.4" -> new VRNCoreNMS1_19_R3();
+                case "1.20" -> new VRNCoreNMS1_20_R1();
                 default -> null;
             };
         }

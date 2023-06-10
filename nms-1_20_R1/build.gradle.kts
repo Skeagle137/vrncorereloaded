@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     compileOnly(project(":api"))
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20-R0.1-SNAPSHOT")
     compileOnly("net.skeagle:VRNLib:2.1.3")
 }
 
