@@ -1,18 +1,14 @@
 package net.skeagle.vrncore.event;
 
 import net.skeagle.vrncore.VRNCore;
-import net.skeagle.vrncore.hook.HookManager;
-import net.skeagle.vrncore.hook.SuperVanishHook;
 import net.skeagle.vrncore.playerdata.TrailData;
 import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.TrailType;
-import net.skeagle.vrncore.trail.TrailVisibility;
 import net.skeagle.vrncore.trail.style.idle.IdleStyle;
 import net.skeagle.vrncore.utils.AFKManager;
 import net.skeagle.vrnlib.misc.EventListener;
 import net.skeagle.vrnlib.misc.Task;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -20,19 +16,22 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TrailHandler implements Listener {
 
     private Task trailTask;
-    public static int tick = 0;
     private final Map<Player, TrailData> trailCache;
-    private final Map<Player, TrailData> arrowCache;
+    private final Map<Player, TrailData> projectileCache;
+    private final Map<Player, Set<Projectile>> activeProjectiles;
 
     public TrailHandler(VRNCore plugin) {
         trailCache = Collections.synchronizedMap(new ConcurrentHashMap<>());
-        arrowCache = Collections.synchronizedMap(new ConcurrentHashMap<>());
+        projectileCache = Collections.synchronizedMap(new ConcurrentHashMap<>());
+        activeProjectiles = Collections.synchronizedMap(new ConcurrentHashMap<>());
         this.startParticleTask();
         new EventListener<>(PlayerJoinEvent.class, e -> {
             plugin.getPlayerManager().getData(e.getPlayer().getUniqueId()).thenAccept(data -> {
@@ -40,13 +39,14 @@ public class TrailHandler implements Listener {
                     trailCache.put(e.getPlayer(), data.getPlayerTrailData());
                 }
                 if (data.getArrowTrailData() != null) {
-                    arrowCache.put(e.getPlayer(), data.getArrowTrailData());
+                    projectileCache.put(e.getPlayer(), data.getArrowTrailData());
                 }
             });
         });
         new EventListener<>(PlayerQuitEvent.class, e -> {
             trailCache.remove(e.getPlayer());
-            arrowCache.remove(e.getPlayer());
+            projectileCache.remove(e.getPlayer());
+            activeProjectiles.remove(e.getPlayer());
         });
         new EventListener<>(TrailDataUpdateEvent.class, e -> {
             if (e.getTrailData().getType() == TrailType.PLAYER) {
@@ -55,13 +55,19 @@ public class TrailHandler implements Listener {
                     return;
                 }
                 trailCache.put(e.getPlayer(), e.getTrailData());
-                return;
             }
-            if (e.getTrailData().getParticle() == null) {
-                arrowCache.remove(e.getPlayer());
-                return;
+            else {
+                if (e.getTrailData().getParticle() == null) {
+                    projectileCache.remove(e.getPlayer());
+                    activeProjectiles.remove(e.getPlayer());
+                    return;
+                }
+                projectileCache.put(e.getPlayer(), e.getTrailData());
             }
-            arrowCache.put(e.getPlayer(), e.getTrailData());
+
+            if (e.shouldUpdateStyle()) {
+                e.getTrailData().getTrailStyle().updateData(e.getTrailData());
+            }
         });
     }
 
@@ -71,57 +77,59 @@ public class TrailHandler implements Listener {
         }
 
         trailTask = Task.syncRepeating(() -> {
-            trailCache.keySet().forEach(this::handleTrail);
-            tick = ++tick % 60;
-        }, 20L, 1L);
+            trailCache.keySet().forEach(p -> {
+                this.handleTrail(p, TrailType.PLAYER, (player, target, data) -> {
+                    if (data.getTrailStyle() instanceof IdleStyle && !AFKManager.getAfkManager(player).isIdle()) return;
+                    data.getTrailStyle().tick(player, player.getLocation());
+                    data.getTrailStyle().step();
+                });
+            });
+            projectileCache.keySet().forEach(p -> {
+                Set<Projectile> projectiles = activeProjectiles.get(p);
+                if (projectiles == null) return;
+                int size = projectiles.size();
+                projectiles.removeIf(projectile -> !projectile.isValid() || projectile.isOnGround());
+                if (projectiles.size() < size) {
+                    activeProjectiles.put(p, projectiles);
+                }
+                for (Projectile projectile : projectiles)
+                    this.handleTrail(projectile, TrailType.PROJECTILE, (player, target, data) ->
+                            data.getTrailStyle().tick(target, target.getLocation()));
+                projectileCache.get(p).getTrailStyle().step();
+            });
+
+        }, 1, 1);
     }
 
     @EventHandler
     public void onArrowShot(final ProjectileLaunchEvent e) {
-        if (!(e.getEntity().getShooter() instanceof Player player) || !(e.getEntity() instanceof Arrow arrow)) return;
-        if (arrowCache.containsKey(player)) {
-            this.handleArrow(player, arrow);
-        }
+        if (e.getEntity().getShooter() == null || !(e.getEntity().getShooter() instanceof Player player) ||
+                !(e.getEntity() instanceof ThrowableProjectile || e.getEntity() instanceof Arrow)) return;
+        Set<Projectile> updated = activeProjectiles.getOrDefault(player, new HashSet<>());
+        updated.add(e.getEntity());
+        activeProjectiles.put(player, updated);
     }
 
-    private void handleTrail(Player player) {
-        TrailData data = trailCache.get(player);
+    private void handleTrail(Entity target, TrailType type, TrailConsumer consumer) {
+        Player player = (Player) (type == TrailType.PLAYER ? target : ((Projectile) target).getShooter());
+        TrailData data = (type == TrailType.PLAYER ? trailCache : projectileCache).get(player);
         if (data == null) {
             trailCache.remove(player);
+            return;
         }
-        final Particles trail = Particles.getFromParticle(data.getParticle());
+        final Particles trail = data.getParticle();
         if (trail == null) {
             data.setParticle(player, null);
             return;
         }
-        if (player.hasPermission(trail.getPermission(TrailType.PLAYER))) {
-            if (data.getStyle() instanceof IdleStyle && !AFKManager.getAfkManager(player).isIdle()) return;
-            data.getStyle().tick(player, player.getLocation(), data, trail,
-                    HookManager.isSuperVanishLoaded() && SuperVanishHook.isVanished(player) ? TrailVisibility.CLIENT : TrailVisibility.ALL);
+        if (!player.hasPermission(trail.getPermission(type))) {
+            data.setParticle(player, null);
             return;
         }
-        data.setParticle(player, null);
+        consumer.handle(player, target, data);
     }
 
-    private void handleArrow(Player player, Arrow arrow) {
-        TrailData data = arrowCache.get(player);
-        if (data == null) {
-            arrowCache.remove(player);
-        }
-        final Particles trail = Particles.getFromParticle(data.getParticle());
-        if (trail == null) {
-            return;
-        }
-        if (player.hasPermission(trail.getPermission(TrailType.ARROW))) {
-            Task.syncRepeating(run -> {
-                if (!arrow.isValid() || arrow.isOnGround()) {
-                    run.cancel();
-                    return;
-                }
-                data.getStyle().tick(player, arrow.getLocation(), data, trail, TrailVisibility.ALL);
-            }, 1, 1);
-            return;
-        }
-        data.setParticle(player, null);
+    private interface TrailConsumer {
+        void handle(Player player, Entity target, TrailData data);
     }
 }

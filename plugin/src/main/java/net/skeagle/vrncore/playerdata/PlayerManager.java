@@ -54,8 +54,8 @@ public class PlayerManager {
             final JsonObject arrowTrailData = VRNUtil.GSON.fromJson(res.getString(4), JsonObject.class);
             final PlayerStates states = VRNUtil.GSON.fromJson(res.getString(5), PlayerStates.class);
             return new PlayerData(UUID.fromString(res.getString(1)), res.getString(2),
-                    playerTrailData != null ? TrailData.deserialize(plugin, TrailType.PLAYER, playerTrailData) : new TrailData(TrailType.PLAYER),
-                    arrowTrailData != null ? TrailData.deserialize(plugin, TrailType.ARROW, arrowTrailData) : new TrailData(TrailType.ARROW),
+                    playerTrailData != null ? TrailData.deserialize(TrailType.PLAYER, playerTrailData) : new TrailData(TrailType.PLAYER),
+                    arrowTrailData != null ? TrailData.deserialize(TrailType.PROJECTILE, arrowTrailData) : new TrailData(TrailType.PROJECTILE),
                     states != null ? states : new PlayerStates(), res.getLong(6));
         });
     }

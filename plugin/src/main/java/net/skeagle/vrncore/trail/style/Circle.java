@@ -1,41 +1,31 @@
 package net.skeagle.vrncore.trail.style;
 
-import net.skeagle.vrncore.event.TrailHandler;
 import net.skeagle.vrncore.playerdata.TrailData;
-import net.skeagle.vrncore.trail.Particles;
-import net.skeagle.vrncore.trail.Style;
-import net.skeagle.vrncore.trail.TrailType;
-import net.skeagle.vrncore.trail.TrailVisibility;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.util.Vector;
 
-class Circle extends TrailStyle {
+public class Circle extends SplitTrailStyle {
 
-    private int i;
-    private int j;
-
-    public Circle() {
-        super(Style.CIRCLE);
+    public Circle(TrailData data) {
+        super(data);
     }
 
     @Override
-    public void tick(Player player, Location loc, TrailData data, Particles particle, TrailVisibility visibility) {
-        if (data.getType() == TrailType.PLAYER) {
-            if (TrailHandler.tick % 2 != 0) return;
-            runPlayer(player, loc, data, particle, visibility, i);
-        }
-        else {
-            runArrow(player, loc, data, particle, j);
-        }
-        i += 20 % 360;
-        j += 35 % 360;
+    public void onPlayerTick(Player player, Location loc) {
+        if (step % 2 != 0) return;
+        Vector vec = new Vector(0.55, 1.15, 0.55);
+        Vector offset = vec.clone().rotateAroundY(Math.toRadians(step * 10));
+        run(player, loc.clone().add(offset), 2, 0.001D, 0.001D);
     }
 
-    private void runPlayer(Player player, Location loc, TrailData data, Particles particle, TrailVisibility visibility, int i) {
-        particle.run(player, loc.clone().add(Math.cos(Math.toRadians(i)) * 0.6, 1.15, Math.sin(Math.toRadians(i)) * 0.6), data, 2, 0.001D, 0.001D, visibility);
-    }
-
-    private void runArrow(Player player, Location loc, TrailData data, Particles particle, int j) {
-        particle.run(player, loc.clone().add(Math.cos(Math.toRadians(j)) * 0.6, 0, Math.sin(Math.toRadians(j)) * 0.6), data, 3, 0.005D, 0.005D, TrailVisibility.ALL);
+    @Override
+    public void onProjectileTick(Projectile projectile, Location loc) {
+        Vector dir = loc.getDirection().normalize();
+        Vector vec = (Math.abs(dir.getZ()) < Math.abs(dir.getX()) ? new Vector(dir.getY(), -dir.getX(), 0)
+                : new Vector(0, -dir.getZ(), dir.getY())).multiply(0.6);
+        Vector offset = vec.clone().rotateAroundAxis(dir, Math.toRadians(step * 30));
+        run(projectile, loc.clone().add(offset), 3, 0.005D, 0.005D);
     }
 }

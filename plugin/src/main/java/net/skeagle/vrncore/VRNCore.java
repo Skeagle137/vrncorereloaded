@@ -12,15 +12,13 @@ import net.skeagle.vrncore.event.MotdListener;
 import net.skeagle.vrncore.event.PlayerListener;
 import net.skeagle.vrncore.homes.HomeManager;
 import net.skeagle.vrncore.hook.HookManager;
-import net.skeagle.vrncore.nms.v1_19_R2.VRNCoreNMS1_19_R2;
-import net.skeagle.vrncore.nms.v1_19_R3.VRNCoreNMS1_19_R3;
 import net.skeagle.vrncore.nms.v1_20_R1.VRNCoreNMS1_20_R1;
+import net.skeagle.vrncore.nms.v1_20_R2.VRNCoreNMS1_20_R2;
 import net.skeagle.vrncore.npc.NpcData;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
 import net.skeagle.vrncore.playerdata.PlayerManager;
 import net.skeagle.vrncore.configurable.rewards.RewardManager;
-import net.skeagle.vrncore.trail.style.StyleRegistry;
 import net.skeagle.vrncore.utils.VRNUtil;
 import net.skeagle.vrncore.warps.Warp;
 import net.skeagle.vrncore.warps.WarpManager;
@@ -52,7 +50,6 @@ public final class VRNCore extends JavaPlugin {
     private WarpManager warpManager;
     private RewardManager rewardManager;
     private NpcManager npcManager;
-    private StyleRegistry styleRegistry;
     private SQLHelper db;
     private MotdListener motdListener;
 
@@ -63,9 +60,8 @@ public final class VRNCore extends JavaPlugin {
         if (VRNLib.MID_VERSION >= 20) {
             String serverVersion = VRNLib.getServerVersion();
             api = switch (serverVersion) {
-                case "1.19.3" -> new VRNCoreNMS1_19_R2();
-                case "1.19.4" -> new VRNCoreNMS1_19_R3();
-                case "1.20" -> new VRNCoreNMS1_20_R1();
+                case "1.20", "1.20.1" -> new VRNCoreNMS1_20_R1();
+                case "1.20.2" -> new VRNCoreNMS1_20_R2();
                 default -> null;
             };
         }
@@ -92,7 +88,6 @@ public final class VRNCore extends JavaPlugin {
         //managers and tasks
         UserCache.asyncInit();
         playerManager = new PlayerManager(this);
-        styleRegistry = new StyleRegistry(this);
         homeManager = new HomeManager(db);
         warpManager = new WarpManager(db);
         rewardManager = new RewardManager(this);
@@ -164,10 +159,6 @@ public final class VRNCore extends JavaPlugin {
 
     public PlayerManager getPlayerManager() {
         return playerManager;
-    }
-
-    public StyleRegistry getStyleRegistry() {
-        return styleRegistry;
     }
 
     public HomeManager getHomeManager() {

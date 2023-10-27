@@ -9,10 +9,18 @@ public class TrailDataUpdateEvent extends PlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final TrailData data;
+    private final boolean updateStyle;
 
     public TrailDataUpdateEvent(Player player, TrailData data) {
         super(player);
         this.data = data;
+        this.updateStyle = false;
+    }
+
+    public TrailDataUpdateEvent(Player player, TrailData data, boolean updateStyle) {
+        super(player);
+        this.data = data;
+        this.updateStyle = updateStyle;
     }
 
     public static HandlerList getHandlerList() {
@@ -21,6 +29,10 @@ public class TrailDataUpdateEvent extends PlayerEvent {
 
     public TrailData getTrailData() {
         return data;
+    }
+
+    public boolean shouldUpdateStyle() {
+        return updateStyle;
     }
 
     public HandlerList getHandlers() {

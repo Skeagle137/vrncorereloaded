@@ -1,14 +1,7 @@
 package net.skeagle.vrncore.trail;
 
 import net.skeagle.vrncommands.misc.FormatUtils;
-import net.skeagle.vrncore.hook.HookManager;
-import net.skeagle.vrncore.hook.SuperVanishHook;
-import net.skeagle.vrncore.playerdata.TrailData;
 import org.bukkit.*;
-import org.bukkit.entity.Player;
-
-import java.util.Arrays;
-import java.util.List;
 
 public enum Particles {
     FIREWORKS_SPARK(Particle.FIREWORKS_SPARK, Material.FIREWORK_ROCKET, ParticleProperties.DIRECTIONAL),
@@ -45,7 +38,8 @@ public enum Particles {
     TRANSITION_DUST(Particle.DUST_COLOR_TRANSITION, Material.MAGENTA_CONCRETE_POWDER, ParticleProperties.COLOR_TRANSITION),
     FALLING_NECTAR(Particle.FALLING_NECTAR, Material.BEEHIVE),
     FALLING_HONEY(Particle.FALLING_HONEY, Material.BEE_NEST),
-    SMALL_FLAME(Particle.SMALL_FLAME, Material.CANDLE, 0.1);
+    SMALL_FLAME(Particle.SMALL_FLAME, Material.CANDLE, 0.1),
+    CHERRY_LEAVES(Particle.CHERRY_LEAVES, Material.CHERRY_LEAVES);
 
 
     private final String name;
@@ -90,7 +84,7 @@ public enum Particles {
         return name;
     }
 
-    public Particle getParticle() {
+    public Particle get() {
         return particle;
     }
 
@@ -106,69 +100,8 @@ public enum Particles {
         return properties;
     }
 
-    public static Particles getFromParticle(final Particle particle) {
-        return Arrays.stream(values()).filter(t -> t.getParticle() == particle).findFirst().orElse(null);
-    }
-
     public String getPermission(TrailType type) {
         return "vrn.trails." + toString().toLowerCase() + "." + type.name().toLowerCase();
-    }
-
-    public void run(Player player, Location loc, TrailData data, int amount, double speed, double off) {
-        run(player, loc, data, amount, speed, off, TrailVisibility.ALL);
-    }
-
-    public void run(Player player, Location loc, TrailData data, int amount, double speed, double off, TrailVisibility visibility) {
-        run(player, loc, data, amount, speed, off, off, off, visibility);
-    }
-
-    public void run(Player player, Location loc, TrailData data, int amount, double speed, double offX, double offY, double offZ, TrailVisibility visibility) {
-        Object particleOptions = null;
-        if (this.getProperties().length != 0) {
-            List<ParticleProperties> props = Arrays.asList(this.getProperties());
-            if (props.contains(ParticleProperties.COLOR)) {
-                switch (this) {
-                    case REDSTONE -> particleOptions = new Particle.DustOptions(data.getColor(), (float) data.getSize());
-                    case NOTE -> {
-                        amount = 0;
-                        speed = 1;
-                        offX = data.getNote() / 24D;
-                        offY = 0;
-                        offZ = 0;
-                    }
-                    case POTION -> {
-                        speed = 1;
-                        offX = data.getColor().getRed() / 255D;
-                        offY = data.getColor().getGreen() / 255D;
-                        offZ = data.getColor().getBlue() / 255D;
-                    }
-                }
-            } else if (props.contains(ParticleProperties.COLOR_TRANSITION)) {
-                particleOptions = new Particle.DustTransition(data.getColor(), data.getFade(), (float) data.getSize());
-            }
-        }
-        if (this == POTION) {
-            for (int i = 0; i < amount; i++) {
-                run(player, loc, 0, speed, offX, offY, offZ, particleOptions, visibility);
-            }
-            return;
-        }
-        run(player, loc, amount, speed, offX, offY, offZ, particleOptions, visibility);
-    }
-
-    private void run(Player player, Location location, int amount, double speed, double offX, double offY, double offZ, Object options, TrailVisibility visibility) {
-        if (visibility == TrailVisibility.CLIENT) {
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                if (HookManager.isSuperVanishLoaded() && !SuperVanishHook.canSee(pl, player)) {
-                    continue;
-                }
-                pl.spawnParticle(this.getParticle(), location, amount, offX, offY, offZ, speed, options);
-            }
-        }
-        else {
-            player.getWorld().spawnParticle(this.getParticle(), location, amount, offX, offY, offZ, speed, options, true);
-        }
-
     }
 
     public enum ParticleProperties {

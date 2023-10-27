@@ -4,7 +4,7 @@ import net.skeagle.vrncommands.misc.FormatUtils;
 
 public enum TrailType {
     PLAYER,
-    ARROW;
+    PROJECTILE;
 
     public String getName() {
         return FormatUtils.toTitleCase(this.name());

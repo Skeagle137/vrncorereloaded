@@ -25,7 +25,7 @@ public class PlayerData {
     PlayerData(final UUID uuid) {
         this.uuid = uuid;
         this.playerTrailData = new TrailData(TrailType.PLAYER);
-        this.arrowTrailData = new TrailData(TrailType.ARROW);
+        this.arrowTrailData = new TrailData(TrailType.PROJECTILE);
         this.states = new PlayerStates();
     }
 

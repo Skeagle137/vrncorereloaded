@@ -1,57 +1,54 @@
 package net.skeagle.vrncore.playerdata;
 
 import com.google.gson.JsonObject;
-import net.skeagle.vrncore.VRNCore;
+import net.skeagle.vrncore.trail.Particles;
 import net.skeagle.vrncore.trail.Style;
 import net.skeagle.vrncore.trail.TrailColors;
 import net.skeagle.vrncore.trail.style.TrailStyle;
 import net.skeagle.vrncore.event.TrailDataUpdateEvent;
 import net.skeagle.vrncore.trail.TrailType;
-import net.skeagle.vrncore.trail.style.StyleRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 public class TrailData {
 
-    private final StyleRegistry registry;
     private final TrailType type;
-    private Particle particle;
+    private Particles particle;
     private Color color;
     private Color fade;
     private double size;
-    private TrailStyle style;
+    private Style style;
+    private TrailStyle trailStyle;
     private double note = TrailColors.RED.getNote();
 
     public TrailData(TrailType type) {
-        this.registry = VRNCore.getInstance().getStyleRegistry();
         this.type = type;
         this.color = Color.RED;
         this.fade = Color.WHITE;
         this.size = 1.0;
-        this.style = registry.get(Style.DEFAULT);
+        this.style = Style.DEFAULT;
     }
 
-    public TrailData(VRNCore plugin, TrailType type, Particle particle, Color color, Color fade, double size, TrailStyle style) {
-        this.registry = plugin.getStyleRegistry();
+    public TrailData(TrailType type, Particles particle, Color color, Color fade, double size, Style style) {
         this.type = type;
         this.particle = particle;
         this.color = color;
         this.fade = fade;
         this.size = size;
         this.style = style;
+        this.trailStyle = style.create(this);
     }
 
     public TrailType getType() {
         return type;
     }
 
-    public Particle getParticle() {
+    public Particles getParticle() {
         return particle;
     }
 
-    public void setParticle(Player player, Particle particle) {
+    public void setParticle(Player player, Particles particle) {
         this.particle = particle;
         Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
@@ -87,13 +84,18 @@ public class TrailData {
         Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
     }
 
-    public TrailStyle getStyle() {
+    public Style getStyle() {
         return style;
     }
 
     public void setStyle(Player player, Style style) {
-        this.style = registry.get(style);
+        this.style = style;
+        this.trailStyle = style.create(this);
         Bukkit.getPluginManager().callEvent(new TrailDataUpdateEvent(player, this));
+    }
+
+    public TrailStyle getTrailStyle() {
+        return trailStyle;
     }
 
     public double getNote() {
@@ -106,15 +108,15 @@ public class TrailData {
         jsonObject.addProperty("color", color.asRGB());
         jsonObject.addProperty("fade", fade.asRGB());
         jsonObject.addProperty("size", size);
-        jsonObject.addProperty("style", VRNCore.getInstance().getStyleRegistry().getStyle(style).toString());
+        jsonObject.addProperty("style", style.toString());
         return jsonObject;
     }
 
-    static TrailData deserialize(VRNCore plugin, TrailType type, JsonObject jsonObject) {
+    static TrailData deserialize(TrailType type, JsonObject jsonObject) {
         try {
-            return new TrailData(plugin, type, Particle.valueOf(jsonObject.get("particle").getAsString()),
+            return new TrailData(type, Particles.valueOf(jsonObject.get("particle").getAsString()),
                     Color.fromRGB(jsonObject.get("color").getAsInt()), Color.fromRGB(jsonObject.get("fade").getAsInt()),
-                    jsonObject.get("size").getAsDouble(), plugin.getStyleRegistry().get(Style.valueOf(jsonObject.get("style").getAsString())));
+                    jsonObject.get("size").getAsDouble(), Style.valueOf(jsonObject.get("style").getAsString()));
         }
         catch (Exception ex) {
             return new TrailData(type);

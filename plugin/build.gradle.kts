@@ -1,23 +1,17 @@
 plugins {
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-}
-
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 dependencies {
     implementation(project(":api"))
-    implementation(project(":nms-1_19_R2", "reobf"))
-    implementation(project(":nms-1_19_R3", "reobf"))
     implementation(project(":nms-1_20_R1", "reobf"))
+    implementation(project(":nms-1_20_R2", "reobf"))
 
     compileOnly("net.skeagle:VRNLib:2.1.3")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("com.github.LeonMangler:SuperVanish:6.2.16")
+    compileOnly("com.github.LeonMangler:SuperVanish:6.2.17")
 }
 
 java {
