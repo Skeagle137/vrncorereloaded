@@ -95,7 +95,9 @@ public class TrailHandler implements Listener {
                 for (Projectile projectile : projectiles)
                     this.handleTrail(projectile, TrailType.PROJECTILE, (player, target, data) ->
                             data.getTrailStyle().tick(target, target.getLocation()));
-                projectileCache.get(p).getTrailStyle().step();
+                TrailData data = projectileCache.get(p);
+                if (data != null)
+                    data.getTrailStyle().step();
             });
 
         }, 1, 1);

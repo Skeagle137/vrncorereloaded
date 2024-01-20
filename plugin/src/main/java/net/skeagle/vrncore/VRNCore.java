@@ -14,6 +14,7 @@ import net.skeagle.vrncore.homes.HomeManager;
 import net.skeagle.vrncore.hook.HookManager;
 import net.skeagle.vrncore.nms.v1_20_R1.VRNCoreNMS1_20_R1;
 import net.skeagle.vrncore.nms.v1_20_R2.VRNCoreNMS1_20_R2;
+import net.skeagle.vrncore.nms.v1_20_R3.VRNCoreNMS1_20_R3;
 import net.skeagle.vrncore.npc.NpcData;
 import net.skeagle.vrncore.npc.NpcManager;
 import net.skeagle.vrncore.playerdata.PlayerData;
@@ -62,6 +63,7 @@ public final class VRNCore extends JavaPlugin {
             api = switch (serverVersion) {
                 case "1.20", "1.20.1" -> new VRNCoreNMS1_20_R1();
                 case "1.20.2" -> new VRNCoreNMS1_20_R2();
+                case "1.20.3", "1.20.4" -> new VRNCoreNMS1_20_R3();
                 default -> null;
             };
         }

@@ -25,7 +25,7 @@ allprojects {
 
     dependencies {
         compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
-        compileOnly("com.mojang:authlib:3.16.29")
+        compileOnly("com.mojang:authlib:4.0.43")
     }
 
     tasks.withType<JavaCompile> {

@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":nms-1_20_R1", "reobf"))
     implementation(project(":nms-1_20_R2", "reobf"))
+    implementation(project(":nms-1_20_R3", "reobf"))
 
     compileOnly("net.skeagle:VRNLib:2.1.3")
     compileOnly("net.luckperms:api:5.4")
